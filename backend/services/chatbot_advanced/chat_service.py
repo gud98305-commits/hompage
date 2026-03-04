@@ -661,7 +661,9 @@ class ChatService:
         # Step 4. product_adapter로 1차 검색
         try:
             from backend.services.chatbot_advanced.product_adapter import get_products_by_curator
+            print(f">>> [DEBUG] _handle_recommend: curator_req = {curator_req}")
             products = await get_products_by_curator(curator_req)
+            print(f">>> [DEBUG] _handle_recommend: found {len(products)} products from get_products_by_curator")
         except RAGEngineError as e:
             if e.code == "no_result":
                 return (
@@ -683,8 +685,10 @@ class ChatService:
             products: list[ProductItem] = await self.rag_engine.run(
                 products, curator_req,
             )
-        except Exception:
+            print(f">>> [DEBUG] _handle_recommend: found {len(products)} products after rag_engine")
+        except Exception as e:
             # RAG 실패 시 1차 검색 결과 그대로 사용 (서비스 연속성)
+            print(f">>> [DEBUG] _handle_recommend: rag_engine error = {e}")
             pass
 
         # Step 6. 응답 텍스트 생성
@@ -708,6 +712,7 @@ class ChatService:
             f"{prefix}상품 {len(products)}개를 추천드려요! "
             "아래 상품들을 확인해보세요 😊"
         )
+        print(f">>> [DEBUG] _handle_recommend: Returning {len(products)} products to caller.")
         return response, products, None
         # TODO 5단계: game_items 연동 시 게임 담은 옷 기반 추천으로 확장
 
