@@ -1,7 +1,7 @@
 /* ── SEOULFIT AI Photobooth ─────────────────────────────────────────── */
 'use strict';
 
-const NEXT_BASE    = 'http://localhost:3001';
+const NEXT_BASE    = '';  // FastAPI 통합: 상대경로 사용
 const MAX_REQUESTS = 5;
 
 // ── i18n ─────────────────────────────────────────────────────────────────
@@ -128,7 +128,7 @@ function resizeImage(file, maxPx = 1024) {
 
 // ── 스타일 로드 ──────────────────────────────────────────────────────────
 async function fetchStyles() {
-  const res = await fetch(`${NEXT_BASE}/api/styles`);
+  const res = await fetch(`/api/photobooth/styles`);
   if (!res.ok) throw new Error('스타일 로드 실패');
   return res.json();
 }
@@ -431,7 +431,7 @@ async function startGeneration() {
   if (S.outfitDescription) payload.outfitDescription = S.outfitDescription;
 
   try {
-    const res = await fetch(`${NEXT_BASE}/api/generate`, {
+    const res = await fetch(`/api/photobooth/generate`, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify(payload),

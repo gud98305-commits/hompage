@@ -35,5 +35,8 @@ google-api-python-client==2.118.0
 google-auth==2.29.0
 google-auth-httplib2==0.2.0
 
+# 이미지 처리 (포토부스 합성)
+Pillow>=10.1.0
+
 # 유틸
 tqdm==4.66.4
