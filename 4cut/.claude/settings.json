@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"BASE64\\\\|base64\\\\|Buffer\" /c/GITHUB/photobooth/lib/*.ts)",
+      "Bash(ls data/pose_presets.json lib/*.ts types/*.ts app/photo-booth/page.tsx app/api/generate/route.ts app/api/presets/route.ts vercel.json .gitignore ARCHITECTURE.md CLAUDE_v3_final.md)",
+      "Bash(ls public/references/*.jpg)"
+    ]
+  }
+}
