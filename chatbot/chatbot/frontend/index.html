@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>채찍피티 - AI 패션 어드바이저</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .landing {
+      text-align: center;
+      color: #fff;
+    }
+    .landing h1 {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+    }
+    .landing p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-bottom: 40px;
+    }
+    .btn-group {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-group a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 32px 48px;
+      border-radius: 16px;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 700;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-group a:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    .btn-shop {
+      background: #fff;
+      color: #6366f1;
+    }
+    .btn-game {
+      background: #1e1b4b;
+      color: #c7d2fe;
+    }
+    .btn-group a .icon {
+      font-size: 2.5rem;
+    }
+    .notice {
+      margin-top: 40px;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="landing">
+    <h1>SEOULFIT</h1>
+    <p>AI가 추천하는 나만의 패션 스타일</p>
+    <div class="btn-group">
+      <a href="#" class="btn-shop" onclick="alert('옷가게 페이지 (게임 합칠 때 연동)')">
+        <span class="icon">👗</span>
+        옷가게 가기
+      </a>
+      <a href="#" class="btn-game" onclick="alert('게임 페이지 (게임 합칠 때 연동)')">
+        <span class="icon">🎮</span>
+        게임하기
+      </a>
+    </div>
+    <p class="notice">
+      우측 하단 👗 버튼을 클릭하면 AI 패션 챗봇이 열립니다
+    </p>
+  </div>
+
+  <!-- 챗봇 JS -->
+  <script src="/static/chatbot.js"></script>
+</body>
+</html>

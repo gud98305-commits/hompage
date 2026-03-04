@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -18,13 +19,22 @@ from backend.routes.translate import router as translate_router
 from backend.routes.webhook import router as webhook_router
 from backend.routes.my import router as my_router
 from backend.routes.game import router as game_router
-from backend.routes.chatbot import router as chatbot_router
 from backend.routes.photobooth import router as photobooth_router
 from backend.services.turso_db import init_db
+from backend.services.chatbot_advanced.chat_routes import router as advanced_chat_router
+from backend.services.chatbot_advanced.chat_service import register_chat_exception_handlers
+from backend.services.chatbot_advanced.chat_db import init_chat_db
 
-init_db()
 
-app = FastAPI(title='SEOULFIT API', version='0.1.0')
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """서버 시작/종료 시 실행되는 라이프사이클."""
+    init_db()               # Turso 테이블 초기화 (동기)
+    await init_chat_db()    # 챗봇 히스토리 SQLite 초기화 (비동기)
+    yield
+
+
+app = FastAPI(title='SEOULFIT API', version='0.1.0', lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -41,8 +51,11 @@ app.include_router(translate_router)
 app.include_router(webhook_router)
 app.include_router(my_router)
 app.include_router(game_router)
-app.include_router(chatbot_router)
+app.include_router(advanced_chat_router)
 app.include_router(photobooth_router)
+
+# 챗봇 예외 핸들러 등록
+register_chat_exception_handlers(app)
 
 ROOT = Path(__file__).resolve().parents[1]
 app.mount('/assets', StaticFiles(directory=str(ROOT / 'assets')), name='assets')
