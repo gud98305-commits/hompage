@@ -21,7 +21,8 @@ class Base(DeclarativeBase):
     pass
 
 
-DATABASE_URL = "sqlite+aiosqlite:///./chatbot_history.db"
+# Railway 볼륨 마운트를 위해 data/ 폴더 내부에 DB를 위치시킵니다.
+DATABASE_URL = "sqlite+aiosqlite:///./data/chatbot_history.db"
 
 engine = create_async_engine(DATABASE_URL, echo=False)
 

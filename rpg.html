@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pixel Seongsu Adventure</title>
+  <link rel="stylesheet" href="/assets/css/rpg.css" />
+</head>
+
+<body>
+  <!-- 타이틀 화면 (캔버스 위에 오버레이) -->
+  <div id="title-screen">
+    <img id="title-bg" src="/assets/rpg/first_page.png" alt="title" />
+    <div id="title-overlay">
+      <div id="title-tap">TAP TO PLAY</div>
+    </div>
+  </div>
+
+  <!-- HUD: 에너지 바 -->
+  <div id="hud" style="display:none;">
+    <div id="hud-energy">
+      <span id="hud-energy-icon">&#9829;</span>
+      <div id="hud-energy-bar">
+        <div id="hud-energy-fill"></div>
+      </div>
+      <span id="hud-energy-text">100</span>
+    </div>
+    <div id="hud-gold">
+      <span id="hud-gold-icon">&#9733;</span>
+      <span id="hud-gold-text">0</span>
+    </div>
+  </div>
+
+  <!-- 인벤토리 버튼 -->
+  <div id="inventory-btn" style="display:none;">INVENTORY</div>
+  <div id="cloth-btn" style="display:none;">CLOTH</div>
+
+  <!-- 인벤토리 패널 -->
+  <div id="inventory-panel" style="display:none;">
+    <div id="inventory-header">
+      <span>INVENTORY</span>
+      <button id="inventory-close">&times;</button>
+    </div>
+    <div id="inventory-grid"></div>
+    <div id="inventory-desc"></div>
+  </div>
+
+  <!-- 옷 인벤토리 패널 -->
+  <div id="cloth-panel" style="display:none;">
+    <div id="cloth-header">
+      <span>CLOTHES</span>
+      <button id="cloth-close">&times;</button>
+    </div>
+    <div id="cloth-grid"></div>
+    <div id="cloth-desc"></div>
+  </div>
+
+  <!-- 게임 알림 UI -->
+  <div id="game-notification" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:#ffaa00; color:#000; padding:10px 20px; border:2px solid #fff; border-radius:4px; z-index:1000; font-family:'Press Start 2P', monospace; font-size:10px;"></div>
+
+
+  <!-- 대화창 -->
+  <div id="dialog-box">
+    <div id="dialog-portrait-wrap">
+      <img id="dialog-portrait" src="" alt="" />
+    </div>
+    <div id="dialog-content">
+      <div id="dialog-name"></div>
+      <div id="dialog-text"></div>
+      <div id="dialog-hint">[ Space ] 계속</div>
+        <div id="dialog-action-btns">
+          <button id="dialog-btn-in">↑ 입장</button>
+          <button id="dialog-btn-out">↓ 나가기</button>
+        </div>
+    </div>
+  </div>
+
+  <!-- 종료 모달 -->
+  <div id="exit-modal" style="display:none;">
+    <div id="exit-modal-overlay"></div>
+    <div id="exit-modal-content">
+      <p id="exit-modal-title">🏙️ 성수동 탐험 완료!</p>
+      <p id="exit-modal-desc">오늘 성수동 구석구석을 잘 둘러봤어요.<br>웹페이지로 돌아갈까요?</p>
+      <div id="exit-modal-buttons">
+        <button id="exit-modal-confirm">웹페이지로 이동</button>
+        <button id="exit-modal-cancel">계속 탐험하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 커버낫 전용 모달 -->
+  <div id="covernat-modal" style="display:none;">
+    <div id="covernat-modal-overlay"></div>
+    <div id="covernat-modal-content">
+      <button id="covernat-modal-close">✕</button>
+      <div id="covernat-modal-dialog" style="display:block;">
+        <p id="covernat-modal-dialog-text"></p>
+      </div>
+      <div id="covernat-modal-grid">
+        <div class="covernat-item" data-name="커버낫 아이템 1" data-brand="covernat" data-img="/assets/rpg/covernat_1.jpg"><img src="/assets/rpg/covernat_1.jpg"/></div>
+        <div class="covernat-item" data-name="커버낫 아이템 2" data-brand="covernat" data-img="/assets/rpg/covernat_2.jpg"><img src="/assets/rpg/covernat_2.jpg"/></div>
+        <div class="covernat-item" data-name="커버낫 아이템 3" data-brand="covernat" data-img="/assets/rpg/covernat_3.jpg"><img src="/assets/rpg/covernat_3.jpg"/></div>
+        <div class="covernat-item" data-name="커버낫 아이템 4" data-brand="covernat" data-img="/assets/rpg/covernat_4.jpg"><img src="/assets/rpg/covernat_4.jpg"/></div>
+        <div class="covernat-item" data-name="커버낫 아이템 5" data-brand="covernat" data-img="/assets/rpg/covernat_5.jpg"><img src="/assets/rpg/covernat_5.jpg"/></div>
+        <div class="covernat-item" data-name="커버낫 아이템 6" data-brand="covernat" data-img="/assets/rpg/covernat_6.jpg"><img src="/assets/rpg/covernat_6.jpg"/></div>
+        <div class="covernat-item" data-name="커버낫 아이템 7" data-brand="covernat" data-img="/assets/rpg/covernat_7.jpg"><img src="/assets/rpg/covernat_7.jpg"/></div>
+        <div class="covernat-item" data-name="커버낫 아이템 8" data-brand="covernat" data-img="/assets/rpg/covernat_8.jpg"><img src="/assets/rpg/covernat_8.jpg"/></div>
+        <div class="covernat-item" data-name="커버낫 아이템 9" data-brand="covernat" data-img="/assets/rpg/covernat_9.jpg"><img src="/assets/rpg/covernat_9.jpg"/></div>
+      </div>
+      <div id="covernat-item-preview" style="display:none;">
+        <img id="covernat-preview-img" src="" alt="아이템 미리보기"/>
+        <p id="covernat-preview-text">저장하시겠습니까?</p>
+        <div id="covernat-preview-btns">
+          <button id="covernat-preview-save">저장</button>
+          <button id="covernat-preview-cancel">취소</button>
+        </div>
+      </div>
+      <div id="covernat-modal-toast" style="display:none;">✔ CLOTH에 저장되었습니다!</div>
+    </div>
+  </div>
+
+  <!-- 무신사 전용 모달 -->
+  <div id="musinsa-modal" style="display:none;">
+    <div id="musinsa-modal-overlay"></div>
+    <div id="musinsa-modal-content">
+      <button id="musinsa-modal-close">✕</button>
+      <div id="musinsa-modal-dialog" style="display:block;">
+        <p id="musinsa-modal-dialog-text"></p>
+      </div>
+      <div id="musinsa-modal-grid">
+        <div class="musinsa-item" data-name="무신사 헨리넥 니트" data-brand="musinsa" data-img="/assets/rpg/musinsa_1.jpg"><img src="/assets/rpg/musinsa_1.jpg"/></div>
+        <div class="musinsa-item" data-name="무신사 크롭 티셔츠" data-brand="musinsa" data-img="/assets/rpg/musinsa_2.jpg"><img src="/assets/rpg/musinsa_2.jpg"/></div>
+        <div class="musinsa-item" data-name="무신사 럭비 스웻셔츠" data-brand="musinsa" data-img="/assets/rpg/musinsa_3.jpg"><img src="/assets/rpg/musinsa_3.jpg"/></div>
+        <div class="musinsa-item" data-name="무신사 배기 데님 팬츠" data-brand="musinsa" data-img="/assets/rpg/musinsa_4.jpg"><img src="/assets/rpg/musinsa_4.jpg"/></div>
+        <div class="musinsa-item" data-name="무신사 블랙 슬림 팬츠" data-brand="musinsa" data-img="/assets/rpg/musinsa_5.jpg"><img src="/assets/rpg/musinsa_5.jpg"/></div>
+        <div class="musinsa-item" data-name="무신사 베이지 치노 팬츠" data-brand="musinsa" data-img="/assets/rpg/musinsa_6.jpg"><img src="/assets/rpg/musinsa_6.jpg"/></div>
+        <div class="musinsa-item" data-name="무신사 그레이 오버셔츠" data-brand="musinsa" data-img="/assets/rpg/musinsa_7.jpg"><img src="/assets/rpg/musinsa_7.jpg"/></div>
+        <div class="musinsa-item" data-name="무신사 차콜 오버셔츠" data-brand="musinsa" data-img="/assets/rpg/musinsa_8.jpg"><img src="/assets/rpg/musinsa_8.jpg"/></div>
+        <div class="musinsa-item" data-name="무신사 브라운 집업 자켓" data-brand="musinsa" data-img="/assets/rpg/musinsa_9.jpg"><img src="/assets/rpg/musinsa_9.jpg"/></div>
+      </div>
+      <div id="musinsa-item-preview" style="display:none;">
+        <img id="musinsa-preview-img" src="" alt="아이템 미리보기"/>
+        <p id="musinsa-preview-text">저장하시겠습니까?</p>
+        <div id="musinsa-preview-btns">
+          <button id="musinsa-preview-save">저장</button>
+          <button id="musinsa-preview-cancel">취소</button>
+        </div>
+      </div>
+      <div id="musinsa-modal-toast" style="display:none;">✔ CLOTH에 저장되었습니다!</div>
+    </div>
+  </div>
+
+  <!-- 마뗑킴 전용 모달 -->
+  <div id="matinkim-modal" style="display:none;">
+    <div id="matinkim-modal-overlay"></div>
+    <div id="matinkim-modal-content">
+      <button id="matinkim-modal-close">✕</button>
+      <div id="matinkim-modal-dialog" style="display:block;">
+        <p id="matinkim-modal-dialog-text"></p>
+      </div>
+      <div id="matinkim-modal-grid">
+        <div class="matinkim-item" data-name="마뗑킴 블랙 후드" data-brand="matinkim" data-img="/assets/rpg/matinkim_1.jpg"><img src="/assets/rpg/matinkim_1.jpg"/></div>
+        <div class="matinkim-item" data-name="마뗑킴 크롭 스웻셔츠" data-brand="matinkim" data-img="/assets/rpg/matinkim_2.jpg"><img src="/assets/rpg/matinkim_2.jpg"/></div>
+        <div class="matinkim-item" data-name="마뗑킴 실버 크롭티" data-brand="matinkim" data-img="/assets/rpg/matinkim_3.jpg"><img src="/assets/rpg/matinkim_3.jpg"/></div>
+        <div class="matinkim-item" data-name="마뗑킴 카고 스커트 (베이지)" data-brand="matinkim" data-img="/assets/rpg/matinkim_4.jpg"><img src="/assets/rpg/matinkim_4.jpg"/></div>
+        <div class="matinkim-item" data-name="마뗑킴 후드 원피스" data-brand="matinkim" data-img="/assets/rpg/matinkim_5.jpg"><img src="/assets/rpg/matinkim_5.jpg"/></div>
+        <div class="matinkim-item" data-name="마뗑킴 카고 스커트 (블랙)" data-brand="matinkim" data-img="/assets/rpg/matinkim_6.jpg"><img src="/assets/rpg/matinkim_6.jpg"/></div>
+        <div class="matinkim-item" data-name="마뗑킴 로고 티셔츠 (블랙)" data-brand="matinkim" data-img="/assets/rpg/matinkim_7.jpg"><img src="/assets/rpg/matinkim_7.jpg"/></div>
+        <div class="matinkim-item" data-name="마뗑킴 로고 티셔츠 (화이트)" data-brand="matinkim" data-img="/assets/rpg/matinkim_8.jpg"><img src="/assets/rpg/matinkim_8.jpg"/></div>
+        <div class="matinkim-item" data-name="마뗑킴 로고 맨투맨" data-brand="matinkim" data-img="/assets/rpg/matinkim_9.jpg"><img src="/assets/rpg/matinkim_9.jpg"/></div>
+      </div>
+      <div id="matinkim-item-preview" style="display:none;">
+        <img id="matinkim-preview-img" src="" alt="아이템 미리보기"/>
+        <p id="matinkim-preview-text">저장하시겠습니까?</p>
+        <div id="matinkim-preview-btns">
+          <button id="matinkim-preview-save">저장</button>
+          <button id="matinkim-preview-cancel">취소</button>
+        </div>
+      </div>
+      <div id="matinkim-modal-toast" style="display:none;">✔ CLOTH에 저장되었습니다!</div>
+    </div>
+  </div>
+
+  <!-- 가게 모달 -->
+  <div id="shop-modal" style="display:none;">
+    <div id="shop-modal-overlay"></div>
+    <div id="shop-modal-content">
+      <div id="shop-modal-header">
+        <span id="shop-modal-name"></span>
+        <button id="shop-modal-close">✕</button>
+      </div>
+      <img id="shop-modal-img" src="" alt="" />
+      <p id="shop-modal-desc"></p>
+      <div id="shop-modal-buttons">
+        <a id="shop-modal-link" href="#" target="_blank">🔗 플랫폼에서 보기</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 웹뷰 모달 (외부 페이지 임베드용) -->
+  <div id="webview-modal" style="display:none;">
+    <div id="webview-modal-overlay"></div>
+    <div id="webview-modal-content">
+      <div id="webview-modal-header">
+        <span id="webview-modal-name"></span>
+        <button id="webview-modal-close">✕</button>
+      </div>
+      <div id="webview-container">
+        <iframe id="webview-iframe" src="" frameborder="0"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- 모바일 조작 -->
+  <div id="mobile-controls" style="display:none;">
+    <button id="btn-left" class="ctrl-btn">&larr;</button>
+    <button id="btn-action" class="ctrl-btn">TALK</button>
+    <button id="btn-right" class="ctrl-btn">&rarr;</button>
+  </div>
+
+  <script src="https://unpkg.com/kaplay@3001.0.19/dist/kaplay.js"></script>
+  <script src="/assets/js/rpg-game.js"></script>
+</body>
+
+</html>

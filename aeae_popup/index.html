@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>aeae — pop-up store</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Noto+Serif+JP:wght@300;400&display=swap');
+
+:root {
+  --blush: #f2c4c4;
+  --cream: #fdf6ee;
+  --dusty: #c9b8a8;
+  --ink: #2a2a2a;
+  --red: #c0272d;
+  --red-light: #f2b8b8;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #c8a882;
+  font-family: 'Noto Serif JP', serif;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ══════════════════════════════════════
+   DESK  (floor.png 배경)
+══════════════════════════════════════ */
+#desk {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: url('https://aeaepopup.netlify.app/images/floor.png') center center / cover no-repeat;
+  overflow: hidden;
+}
+
+/* ── 매트 (mat.png) ── */
+#mat {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 78vw;
+  height: 72vh;
+  background: url('https://aeaepopup.netlify.app/images/mat.png') center center / contain no-repeat;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ── 로고 (logo.png) ── */
+#logo {
+  position: absolute;
+  top: 3vh;
+  left: 50%;
+  transform: translateX(-50%);
+  height: clamp(50px, 9vh, 90px);
+  z-index: 10;
+  pointer-events: none;
+  filter: drop-shadow(1px 2px 4px rgba(0,0,0,0.15));
+}
+
+/* ── 브랜드 이미지 딸기 (brandimage.png) ── */
+#brandimage {
+  position: absolute;
+  top: 2vh;
+  left: 2vw;
+  height: clamp(100px, 15vh, 180px);
+  z-index: 10;
+  pointer-events: none;
+  filter: drop-shadow(1px 2px 4px rgba(0,0,0,0.12));
+}
+
+/* ── 힌트 텍스트 ── */
+#hint {
+  position: absolute;
+  bottom: 2.5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Caveat', cursive;
+  font-size: clamp(0.85rem, 1.5vw, 1.15rem);
+  color: rgba(255,255,255,0.8);
+  z-index: 10;
+  letter-spacing: 0.08em;
+  animation: pulse 2.5s ease-in-out infinite;
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+@keyframes pulse { 0%,100%{opacity:.45} 50%{opacity:1} }
+
+/* ── 카운터 ── */
+#counter {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  font-family: 'Caveat', cursive;
+  font-size: 1rem;
+  color: rgba(255,255,255,0.75);
+  z-index: 50;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* ══════════════════════════════════════
+   ITEMS  (PNG 이미지)
+══════════════════════════════════════ */
+.item {
+  position: absolute;
+  cursor: grab;
+  z-index: 20;
+  transition: filter 0.15s, transform 0.15s;
+  user-select: none;
+}
+.item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.28));
+}
+.item:hover img {
+  filter: drop-shadow(3px 6px 12px rgba(0,0,0,0.38)) brightness(1.04);
+}
+.item:hover {
+  transform: rotate(2deg) scale(1.05);
+}
+.item.dragging {
+  cursor: grabbing;
+  z-index: 100;
+  transition: none;
+}
+.item.dragging img {
+  filter: drop-shadow(6px 12px 24px rgba(0,0,0,0.45));
+}
+.item.removed {
+  animation: flyAway 0.45s ease-in forwards;
+  pointer-events: none;
+}
+@keyframes flyAway {
+  to { transform: translateY(-130vh) rotate(25deg) scale(0.4); opacity: 0; }
+}
+
+/* ══════════════════════════════════════
+   THE BAG  (thebag.png — 특별 아이템)
+══════════════════════════════════════ */
+#thebag {
+  position: absolute;
+  bottom: 26%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(180px, 15vw, 270px);
+  cursor: pointer !important;
+  z-index: 18;
+  animation: bagPulse 2.8s ease-in-out infinite;
+  transition: transform 0.2s;
+}
+#thebag img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.35));
+}
+#thebag:hover {
+  transform: translateX(-50%) scale(1.06);
+}
+@keyframes bagPulse {
+  0%,100% { filter: none; }
+  50%      { filter: drop-shadow(0 0 18px rgba(242,196,196,0.85)); }
+}
+
+/* ══════════════════════════════════════
+   OVERLAY (전체 어두운 배경)
+══════════════════════════════════════ */
+#overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10,6,6,0.75);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+#overlay.active { display: flex; }
+
+#overlay-scene {
+  position: relative;
+  width: min(520px, 90vw);
+  height: min(560px, 88vh);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 닫기 버튼 */
+#btn-close {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--cream);
+  border: 2px solid var(--dusty);
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  box-shadow: 2px 2px 0 var(--dusty);
+  transition: transform 0.2s;
+  color: var(--ink);
+}
+#btn-close:hover { transform: rotate(90deg); }
+
+/* ── STEP 1: closeup 이미지 ── */
+#step-closeup {
+  display: none;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+}
+#step-closeup.active { display: flex; }
+#step-closeup img {
+  width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 16px;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.5);
+  animation: zoomIn 0.55s cubic-bezier(.22,1,.36,1);
+  cursor: pointer;
+}
+@keyframes zoomIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+/* ── STEP 2: openup 이미지 + 봉투 ── */
+#step-open {
+  display: none;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+}
+#step-open.active { display: flex; }
+
+/* step2 전체를 감싸는 컨테이너 — 봉투를 가방 위에 겹치게 포지셔닝 */
+#step-open-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* step2 가방 오픈 이미지 — step1 closeup과 동일한 크기 */
+#bag-open-img {
+  width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 16px;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.5);
+  animation: zoomIn 0.55s cubic-bezier(.22,1,.36,1);
+}
+
+/* 봉투 — 가방 내부 중앙에서 스르륵 위로 올라옴 */
+#envelope {
+  position: absolute;
+  bottom: 22%;
+  left: 35%;
+  transform: translateX(-50%);
+  width: clamp(130px, 26%, 200px);
+  cursor: pointer;
+  animation: envelopeRise 1s 0.5s cubic-bezier(.22,1,.36,1) both;
+  z-index: 10;
+  transition: transform 0.25s, filter 0.25s;
+  filter: drop-shadow(3px 8px 20px rgba(0,0,0,0.45));
+}
+#envelope img {
+  width: 200%;
+  height: auto;
+  display: block;
+}
+#envelope:hover {
+  transform: translateX(-50%) scale(1.07) translateY(-6px);
+  filter: drop-shadow(3px 12px 28px rgba(192,39,45,0.5));
+}
+@keyframes envelopeRise {
+  0%   { transform: translateX(-50%) translateY(100px) scale(0.55); opacity: 0; }
+  60%  { transform: translateX(-50%) translateY(-12px) scale(1.04); opacity: 1; }
+  100% { transform: translateX(-50%) translateY(0px)   scale(1);    opacity: 1; }
+}
+
+/* 봉투 SVG fallback */
+.envelope-svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(3px 6px 16px rgba(0,0,0,0.4));
+}
+
+/* ── STEP 3: 봉투 열림 + 아이콘 ── */
+#step-letter {
+  display: none;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+}
+#step-letter.active { display: flex; }
+
+/* 열린 봉투 + 편지지 카드 */
+.letter-card {
+  position: relative;
+  width: clamp(260px, 78%, 360px);
+  background: linear-gradient(160deg, #fff8f8 0%, #fdf0f0 50%, #fff5f5 100%);
+  border-radius: 12px;
+  padding: 28px 22px 22px;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.4),
+    0 0 0 2px rgba(192,39,45,0.12),
+    4px 4px 0 #d4a0a0;
+  animation: letterPop 0.7s cubic-bezier(.22,1,.36,1);
+  border-top: 4px solid var(--red);
+}
+@keyframes letterPop {
+  from { transform: scale(0.6) rotate(-6deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0);       opacity: 1; }
+}
+
+/* 편지지 상단 봉투 플랩 모양 */
+.letter-card::before {
+  content: '';
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  border-bottom: 18px solid var(--red);
+}
+
+.letter-header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.letter-heart {
+  font-size: 1.6rem;
+  display: block;
+  margin-bottom: 4px;
+  animation: heartBeat 1.2s ease-in-out infinite;
+}
+@keyframes heartBeat {
+  0%,100% { transform: scale(1); }
+  40%      { transform: scale(1.2); }
+  60%      { transform: scale(0.95); }
+}
+.letter-title {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(1rem, 3vw, 1.35rem);
+  color: var(--red);
+  letter-spacing: 0.04em;
+}
+
+/* 구분선 */
+.letter-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e8a0a0, transparent);
+  margin: 12px 0 18px;
+}
+
+/* 아이콘 3개 */
+.event-icons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.event-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  animation: iconPop 0.45s cubic-bezier(.36,.07,.19,.97) both;
+  transition: transform 0.2s;
+  text-decoration: none;
+}
+.event-icon:nth-child(1) { animation-delay: 0.35s; }
+.event-icon:nth-child(2) { animation-delay: 0.55s; }
+.event-icon:nth-child(3) { animation-delay: 0.75s; }
+@keyframes iconPop {
+  from { transform: scale(0) rotate(-15deg) translateY(20px); opacity: 0; }
+  to   { transform: scale(1) rotate(0)      translateY(0);    opacity: 1; }
+}
+.event-icon:hover { transform: scale(1.12) translateY(-4px); }
+.event-icon:hover .icon-bubble {
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.18), 0 0 18px rgba(192,39,45,0.3);
+}
+
+.icon-bubble {
+  width: clamp(60px, 15vw, 80px);
+  height: clamp(60px, 15vw, 80px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.15);
+  border: 2.5px solid rgba(255,255,255,0.6);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.icon-label {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(0.68rem, 1.5vw, 0.82rem);
+  color: var(--red);
+  text-align: center;
+  line-height: 1.3;
+  letter-spacing: 0.03em;
+}
+
+/* ── 언락 메시지 ── */
+#unlock-msg {
+  display: none;
+  position: fixed;
+  top: 46%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Caveat', cursive;
+  font-size: clamp(1.1rem, 3vw, 1.6rem);
+  color: white;
+  background: rgba(192,39,45,0.88);
+  padding: 12px 28px;
+  border-radius: 24px;
+  z-index: 250;
+  animation: fadeMsg 2.2s ease forwards;
+  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+@keyframes fadeMsg {
+  0%   { opacity:0; transform:translate(-50%,-60%); }
+  18%  { opacity:1; transform:translate(-50%,-50%); }
+  72%  { opacity:1; }
+  100% { opacity:0; transform:translate(-50%,-42%); }
+}
+
+/* step 설명 텍스트 */
+.step-hint {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Caveat', cursive;
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.65);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════
+   INTRO — 문 + ENTER 버튼
+═══════════════════════════════════════ */
+#intro {
+  position: fixed; inset: 0; z-index: 1000;
+  background: #fff;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  overflow: hidden;
+}
+#intro.done { display: none !important; }
+
+/* 배경 분홍 파동 (자동) */
+#intro::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center,
+    rgba(242,196,196,0.28) 0%,
+    rgba(242,196,196,0.07) 48%,
+    transparent 72%);
+  animation: introPulse 2.4s ease-in-out infinite;
+  pointer-events: none; z-index: 0;
+}
+@keyframes introPulse {
+  0%,100% { opacity:.4; transform:scale(1); }
+  50%     { opacity:1;  transform:scale(1.13); }
+}
+
+/* 로고 */
+#intro-logo {
+  height: clamp(55px,10vh,100px);
+  margin-bottom: 36px;
+  animation: introFloat 3s ease-in-out infinite alternate;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.08));
+  position: relative; z-index: 2;
+}
+@keyframes introFloat {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-8px); }
+}
+
+/* ENTER 버튼 */
+#intro-enter {
+  position: relative; z-index: 2;
+  font-family: 'Caveat', cursive;
+  font-size: clamp(1rem,2.2vw,1.4rem);
+  color: #a08070; letter-spacing: 0.22em;
+  border: 1.5px solid rgba(180,150,130,0.45);
+  padding: 10px 40px; border-radius: 40px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.8);
+  transition: background .2s, color .2s, transform .15s;
+  animation: pulse 2s ease-in-out infinite;
+  user-select: none;
+}
+#intro-enter:hover {
+  background: rgba(242,210,200,0.55);
+  color: #7a4a3a; transform: scale(1.05);
+}
+.enter-line{
+  position: relative;
+  z-index: 2;                 /* 로고/버튼과 같은 레벨 */
+  margin: -18px 0 16px;       /* 로고 아래 살짝 붙이고, 버튼과 간격 */
+  text-align: center;
+  font-family: 'Noto Serif JP', serif; /* 전체 톤과 맞춤 */
+  font-size: clamp(0.78rem, 1.4vw, 0.95rem);
+  letter-spacing: 0.12em;
+  color: rgba(160,128,112,0.72);       /* ENTER 톤과 맞춘 잔잔한 색 */
+}
+
+/* 문 — 처음부터 닫혀 있다가 ENTER 클릭 후 열림 */
+#door-left, #door-right {
+  position: absolute; top: 0; bottom: 0; width: 50%;
+  background: #fff; z-index: 1;           /* 로고/버튼보다 아래 */
+  transition: transform 0.85s cubic-bezier(.77,0,.18,1);
+  pointer-events: none;
+}
+#door-left  { left: 0; }
+#door-right { right: 0; }
+/* 중앙 세로선 */
+#door-left::after {
+  content: '';
+  position: absolute; top: 0; bottom: 0; right: 0; width: 1px;
+  background: rgba(180,150,130,0.18);
+}
+/* ENTER 후 열림 */
+#intro.opening #door-left  { transform: translateX(-100%); }
+#intro.opening #door-right { transform: translateX(100%); }
+
+/* 흰 페이드 아웃 */
+#intro-fade {
+  position: fixed; inset: 0; background: #fff;
+  z-index: 999; pointer-events: none;
+  display: none; opacity: 0;
+}
+#intro-fade.active {
+  display: block;
+  animation: introFadeOut 0.9s 0.78s ease-in forwards;
+}
+#intro-fade.gone { display: none !important; }
+@keyframes introFadeOut { from{opacity:1} to{opacity:0} }
+
+/* ═══════════════════════════════════════
+   DIALOG BOX — RPG 대화창
+   z-index 500 → 오버레이(300) 위에 표시
+═══════════════════════════════════════ */
+#dialog-box {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 500;
+  padding: 0 clamp(12px,5vw,60px) clamp(10px,2vh,22px);
+  pointer-events: none;
+  transform: translateY(130%);
+  transition: transform 0.5s cubic-bezier(.22,1,.36,1);
+}
+#dialog-box.visible {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.dialog-inner {
+  background: rgba(255,252,248,0.97);
+  border: 2px solid rgba(200,180,165,0.55);
+  border-radius: 12px;
+  padding: 15px 22px 12px;
+  box-shadow: 0 -4px 30px rgba(0,0,0,0.12),
+              inset 0 1px 0 rgba(255,255,255,.9);
+  position: relative;
+  max-width: 680px; margin: 0 auto;
+}
+.dialog-text {
+  font-family: 'Noto Serif JP', serif;
+  font-size: clamp(.82rem,1.6vw,1rem);
+  color: #3a2a2a; line-height: 1.75;
+  letter-spacing: .04em; min-height: 2.6em;
+}
+.dialog-text.typing::after {
+  content: '▎';
+  animation: blink .9s step-end infinite;
+  color: #c8a090; font-size: .85em;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.dialog-next {
+  display: flex; align-items: center;
+  justify-content: flex-end;
+  gap: 4px; margin-top: 5px;
+  font-family: 'Caveat', cursive;
+  font-size: .8rem; color: #b09080;
+  letter-spacing: .06em; cursor: pointer;
+  opacity: 0; transition: opacity .3s;
+  user-select: none;
+}
+.dialog-next.show { opacity:1; animation: pulse 1.5s ease-in-out infinite; }
+.dialog-next::after { content: ' ▶'; }
+.dialog-inner::before,.dialog-inner::after {
+  content:'✦'; position:absolute; bottom:9px;
+  font-size:.5rem; color:rgba(200,170,150,.35);
+}
+.dialog-inner::before { left:10px; }
+.dialog-inner::after  { right:10px; }
+
+/* step-hint, hint 숨김 */
+.step-hint, #hint { display: none !important; }
+
+/* closeup 이미지 — 클릭 커서 명시 */
+#img-closeup { cursor: pointer; }
+
+</style>
+</head>
+<body>
+
+<!-- ── INTRO ── -->
+<div id="intro">
+  <div id="door-left"></div>
+  <div id="door-right"></div>
+  <img id="intro-logo" src="https://aeaepopup.netlify.app/images/logo.png" alt="aeae">
+  <p class="enter-line">aeaeの部屋へ、ようこそ。</p>
+  <div id="intro-enter">✦ &nbsp; ENTER &nbsp; ✦</div>
+</div>
+<div id="intro-fade"></div>
+
+<!-- ── DIALOG BOX ── -->
+<div id="dialog-box">
+  <div class="dialog-inner">
+    <div class="dialog-text typing" id="dialog-text"></div>
+    <div class="dialog-next" id="dialog-next" onclick="dialogNext()">계속</div>
+  </div>
+</div>
+
+<div id="desk">
+
+  <!-- 매트 -->
+  <div id="mat"></div>
+
+  <!-- 로고 -->
+  <img id="logo" src="https://aeaepopup.netlify.app/images/logo.png" alt="aeae">
+
+  <!-- 브랜드 이미지 딸기 -->
+  <img id="brandimage" src="https://aeaepopup.netlify.app/images/brandimage.png" alt="aeae brand">
+
+  <!-- 힌트 & 카운터 -->
+  <div id="hint">✦ カバン、どこに置いたっけ？ — 가방을 찾아주세요 ✦</div>
+  <div id="counter"></div>
+
+  <!-- ════════════════════════════════════
+       ITEMS  (위치/크기는 style로 조정)
+       순서 = z-index (뒤에 올수록 아래)
+  ════════════════════════════════════ -->
+
+  <!-- Row: 상단 -->
+
+  <div class="item" id="i-airpod"   style="left:43%;top:28%;width:clamp(105px,17vw,300px);transform:rotate(5deg)">
+    <img src="https://aeaepopup.netlify.app/images/airpod.png" alt="airpod"></div>
+
+  <div class="item" id="i-clock"    style="right:30%;top:48%;width:clamp(120px,12vw,180px);transform:rotate(6deg)">
+    <img src="https://aeaepopup.netlify.app/images/clock.png" alt="clock"></div>
+
+  <div class="item" id="i-max"      style="right:22%;top:17%;width:clamp(200px,20vw,250px);transform:rotate(-4deg)">
+    <img src="https://aeaepopup.netlify.app/images/max.png" alt="max"></div>
+
+  <!-- Row: 중상단 -->
+  <div class="item" id="i-ipod"     style="left:10%;top:25%;width:clamp(85px,12vw,120px);transform:rotate(-10deg)">
+    <img src="https://aeaepopup.netlify.app/images/ipod.png" alt="ipod"></div>
+
+  <div class="item" id="i-polaroid" style="left:25%;top:17%;width:clamp(120px,13vw,125px);transform:rotate(7deg)">
+    <img src="https://aeaepopup.netlify.app/images/polaroid.png" alt="polaroid"></div>
+
+  <div class="item" id="i-cupcake"  style="left:38%;top:18%;width:clamp(80px,15vw,140px)">
+    <img src="https://aeaepopup.netlify.app/images/cupcake.png" alt="cupcake"></div>
+
+  <div class="item" id="i-memo"     style="left:34%;top:28%;width:clamp(175px,18vw,315px);transform:rotate(-7deg)">
+    <img src="https://aeaepopup.netlify.app/images/memo.png" alt="memo"></div>
+
+  <div class="item" id="i-pic"      style="right:45%;top:40%;width:clamp(120px,14vw,220px);transform:rotate(-13deg)">
+    <img src="https://aeaepopup.netlify.app/images/pic.png" alt="pic"></div>
+    
+  <div class="item" id="i-cake"     style="left:46%;top:55%;width:clamp(80px,15vw,120px)">
+    <img src="https://aeaepopup.netlify.app/images/cake.png" alt="cake"></div>
+
+  <div class="item" id="i-picture"  style="right:15%;top:23%;width:clamp(115px,12vw,178px);transform:rotate(35deg)">
+    <img src="https://aeaepopup.netlify.app/images/picture.png" alt="picture"></div>
+
+  <!-- Row: 중단 -->
+  <div class="item" id="i-hat"      style="left:15%;top:40%;width:clamp(150px,15vw,230px);transform:rotate(-12deg)">
+    <img src="https://aeaepopup.netlify.app/images/hat.png" alt="hat"></div>
+
+  <div class="item" id="i-perfume"  style="left:12%;top:23%;width:clamp(155px,155vw,188px);transform:rotate(18deg)">
+    <img src="https://aeaepopup.netlify.app/images/perfume.png" alt="perfume"></div>
+
+  <div class="item" id="i-cinamon"  style="left:50%;top:37%;width:clamp(155px,15vw,225px);transform:rotate(deg)">
+    <img src="https://aeaepopup.netlify.app/images/cinamon.png" alt="cinamon"></div>
+
+  <div class="item" id="i-shirt"    style="right:20%;top:33%;width:clamp(150px,15vw,250px);transform:rotate(10deg)">
+    <img src="https://aeaepopup.netlify.app/images/shirt.png" alt="shirt"></div>
+
+  <!-- Row: 중하단 -->
+
+  <div class="item" id="i-radio"    style="left:45%;top:63%;width:clamp(130px,13vw,195px);transform:rotate(-4deg)">
+    <img src="https://aeaepopup.netlify.app/images/radio.png" alt="radio"></div>
+
+  <div class="item" id="i-milk"     style="left:17%;top:53%;width:clamp(120px,13vw,230px);transform:rotate(6deg)">
+    <img src="https://aeaepopup.netlify.app/images/milk.png" alt="milk"></div>
+
+  <div class="item" id="i-eyemask"  style="left:26%;top:30%;width:clamp(150px,20vw,350px);transform:rotate(-8deg)">
+    <img src="https://aeaepopup.netlify.app/images/eyemask.png" alt="eyemask"></div>
+    
+  <div class="item" id="i-muffler"  style="left:25%;top:38%;width:clamp(220px,20vw,290px);transform:rotate(-35deg)">
+    <img src="https://aeaepopup.netlify.app/images/muffler.png" alt="muffler"></div>
+
+  <div class="item" id="i-cookie"   style="left:20%;top:60%;width:clamp(105px,10vw,165px)">
+    <img src="https://aeaepopup.netlify.app/images/cookie.png" alt="cookie"></div>
+
+  <div class="item" id="i-flower"   style="right:17%;top:50%;width:clamp(130px,25vw,250px);transform:rotate(10deg)">
+    <img src="https://aeaepopup.netlify.app/images/flower.png" alt="flower"></div>
+
+  <div class="item" id="i-gloves"   style="right:12%;top:40%;width:clamp(130px,12vw,208px);transform:rotate(-40deg)">
+    <img src="https://aeaepopup.netlify.app/images/gloves.png" alt="gloves"></div>
+
+  <!-- Row: 하단 -->
+  <div class="item" id="i-note"     style="left:33%;bottom:20%;width:clamp(180px,18vw,210px);transform:rotate(4deg)">
+    <img src="https://aeaepopup.netlify.app/images/note.png" alt="note"></div>
+
+  <div class="item" id="i-diary"    style="left:45%;bottom:53%;width:clamp(180px,23vw,300px);transform:rotate(51deg)">
+    <img src="https://aeaepopup.netlify.app/images/diary.png" alt="diary"></div>
+
+  <div class="item" id="i-latte"    style="right:15%;bottom:32%;width:clamp(120px,18vw,255px);transform:rotate(7deg)">
+    <img src="https://aeaepopup.netlify.app/images/latte.png" alt="latte"></div>
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━
+       THE BAG (클릭용 — 드래그 불가)
+  ━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <div id="thebag">
+    <img src="https://aeaepopup.netlify.app/images/thebag.png" alt="the bag">
+  </div>
+
+</div><!-- /desk -->
+
+
+<!-- ══════════════════════════════════════════════
+     OVERLAY  — 3단계 시퀀스
+══════════════════════════════════════════════ -->
+<div id="overlay">
+  <div id="overlay-scene">
+    <button id="btn-close" aria-label="close">✕</button>
+
+    <!-- ── STEP 1: 가방 클로즈업 (thebag_closeup.png) ── -->
+    <div id="step-closeup" class="active">
+      <img src="https://aeaepopup.netlify.app/images/thebag_closeup.png" alt="bag closeup" id="img-closeup" onerror="this.style.border='3px solid red';this.alt='⚠️ thebag_closeup.png 파일을 같은 폴더에 넣어주세요'">
+      <span class="step-hint">✦クリックしてカバンの中を確認　🪄 클릭해서 열어보세요 ✦</span>
+    </div>
+
+    <!-- ── STEP 2: 가방 오픈 + 빨간 봉투 ── -->
+    <div id="step-open" style="position: relative;">
+      
+      <div id="step-open-inner">
+        <img src="https://aeaepopup.netlify.app/images/thebag_openup.png" alt="bag open" id="bag-open-img">
+        <div id="envelope" title="封筒を開けてみて✨봉투를 열어보세요">
+          <img src="https://aeaepopup.netlify.app/images/envelope.png" alt="red envelope">
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 3: 봉투 열림 + 아이콘 ── -->
+    <div id="step-letter">
+      <div class="letter-card">
+        <div class="letter-header">
+          <span class="letter-heart">♡</span>
+          <span class="letter-title">aeaeからあなたへ — with love ✦</span>
+        </div>
+        <div class="letter-divider"></div>
+
+        <div class="event-icons">
+          <!-- 아이콘 1: 럭키룰렛 -->
+          <a class="event-icon" href="#lookbook" onclick="goToEvent('lookbook',this)">
+            <div class="icon-bubble" style="background:linear-gradient(135deg,#f5e0e8,#e8b0c0)">
+              <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="6" y="10" width="32" height="22" rx="4" fill="#601020" opacity="0.85"/>
+                <rect x="9" y="13" width="8" height="16" rx="2" fill="#e8e8e0"/>
+                <rect x="18" y="13" width="8" height="16" rx="2" fill="#e8e8e0"/>
+                <rect x="27" y="13" width="8" height="16" rx="2" fill="#e8e8e0"/>
+                <text x="13" y="24" text-anchor="middle" font-size="9" fill="#e0d860">★</text>
+                <text x="22" y="24" text-anchor="middle" font-size="9" fill="#980808">♥</text>
+                <text x="31" y="24" text-anchor="middle" font-size="9" fill="#e0d860">★</text>
+                <rect x="36" y="14" width="3" height="12" rx="1.5" fill="#988878"/>
+                <circle cx="37.5" cy="13" r="2.5" fill="#980808"/>
+                <rect x="10" y="7" width="24" height="5" rx="2" fill="#980808"/>
+                <text x="22" y="11.5" text-anchor="middle" font-size="5" fill="#e0d860" font-weight="bold">LUCKY</text>
+              </svg>
+            </div>
+            <span class="icon-label">LUCKY<br>ROULETTE</span>
+          </a>
+
+          <!-- 아이콘 2: aeae 상담소 -->
+          <a class="event-icon" href="#event" onclick="goToEvent('event',this)">
+            <div class="icon-bubble" style="background:linear-gradient(135deg,#dde8f5,#b0c8e8)">
+              <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="7" y="8" width="26" height="20" rx="3" fill="#202830"/>
+                <rect x="10" y="11" width="20" height="13" rx="1.5" fill="#c8dff0"/>
+                <rect x="10" y="13" width="20" height="1" fill="#a0c0e0" opacity="0.5"/>
+                <rect x="10" y="15" width="20" height="1" fill="#a0c0e0" opacity="0.5"/>
+                <rect x="10" y="17" width="20" height="1" fill="#a0c0e0" opacity="0.5"/>
+                <rect x="13" y="14" width="14" height="2" rx="1" fill="#207090" opacity="0.8"/>
+                <rect x="13" y="18" width="10" height="1.5" rx="0.75" fill="#207090" opacity="0.5"/>
+                <rect x="13" y="21" width="12" height="1.5" rx="0.75" fill="#207090" opacity="0.5"/>
+                <rect x="9" y="28" width="22" height="4" rx="1" fill="#283848"/>
+                <rect x="14" y="30" width="12" height="2" rx="1" fill="#181820"/>
+                <rect x="16" y="31" width="8" height="7" rx="0" fill="#e8e8e0"/>
+                <rect x="17" y="33" width="6" height="0.8" rx="0.4" fill="#988878"/>
+                <rect x="17" y="35" width="4" height="0.8" rx="0.4" fill="#988878"/>
+                <text x="20" y="26.5" text-anchor="middle" font-size="5" fill="#980808">♥</text>
+              </svg>
+            </div>
+            <span class="icon-label">DEAR<br>AEAE</span>
+          </a>
+
+          <!-- 아이콘 3: Shop Now -->
+          <a class="event-icon" href="#shop" onclick="goToEvent('shop',this)">
+            <div class="icon-bubble" style="background:linear-gradient(135deg,#f5f0d8,#e8d870)">
+              <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 18 L12 36 L32 36 L34 18 Z" fill="#601020"/>
+                <rect x="10" y="16" width="24" height="4" rx="1.5" fill="#980808"/>
+                <path d="M17 16 C17 10 27 10 27 16" stroke="#e8e8e0" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <ellipse cx="22" cy="27" rx="5" ry="5.5" fill="#980808"/>
+                <ellipse cx="22" cy="24.5" rx="3" ry="2" fill="#606860"/>
+                <circle cx="20.5" cy="27" r="0.6" fill="#e8e8e0"/>
+                <circle cx="22" cy="29" r="0.6" fill="#e8e8e0"/>
+                <circle cx="23.5" cy="27" r="0.6" fill="#e8e8e0"/>
+                <text x="14" y="28" font-size="6" fill="#e0d860">★</text>
+                <text x="28" y="32" font-size="5" fill="#e0d860">✦</text>
+              </svg>
+            </div>
+            <span class="icon-label">SHOP<br>NOW</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /overlay-scene -->
+</div><!-- /overlay -->
+
+<!-- 언락 메시지 -->
+<div id="unlock-msg">✦ 가방이 나타났어요… ✦</div>
+
+
+<script>
+function bindEnter() {
+  const btn = document.getElementById('intro-enter');
+  if (!btn) {
+    console.error('[intro] intro-enter button not found');
+    return;
+  }
+
+  // 이미 바인딩 되어 있으면 중복 방지
+  if (btn.dataset.bound === "1") return;
+  btn.dataset.bound = "1";
+
+  btn.addEventListener('click', () => {
+    console.log('[intro] ENTER clicked');
+    enterRoom();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') enterRoom();
+  });
+
+  console.log('[intro] bindEnter OK');
+}
+
+// ✅ DOMContentLoaded가 이미 끝난 상태면 즉시 실행, 아니면 이벤트로 실행
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bindEnter);
+} else {
+  bindEnter();
+}
+/* ════════════════════════════════════
+   설정
+════════════════════════════════════ */
+const EVENT_URLS = {
+  lookbook: 'lookbook.html',
+  event:    'receipt.html',
+  shop:     'https://ae-ae.kr/'
+};
+
+const ALL_ITEMS = [
+  'i-eyemask','i-airpod','i-cake','i-clock','i-max',
+  'i-ipod','i-polaroid','i-cupcake','i-pic','i-picture',
+  'i-hat','i-perfume','i-muffler','i-cinamon','i-shirt',
+  'i-cookie','i-radio','i-milk','i-memo','i-flower',
+  'i-gloves','i-note','i-diary','i-latte'
+];
+const TOTAL = ALL_ITEMS.length;
+let removedCount = 0;
+
+/* ════════════════════════════════════
+   드래그 / 클릭으로 아이템 제거
+════════════════════════════════════ */
+document.querySelectorAll('.item').forEach(el => {
+  let dragging = false, moved = false;
+  let startX, startY, origLeft, origTop;
+
+  function startDrag(cx, cy) {
+    dragging = true; moved = false;
+    startX = cx; startY = cy;
+    const r = el.getBoundingClientRect();
+    origLeft = r.left; origTop = r.top;
+    el.classList.add('dragging');
+    el.style.position = 'fixed';
+    el.style.left = origLeft + 'px';
+    el.style.top  = origTop  + 'px';
+    el.style.margin = '0';
+  }
+  function moveDrag(cx, cy) {
+    if (!dragging) return;
+    const dx = cx - startX, dy = cy - startY;
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
+    el.style.left = (origLeft + dx) + 'px';
+    el.style.top  = (origTop  + dy) + 'px';
+  }
+  function endDrag() {
+    if (!dragging) return;
+    dragging = false;
+    el.classList.remove('dragging');
+    const r = el.getBoundingClientRect();
+    const out = r.right < -20 || r.left > window.innerWidth + 20 ||
+                r.bottom < -20 || r.top > window.innerHeight + 20;
+    if (out || !moved) removeItem(el);
+  }
+  el.addEventListener('mousedown', e => { startDrag(e.clientX, e.clientY); e.preventDefault(); });
+  document.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
+  document.addEventListener('mouseup', endDrag);
+  el.addEventListener('touchstart', e => { startDrag(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+  el.addEventListener('touchmove',  e => { moveDrag(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); }, { passive: false });
+  el.addEventListener('touchend', endDrag);
+});
+
+function removeItem(el) {
+  if (el.classList.contains('removed')) return;
+  el.classList.add('removed');
+  removedCount++;
+  updateCounter();
+  setTimeout(() => {
+    el.style.display = 'none';
+    if (removedCount >= TOTAL) showUnlock();
+  }, 460);
+}
+function updateCounter() {
+  const left = TOTAL - removedCount;
+  document.getElementById('counter').textContent =
+    left > 0 ? `✦ ${left}個残ってる` : '✦ 全部片付いた ✦';
+}
+updateCounter();
+
+function showUnlock() {
+  const msg = document.getElementById('unlock-msg');
+  msg.style.display = 'block';
+  document.getElementById('thebag').style.animation = 'bagPulse 0.7s ease-in-out infinite';
+  setTimeout(() => msg.style.display = 'none', 2300);
+}
+
+/* ════════════════════════════════════
+   INTRO
+   수정1: 문이 처음부터 닫혀있지 않고
+          로고+버튼이 바로 보임.
+          ENTER 클릭 시에만 문이 열림.
+════════════════════════════════════ */
+function enterRoom() {
+  console.log('[intro] enterRoom() called');
+
+  // ✅ null 방어 (이게 없으면 여기서 죽어버림)
+  const enterBtn = document.getElementById('intro-enter');
+  const intro     = document.getElementById('intro');
+  const introFade = document.getElementById('intro-fade');
+
+  if (!enterBtn || !intro || !introFade) {
+    console.error('[intro] missing elements', { enterBtn, intro, introFade });
+    return;
+  }
+
+  // 버튼 중복 클릭 방지
+  enterBtn.style.pointerEvents = 'none';
+
+  intro.classList.add('opening');
+  introFade.classList.add('active');
+
+  setTimeout(() => {
+    intro.classList.add('done');
+    introFade.classList.add('gone');
+
+    // ✅ 이것도 안전하게 (정의 안 되어 있으면 에러로 멈춤 방지)
+    if (typeof startRoomDialog === 'function') startRoomDialog();
+    else console.warn('[intro] startRoomDialog is not defined');
+  }, 1800);
+}
+
+/* ════════════════════════════════════
+   DIALOG ENGINE
+════════════════════════════════════ */
+const dialogBox    = document.getElementById('dialog-box');
+const dialogTextEl = document.getElementById('dialog-text');
+const dialogNextEl = document.getElementById('dialog-next');
+
+let dlgLines    = [];
+let dlgIdx      = 0;
+let dlgTyping   = false;
+let dlgTimer    = null;
+let dlgOnFinish = null;
+
+function startDialog(lines, onFinish) {
+  dlgLines    = lines;
+  dlgIdx      = 0;
+  dlgOnFinish = onFinish || null;
+  dialogBox.classList.add('visible');
+  typeLine(lines[0]);
+}
+function hideDialog(cb) {
+  dialogBox.classList.remove('visible');
+  if (cb) setTimeout(cb, 300);
+}
+function typeLine(text) {
+  dialogNextEl.classList.remove('show');
+  dialogTextEl.classList.add('typing');
+  dialogTextEl.textContent = '';
+  dlgTyping = true;
+  let i = 0;
+  clearInterval(dlgTimer);
+  dlgTimer = setInterval(() => {
+    dialogTextEl.textContent += text[i++];
+    if (i >= text.length) {
+      clearInterval(dlgTimer);
+      dlgTyping = false;
+      dialogTextEl.classList.remove('typing');
+      const isLast = dlgIdx >= dlgLines.length - 1;
+      dialogNextEl.textContent = isLast ? '닫기 ✕' : '계속';
+      dialogNextEl.classList.add('show');
+    }
+  }, 52);
+}
+function dialogNext() {
+  if (dlgTyping) {
+    clearInterval(dlgTimer);
+    dlgTyping = false;
+    dialogTextEl.classList.remove('typing');
+    dialogTextEl.textContent = dlgLines[dlgIdx];
+    const isLast = dlgIdx >= dlgLines.length - 1;
+    dialogNextEl.textContent = isLast ? '닫기 ✕' : '계속';
+    dialogNextEl.classList.add('show');
+    return;
+  }
+  dlgIdx++;
+  if (dlgIdx >= dlgLines.length) {
+    hideDialog();
+    if (dlgOnFinish) { const fn = dlgOnFinish; dlgOnFinish = null; fn(); }
+    return;
+  }
+  typeLine(dlgLines[dlgIdx]);
+}
+dialogTextEl.addEventListener('click', dialogNext);
+
+/* ════════════════════════════════════
+   대사 모음
+════════════════════════════════════ */
+const LINES_ROOM = [
+  '部屋に入った。방에 들어왔다.',
+  '......',
+  '部屋の中が散らかってる…… 방이 엄청 어지럽혀져있다.',
+  'あれ、 昨日aeaeで買ったカバン、どこに置いたっけ？ 어제 aeae에서 산 가방을 어디 뒀더라…',
+  'ちょっと片付けなきゃ。カバンが見つからない。물건들을 치워봐야겠어. 가방이 안 보여.',
+  '✦  クリックして部屋を片付けよう  ✦ 아이템을 클릭해서 방을 정리해봐요 ✦'
+];
+const LINES_BAG_FOUND   = ['あ、このカバン…！　ちゃんとあったじゃん。아, 여기 있다! 드디어 찾았어.'];
+const LINES_BAG_CLOSEUP = ['クリックして開けてみて。지퍼를 한번 열어볼까?'];
+const LINES_ENV_APPEAR  = ['あれ、封筒が入ってる…？앗, 봉투가 들어있네?'];
+const LINES_ENV_OPEN    = ['中に何が入ってるんだろう。열어봐야겠다.'];
+
+/* ════════════════════════════════════
+   방 입장 대화
+════════════════════════════════════ */
+function startRoomDialog() {
+  startDialog(LINES_ROOM);
+}
+
+/* ════════════════════════════════════
+   오버레이 유틸
+════════════════════════════════════ */
+const overlay    = document.getElementById('overlay');
+const stepClose  = document.getElementById('step-closeup');
+const stepOpen   = document.getElementById('step-open');
+const stepLetter = document.getElementById('step-letter');
+
+function showStep(step) {
+  [stepClose, stepOpen, stepLetter].forEach(s => s.classList.remove('active'));
+  if (step) step.classList.add('active');
+}
+function closeOverlay() {
+  overlay.classList.remove('active');
+  hideDialog();
+  setTimeout(() => showStep(stepClose), 300);
+}
+document.getElementById('btn-close').addEventListener('click', closeOverlay);
+overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeOverlay(); });
+
+/* ════════════════════════════════════
+   DIRECT OPEN: 마지막 선택 페이지(럭키룰렛 / Dear aeae / Shop now)
+   index.html?menu=1 로 들어오면 step-letter를 바로 열어줌
+════════════════════════════════════ */
+function openMenuDirect() {
+  // intro를 스킵 (이미 끝난 상태여도 안전)
+  const intro     = document.getElementById('intro');
+  const introFade = document.getElementById('intro-fade');
+  const enterBtn  = document.getElementById('intro-enter');
+
+  if (enterBtn) enterBtn.style.pointerEvents = 'auto';
+  if (intro) {
+    intro.classList.add('done');
+    intro.classList.remove('opening');
+  }
+  if (introFade) {
+    introFade.classList.add('gone');
+    introFade.classList.remove('active');
+  }
+
+  // 오버레이 + 마지막(step-letter) 화면
+  overlay.classList.add('active');
+  hideDialog();
+  showStep(stepLetter);
+}
+
+function checkDirectMenu() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('menu') === '1') {
+    // URL 깨끗하게 (선택사항)
+    try { history.replaceState({}, '', window.location.pathname); } catch (_) {}
+    openMenuDirect();
+  }
+}
+// DOM이 다 붙은 뒤에 실행
+window.addEventListener('load', checkDirectMenu);
+
+
+/* ════════════════════════════════════
+   가방 클릭 전체 흐름
+
+   ① thebag 클릭
+      → 대화: "あ、このカバン…！" 닫기 후
+      → 오버레이 열기 + closeup 표시
+      → 대화: "지퍼를 열어볼까" (closeup 위)
+
+   ② [수정2] closeup 이미지 직접 클릭 → openup 전환
+      → 봉투 올라옴(1.2s) 후 대화: "封筒が入ってる"
+      → 닫기 후 대화: "열어봐야겠다"
+      → 닫기 후 봉투 클릭 활성화
+
+   ③ [수정3] 봉투 클릭 → step-letter 표시
+════════════════════════════════════ */
+let closeupClickable  = false;  // closeup 클릭 활성화 여부
+let envelopeClickable = false;  // 봉투 클릭 활성화 여부
+
+document.getElementById('thebag').addEventListener('click', () => {
+  closeupClickable  = false;
+  envelopeClickable = false;
+
+  // 가방 발견 대화 → 닫힌 후 오버레이 열기
+  startDialog(LINES_BAG_FOUND, () => {
+    showStep(stepClose);
+    overlay.classList.add('active');
+
+    // closeup 위에 대화 표시 (약간 딜레이)
+    setTimeout(() => {
+      startDialog(LINES_BAG_CLOSEUP, () => {
+        // 대화 끝나면 closeup 클릭 활성화
+        closeupClickable = true;
+      });
+    }, 350);
+  });
+});
+
+// [수정2] closeup 이미지 클릭 → openup 전환
+document.getElementById('img-closeup').addEventListener('click', () => {
+  if (!closeupClickable) return;  // 대화 끝나기 전엔 무시
+  closeupClickable = false;
+  envelopeClickable = false;
+
+  showStep(null);
+  setTimeout(() => {
+    showStep(stepOpen);
+
+    // 봉투 올라오는 애니메이션 대기 후 대화
+    setTimeout(() => {
+      startDialog(LINES_ENV_APPEAR, () => {
+        startDialog(LINES_ENV_OPEN, () => {
+          // 두 대화 모두 끝나면 봉투 클릭 활성화
+          envelopeClickable = true;
+        });
+      });
+    }, 1200);
+  }, 100);
+});
+
+// [수정3] 봉투 클릭 → step-letter 표시
+document.getElementById('envelope').addEventListener('click', () => {
+  if (!envelopeClickable) return;  // 대화 끝나기 전엔 무시
+  envelopeClickable = false;
+  hideDialog();
+  showStep(null);
+  setTimeout(() => showStep(stepLetter), 80);
+});
+
+/* ════════════════════════════════════
+   이벤트 아이콘 클릭 → 페이지 이동
+════════════════════════════════════ */
+function goToEvent(type, el) {
+  const url = EVENT_URLS[type];
+  if (url && !url.startsWith('#')) {
+    if (url.startsWith('http')) {
+      window.open(url, '_blank');
+    } else {
+      window.location.href = url;
+    }
+  } else {
+    alert(`🎀 "${type}" 페이지로 이동!\n\nEVENT_URLS.${type} 에 실제 URL을 넣어주세요.`);
+  }
+  return false;
+}
+</script>
+</body>
+</html>

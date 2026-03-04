@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>aeae keepsake</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Noto+Sans+JP:wght@300;400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<!-- QR Code library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- html2canvas for saving -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+  --ink:      #181820;
+  --ink2:     #202830;
+  --shadow:   #283848;
+  --paper:    #e8e8e0;
+  --paper2:   #c8c8b8;
+  --tan:      #988878;
+  --wgray:    #b0b0a8;
+  --heather:  #a8a8a8;
+  --mgray:    #909090;
+  --kgray:    #606068;
+  --border:   #585058;
+  --burgundy: #601020;
+  --cherry:   #980808;
+  --dblue:    #a0a8b0;
+  --sage:     #606860;
+  --skydeep:  #207090;
+  --butter:   #e0d860;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+
+/* ── Dear aeae Header ── */
+.dear-hero{
+  width:700px;
+  margin:0 auto 14px;
+  padding:14px 18px 12px;
+  background:rgba(232,232,224,0.10);
+  border:1px solid rgba(160,168,176,0.55);
+  box-shadow: 2px 2px 0 rgba(88,80,88,0.75);
+  border-radius:14px;
+  backdrop-filter: blur(4px);
+}
+
+.dear-hero .kicker{
+  font-family:'VT323',monospace;
+  font-size:20px;
+  letter-spacing:.14em;
+  color: rgba(232,232,224,0.85);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:6px;
+}
+.dear-hero .kicker::before{
+  content:'✦';
+  color: rgba(224,216,96,0.95); /* butter */
+  text-shadow: 0 0 0 rgba(0,0,0,0);
+}
+
+.dear-hero h1{
+  font-family:'VT323',monospace;
+  font-size:45px;
+  letter-spacing:.10em;
+  color: #e8e8e0; /* paper */
+  margin:2px 0 8px;
+}
+
+.dear-hero .desc{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:300;
+  font-size:14px;
+  line-height:1.85;
+  color: rgba(232,232,224,0.88);
+}
+
+.dear-hero .desc .line{
+  display:block;
+}
+
+@media (max-width:740px){
+  .dear-hero{ width:100%; }
+  .dear-hero h1{ font-size:30px; }
+  .dear-hero .desc{ font-size:12.5px; }
+}
+
+
+body {
+  background-color: var(--ink2);
+  background-image:
+    radial-gradient(circle, var(--dblue) 1.5px, transparent 1.5px);
+  background-size: 18px 18px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:36px 20px 160px;
+  font-family:'VT323',monospace;
+}
+
+/* ══════════════════
+   COMPUTER — 아이보리 빈티지 바디
+══════════════════ */
+.computer {
+  width:700px;
+  background:linear-gradient(165deg, var(--paper) 0%, #d8d4c8 50%, var(--paper2) 100%);
+  border-radius:20px 20px 10px 10px;
+  box-shadow:
+    4px 4px 0 var(--tan),
+    8px 8px 0 var(--kgray),
+    0 24px 64px rgba(0,0,0,0.5),
+    inset 0 3px 6px rgba(255,255,255,0.7),
+    inset 0 -3px 6px rgba(0,0,0,0.08);
+  position:relative;
+  padding-bottom:6px;
+}
+.computer::before {
+  content:'';position:absolute;
+  top:10px;left:18px;right:18px;height:3px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.7),transparent);
+  border-radius:2px;
+}
+
+/* ── SCREEN BEZEL — 딥 잉크네이비 ── */
+.screen-bezel {
+  margin:24px 28px 0;
+  background: var(--ink2);
+  border-radius:12px 12px 6px 6px;
+  padding:10px 10px 6px;
+  box-shadow:
+    inset 0 5px 14px rgba(0,0,0,0.7),
+    inset 0 -2px 6px rgba(0,0,0,0.3),
+    2px 2px 0 var(--border);
+}
+
+/* CRT 화면 — skydeep + paper 조합으로 밝게 */
+.screen {
+  background: #e0eef8;
+  border-radius:5px;
+  overflow:hidden;
+  background-image:
+    repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(32,112,144,0.04) 2px,rgba(32,112,144,0.04) 4px),
+    linear-gradient(160deg, #ddeef8, #c8dff0);
+}
+
+/* ── MENU BAR ── */
+.menubar {
+  background: #ddeef8;
+  border-bottom:1px solid var(--dblue);
+  padding:2px 8px;
+  display:flex;align-items:center;gap:14px;
+  font-size:12px;color:var(--ink);
+  font-family:'VT323',monospace;letter-spacing:.03em;
+}
+.menubar span:hover{background:var(--ink);color:#ddeef8;padding:0 3px;cursor:default;}
+
+/* ── WINDOW — 아이보리 페이퍼 ── */
+.window{margin:5px;border:1px solid var(--skydeep);background:#ddeef8;}
+.window-titlebar{
+  background:var(--ink);padding:3px 6px;
+  display:flex;align-items:center;gap:5px;
+}
+.title-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--butter);border:1px solid var(--tan);
+}
+.title-dot:first-child { background: var(--cherry); }
+.window-title{flex:1;text-align:center;color:var(--paper);font-size:12px;letter-spacing:.06em;}
+
+.window-body{display:flex;min-height:260px;}
+
+/* 툴바 — 더스티블루 */
+.toolbar{
+  width:30px;border-right:1px solid var(--dblue);
+  background:#c8dff0;padding:4px 3px;
+  display:flex;flex-direction:column;gap:2px;flex-shrink:0;
+}
+.tool-btn{
+  width:22px;height:20px;
+  border:1px solid var(--dblue);background:#ddeef8;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;cursor:default;color:var(--ink2);
+}
+.tool-btn.sel{background:var(--ink);color:var(--butter);}
+
+.content-area{flex:1;padding:10px 12px;display:flex;flex-direction:column;gap:7px;min-width:0;}
+
+/* States */
+.state-input{display:flex;flex-direction:column;gap:7px;}
+.state-input.hide{display:none;}
+.state-proc{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:200px;}
+.state-proc.show{display:flex;}
+.state-done{display:none;flex-direction:column;gap:8px;align-items:center;justify-content:center;min-height:200px;}
+.state-done.show{display:flex;}
+
+.slabel{font-size:12px;color:var(--skydeep);letter-spacing:.08em;font-family:'VT323',monospace;}
+
+/* 입력창 — 밝은 블루 화면 느낌 */
+.sinput{
+  width:100%;background:#f0f8ff;
+  border:1px solid var(--dblue);border-bottom:2px solid var(--skydeep);
+  font-family:'VT323',monospace;font-size:15px;
+  color:var(--ink);padding:3px 6px;outline:none;
+}
+.sinput:focus{background:#fff;border-color:var(--ink);}
+.sinput::placeholder{color:var(--mgray);}
+.stextarea{
+  width:100%;background:#f0f8ff;
+  border:1px solid var(--dblue);border-bottom:2px solid var(--skydeep);
+  font-family:'VT323',monospace;font-size:14px;
+  color:var(--ink);padding:4px 6px;outline:none;resize:none;line-height:1.5;
+}
+.stextarea:focus{background:#fff;border-color:var(--ink);}
+.stextarea::placeholder{color:var(--mgray);}
+.apiinput{
+  flex:1;background:#f0f8ff;border:1px solid var(--dblue);
+  font-family:'VT323',monospace;font-size:12px;
+  color:var(--ink);padding:2px 5px;outline:none;width:100%;
+}
+.apiinput:focus{background:#fff;}
+
+/* PRINT 버튼 — 버건디 포인트 */
+.print-btn{
+  background:var(--burgundy);color:var(--paper);border:none;
+  padding:5px 16px;font-family:'VT323',monospace;font-size:16px;
+  letter-spacing:.12em;cursor:pointer;align-self:flex-end;
+  box-shadow:2px 2px 0 var(--ink), 0 0 0 1px var(--cherry);
+  transition:all .1s;
+}
+.print-btn:hover{background:var(--cherry);}
+.print-btn:active{transform:translate(2px,2px);box-shadow:none;}
+.print-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* 프로세싱 */
+.proc-text{font-size:18px;color:var(--skydeep);text-align:center;letter-spacing:.08em;}
+.prog-wrap{width:75%;height:11px;border:1px solid var(--skydeep);margin-top:10px;background:#f0f8ff;overflow:hidden;}
+.prog-bar{height:100%;background:var(--skydeep);width:0%;animation:pfill 2.8s ease forwards;}
+@keyframes pfill{to{width:100%;}}
+
+.done-text{font-size:18px;color:var(--skydeep);text-align:center;line-height:1.7;}
+.reset-btn{
+  font-size:13px;color:var(--burgundy);letter-spacing:.1em;cursor:pointer;
+  text-decoration:underline;background:none;border:none;
+  font-family:'VT323',monospace;margin-top:4px;
+}
+
+/* 패턴바 — 버터옐로 도트 */
+.pattern-bar{
+  border-top:1px solid var(--dblue);height:16px;overflow:hidden;
+  background:var(--ink2);display:flex;align-items:center;
+}
+.ptile{
+  width:14px;flex-shrink:0;height:100%;font-size:8px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--butter);overflow:hidden;
+}
+
+/* 상태바 */
+.screen-status-bar{
+  border-top:1px solid var(--dblue);padding:3px 8px;
+  background:var(--ink2);
+  display:flex;align-items:center;gap:8px;
+}
+.status-icon{
+  width:14px;height:10px;background:var(--butter);
+  clip-path:polygon(0 0,100% 0,100% 65%,58% 65%,58% 100%,42% 100%,42% 65%,0 65%);
+  opacity:.9;
+}
+.status-txt{font-size:11px;color:var(--paper);letter-spacing:.05em;}
+
+/* ── COMPUTER BODY ── */
+.computer-body{padding:14px 28px 0;display:flex;align-items:center;justify-content:space-between;}
+.body-left{display:flex;flex-direction:column;gap:8px;}
+.floppy{
+  width:76px;height:9px;
+  background:linear-gradient(180deg,var(--wgray),var(--mgray));
+  border-radius:2px;box-shadow:inset 0 1px 3px rgba(0,0,0,.22);
+}
+.speakers{display:grid;grid-template-columns:repeat(5,6px);gap:3px;}
+.spk-dot{
+  width:4px;height:4px;border-radius:50%;
+  background:var(--kgray);
+  box-shadow:inset 0 1px 1px rgba(0,0,0,.28);
+}
+/* 원형 버튼 — 체리 레드 포인트 */
+.body-logo-btn{
+  width:42px;height:42px;border-radius:50%;
+  background:radial-gradient(circle at 38% 34%,var(--paper),var(--paper2));
+  box-shadow:2px 2px 5px rgba(0,0,0,.3),
+    inset 0 1px 3px rgba(255,255,255,.5),
+    0 0 0 2px var(--cherry);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.body-logo-btn img{width:26px;filter:brightness(0) invert(.05);opacity:.8;}
+.pwr-btn{
+  width:16px;height:16px;border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, var(--butter), var(--tan));
+  box-shadow:1px 1px 3px rgba(0,0,0,.3),inset 0 1px 2px rgba(255,255,255,.5);
+}
+
+/* ══════════════════
+   PRINTER SLOT
+══════════════════ */
+.printer-area{padding:10px 28px 0;display:flex;justify-content:flex-end;}
+.printer-wrap{position:relative;width:320px;}
+.printer-slot{
+  background:linear-gradient(180deg,var(--wgray),var(--mgray));
+  border-radius:4px;height:20px;display:flex;align-items:center;
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.28);position:relative;z-index:2;
+}
+.slot-gap{
+  position:absolute;top:50%;left:14px;right:14px;
+  transform:translateY(-50%);height:4px;background:var(--ink);
+  border-radius:1px;box-shadow:inset 0 2px 3px rgba(0,0,0,.9);
+}
+
+/* ── RECEIPT ── */
+.receipt-container {
+  overflow: hidden;
+  max-height: 0;
+  transition: none;
+  width: 100%;
+}
+.receipt-container.printing {
+  animation: dropDown 3.4s cubic-bezier(0.12,0,0.3,1) forwards;
+}
+@keyframes dropDown {
+  0%   { max-height: 0px; }
+  100% { max-height: 1200px; }
+}
+
+/* 영수증 — 따뜻한 아이보리 종이 */
+.receipt-paper {
+  width:300px;
+  margin:0 auto;
+  background: var(--paper);
+  box-shadow:3px 8px 20px rgba(0,0,0,.35);
+  clip-path:polygon(
+    0% 0%,100% 0%,100% 97%,
+    97% 100%,93% 97%,89% 100%,85% 97%,81% 100%,77% 97%,
+    73% 100%,69% 97%,65% 100%,61% 97%,57% 100%,53% 97%,
+    49% 100%,45% 97%,41% 100%,37% 97%,33% 100%,29% 97%,
+    25% 100%,21% 97%,17% 100%,13% 97%,9% 100%,5% 97%,1% 100%,0% 97%
+  );
+}
+
+.receipt-inner {
+  padding:16px 14px 40px;
+  font-family:'Courier Prime',monospace;
+  font-size:13px;color:var(--ink);line-height:1.7;
+}
+
+.r-logo  {display:block;height:20px;margin:0 auto 4px;opacity:.9;}
+.r-brand {text-align:center;font-size:11px;letter-spacing:.28em;color:var(--burgundy);margin-bottom:10px;text-transform:uppercase;font-weight:700;}
+.r-div   {border:none;border-top:1px dashed var(--tan);margin:6px 0;}
+.r-div.s {border-top:2px solid var(--ink);}
+.r-deco  {text-align:center;font-size:10px;color:var(--cherry);margin:3px 0;word-break:break-all;letter-spacing:.02em;}
+.r-row   {display:flex;justify-content:space-between;font-size:12px;margin:3px 0;}
+.r-row .l{color:var(--tan);}
+.r-sec   {font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--skydeep);margin:10px 0 4px;font-weight:700;}
+.r-worry {
+  font-size:12px;line-height:1.65;font-style:italic;
+  border-left:3px solid var(--cherry);
+  padding-left:7px;margin:4px 0 7px;color:var(--ink2);
+}
+.r-msg   {
+  font-family:'Noto Sans JP',sans-serif;font-size:12px;
+  line-height:2;color:var(--ink);margin:5px 0 10px;white-space:pre-wrap;
+}
+.r-codebox{
+  border:2px dashed var(--burgundy);
+  background: rgba(96,16,32,0.04);
+  padding:8px;text-align:center;margin:7px 0;border-radius:2px;
+}
+.r-codebox .code{font-size:17px;font-weight:700;letter-spacing:.12em;display:block;margin-top:3px;color:var(--burgundy);}
+.r-codebox .pct{font-size:10px;color:var(--tan);letter-spacing:.15em;text-transform:uppercase;}
+
+.r-qr-wrap{text-align:center;margin:10px 0 6px;}
+.r-qr-label{font-size:9px;letter-spacing:.2em;color:var(--skydeep);text-transform:uppercase;margin-bottom:6px;font-weight:700;}
+#receiptQR{display:inline-block;}
+#receiptQR img,#receiptQR canvas{width:72px!important;height:72px!important;}
+
+.r-bc    {display:flex;justify-content:center;align-items:flex-end;gap:1px;height:34px;margin:10px 0 3px;}
+.r-bc-bar{background:var(--ink);width:2px;border-radius:1px 1px 0 0;}
+.r-bc-num{font-size:9px;letter-spacing:.1em;color:var(--mgray);text-align:center;display:block;}
+.r-foot  {text-align:center;font-size:10px;color:var(--tan);margin-top:7px;line-height:1.9;}
+
+.computer-base{
+  height:12px;
+  background:linear-gradient(180deg,var(--paper2),var(--wgray));
+  border-radius:0 0 10px 10px;
+  box-shadow:0 5px 10px rgba(0,0,0,.25);
+  position:relative;
+}
+.computer-base::before{
+  content:'';position:absolute;
+  bottom:4px;left:32%;right:32%;height:2px;
+  background:var(--mgray);border-radius:1px;
+}
+
+/* ══════════════════
+   ACTION BUTTONS
+══════════════════ */
+.action-buttons {
+  width:700px;
+  display:none;
+  gap:10px;
+  margin-top:14px;
+  justify-content:center;
+}
+.action-buttons.show { display:flex; }
+
+.act-btn {
+  flex:1;padding:11px 0;
+  background:var(--ink);color:var(--paper);
+  border:none;font-family:'VT323',monospace;font-size:16px;
+  letter-spacing:.1em;cursor:pointer;
+  box-shadow:2px 2px 0 var(--border), 0 0 0 1px var(--kgray);
+  transition:all .1s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.act-btn:hover{background:var(--shadow);}
+.act-btn:active{transform:translate(2px,2px);box-shadow:none;}
+.act-btn.save { background:var(--skydeep); box-shadow:2px 2px 0 var(--ink2); }
+.act-btn.save:hover { background:#186080; }
+.act-btn.ig { background:var(--burgundy); box-shadow:2px 2px 0 var(--ink2); }
+.act-btn.ig:hover { background:var(--cherry); }
+.act-btn.new { background:var(--ink2); box-shadow:2px 2px 0 var(--border); }
+.act-btn.new:hover { background:var(--shadow); }
+
+.ldots span{animation:blink 1s ease-in-out infinite;}
+.ldots span:nth-child(2){animation-delay:.22s;}
+.ldots span:nth-child(3){animation-delay:.44s;}
+@keyframes blink{0%,100%{opacity:.2}50%{opacity:1}}
+
+.back-btn-wrap {
+  position: fixed;
+  top: 18px;
+  left: 22px;
+  z-index: 999;
+}
+.back-btn-r {
+  font-family: 'VT323', monospace;
+  font-size: 15px;
+  color: var(--paper);
+  background: var(--ink2);
+  border: 1px solid var(--dblue);
+  padding: 5px 14px;
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  box-shadow: 2px 2px 0 var(--border);
+  transition: all 0.15s;
+  display: inline-block;
+}
+.back-btn-r:hover {
+  background: var(--skydeep);
+  border-color: var(--skydeep);
+}
+</style>
+</head>
+<body>
+
+<div class="back-btn-wrap">
+  <a href="index.html?menu=1" class="back-btn-r">← menu</a>
+</div>
+
+<div class="dear-hero">
+  <div class="kicker">MAIL FRIEND</div>
+  <h1>〈Dear. aeae〉</h1>
+  <p class="desc">
+    <span class="line">しまってた気持ちを、ここに。   먼지 쌓인 상자 속에 숨겨둔 마음을, 여기 꺼내줘.</span>
+    <span class="line">書いたら、そっと返事が届くよ。  너만을 위한 답장을 줄게. </span>
+  </p>
+</div>
+
+<div class="computer">
+
+  <!-- SCREEN -->
+  <div class="screen-bezel">
+    <div class="screen">
+
+      <div class="menubar">
+        <span>⬤</span>
+        <span>File</span><span>Edit</span><span>Goodies</span><span>Font</span><span>Style</span>
+      </div>
+
+      <div class="window">
+        <div class="window-titlebar">
+          <div class="title-dot"></div>
+          <div class="title-dot"></div>
+          <div class="window-title">aeae keepsake — untitled</div>
+        </div>
+
+        <div class="window-body">
+          <div class="toolbar">
+            <div class="tool-btn">⬚</div>
+            <div class="tool-btn sel">A</div>
+            <div class="tool-btn">✎</div>
+            <div class="tool-btn">◻</div>
+            <div class="tool-btn">◯</div>
+            <div class="tool-btn">⟋</div>
+            <div class="tool-btn">✂</div>
+            <div class="tool-btn">⬡</div>
+          </div>
+
+          <div class="content-area">
+            <!-- INPUT -->
+            <div class="state-input" id="stateInput">
+              <div class="slabel">▸ お名前 / Name</div>
+              <input type="text" class="sinput" id="nameInput" placeholder="あなたの名前..." maxlength="20">
+              <div class="slabel">▸ Today's Worry</div>
+              <textarea class="stextarea" id="worryInput" rows="5"
+                placeholder="今日の悩みや&#10;気持ちを話してね...♡"></textarea>
+              <button class="print-btn" id="submitBtn" onclick="generateReceipt()">▶ PRINT RECEIPT</button>
+            </div>
+
+            <!-- PROCESSING -->
+            <div class="state-proc" id="stateProc">
+              <div class="proc-text">
+                <span class="ldots">analyzing<span>.</span><span>.</span><span>.</span></span>
+              </div>
+              <div class="prog-wrap"><div class="prog-bar" id="progBar"></div></div>
+              <div class="proc-text" style="font-size:13px;margin-top:12px;color:#4a5a38;">
+                メッセージを生成中...
+              </div>
+            </div>
+
+            <!-- DONE -->
+            <div class="state-done" id="stateDone">
+              <div class="done-text">✓ COMPLETE<br>
+                <span style="font-size:13px;color:#4a5a38;">printing your receipt...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pattern-bar" id="patternBar"></div>
+      </div>
+
+      <div class="screen-status-bar">
+        <div class="status-icon"></div>
+        <span class="status-txt" id="statusTxt">Ready — aeae keepsake v1.0</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="computer-body">
+    <div class="body-left">
+      <div class="floppy"></div>
+      <div class="speakers" id="spkDots"></div>
+    </div>
+    <div class="body-logo-btn"><img src="https://aeaepopup.netlify.app/images/logo.png" alt="aeae"></div>
+    <div class="pwr-btn"></div>
+  </div>
+
+  <!-- PRINTER SLOT -->
+  <div class="printer-area">
+    <div class="printer-wrap">
+      <div class="printer-slot"><div class="slot-gap"></div></div>
+
+      <!-- Receipt drops DOWN from slot -->
+      <div class="receipt-container" id="receiptContainer">
+        <div class="receipt-paper" id="receiptPaper">
+          <div class="receipt-inner" id="receiptInner">
+            <img src="https://aeaepopup.netlify.app/images/logo.png" class="r-logo" alt="aeae">
+            <div class="r-brand">keepsake</div>
+            <div class="r-deco">˚₊·➳❥ ꒷꒦꒷꒦꒷ ❥➳·₊˚</div>
+            <hr class="r-div s">
+            <div class="r-row"><span class="l">Name</span><span id="rName">—</span></div>
+            <div class="r-row"><span class="l">Date</span><span id="rDate">—</span></div>
+            <div class="r-row"><span class="l">Emotion</span><span id="rEmotion">—</span></div>
+            <hr class="r-div">
+            <div class="r-sec">Today's Worry</div>
+            <div class="r-deco">｡ﾟ･｡ ✧ ｡･ﾟ｡</div>
+            <div class="r-worry" id="rWorry">—</div>
+            <hr class="r-div">
+            <div class="r-sec">aeaeからのMessage</div>
+            <div class="r-deco">₊˚♡˚₊ ₊˚♡˚₊ ₊˚♡˚₊</div>
+            <div class="r-msg" id="rMessageJa">—</div>
+            <div class="r-deco">· · ·</div>
+            <div class="r-msg" style="font-size:12px;color:#5a4838;" id="rMessageKr"></div>
+            <hr class="r-div">
+            <div class="r-deco">:¨·.·¨:`·.ꔫ‿︵:¨·.·¨:</div>
+            <div class="r-codebox">
+              <span class="pct">secret discount</span>
+              <span class="code" id="rCode">—</span>
+              <span class="pct" id="rCodeDesc">—</span>
+            </div>
+            <hr class="r-div">
+            <!-- QR CODE -->
+            <div class="r-qr-wrap">
+              <div class="r-qr-label">scan to visit aeae</div>
+              <div id="receiptQR"></div>
+            </div>
+            <hr class="r-div">
+            <div class="r-bc" id="rBarcode"></div>
+            <span class="r-bc-num" id="rBarcodeNum">—</span>
+            <div class="r-deco">˘꒷꒦˘꒷꒦꒷˘꒦꒷꒦˘</div>
+            <div class="r-deco">.+*.｡ﾟ ･*･:*:｡*+.</div>
+            <div class="r-foot">It will be alright. ♡<br>aeae — ae-ae.kr</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="computer-base"></div>
+</div>
+
+<!-- ACTION BUTTONS -->
+<div class="action-buttons" id="actionButtons">
+  <button class="act-btn save" onclick="saveReceipt()">💾 SAVE</button>
+  <button class="act-btn ig" onclick="shareInstagram()">📷 INSTAGRAM</button>
+  <button class="act-btn new" onclick="resetForm()">↺ NEW</button>
+</div>
+
+<script>
+// ── INIT ──
+const spk2 = document.getElementById('spkDots');
+spk2.innerHTML = '';
+for(let i=0;i<15;i++){ const d=document.createElement('div'); d.className='spk-dot'; spk2.appendChild(d); }
+
+// pattern bar already filled above in DOM build step; keep safe:
+const pb2 = document.getElementById('patternBar');
+if(!pb2.hasChildNodes()){
+  ['▦','▧','▨','▩','▤','▥','▦','▧','▨','▩','▤','▥','▦','▧','▨','▩','▤','▥','▦','▧','▦','▧','▨','▩','▤','▥']
+    .forEach(p=>{ const t=document.createElement('div'); t.className='ptile'; t.textContent=p; pb2.appendChild(t); });
+}
+
+// ── UTILS ──
+function getNow(){
+  const d=new Date();
+  return `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}/${String(d.getFullYear()).slice(2)} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+function makeBarcode(){
+  const w=document.getElementById('rBarcode'); w.innerHTML='';
+  const s=[]; [3,1,3].forEach(h=>s.push(h));
+  for(let i=0;i<38;i++){ s.push(Math.random()>.5?1:2); if(i%6===5)s.push(0); }
+  [3,1,3].forEach(h=>s.push(h));
+  s.forEach(h=>{
+    if(h===0){ const g=document.createElement('div'); g.style.width='2px'; w.appendChild(g); }
+    else{ const b=document.createElement('div'); b.className='r-bc-bar'; b.style.height=(9+h*5)+'px'; w.appendChild(b); }
+  });
+  document.getElementById('rBarcodeNum').textContent =
+    Array.from({length:13},()=>Math.floor(Math.random()*10)).join('');
+}
+
+function makeQR(){
+  const el=document.getElementById('receiptQR');
+  el.innerHTML='';
+  new QRCode(el,{
+    text:'https://ae-ae.kr/',
+    width:54,height:54,
+    colorDark:'#1a1410',colorLight:'#fdfaf4',
+    correctLevel:QRCode.CorrectLevel.M
+  });
+}
+
+function setStatus(t){ document.getElementById('statusTxt').textContent=t; }
+
+function showState(s){
+  document.getElementById('stateInput').classList.toggle('hide', s!=='input');
+  const proc=document.getElementById('stateProc');
+  proc.classList.toggle('show', s==='proc');
+  if(s==='proc'){
+    const bar=document.getElementById('progBar');
+    bar.style.animation='none'; bar.offsetHeight;
+    bar.style.animation='pfill 2.8s ease forwards';
+  }
+  document.getElementById('stateDone').classList.toggle('show', s==='done');
+}
+
+// ── DEMO FALLBACK ──
+function demoResponse(name, worry) {
+  return {
+    emotion: "見えない疲れ + 小さな孤独",
+    message_ja:
+`それ、ちゃんと頑張ってきた人の疲れだよ
+平気なふりが上手になりすぎたんだと思う
+ほんとは、少しだけ甘えたかったんじゃない？
+わかってほしいのに、言葉にすると崩れそうで
+今日は「ここまでで十分」って線を引いていい
+あなたのペース、ちゃんと大事にして`,
+    message_kr:
+`그건, 계속 애써온 사람의 피로야
+괜찮은 척이 너무 익숙해진 거지
+사실은 아주 조금, 기대고 싶었던 거 아닐까?
+알아줬으면 하는데 말로 하면 무너질 것 같아서
+오늘은 ‘여기까지면 충분해’라고 선 그어도 돼
+너의 속도, 정말 소중해`,
+    discount_code: "KEEPAEAE_15",
+    discount_pct: 15
+  };
+}
+
+// ── API ──
+// Netlify function이 {emotion,message_ja,message_kr,discount_code,discount_pct} JSON 반환한다고 가정.
+// 실패해도 demoResponse로 영수증 출력되게 함.
+async function callOpenAI(name, worry){
+  const sys = `You are a close friend — warm, perceptive, and the kind of person who always knows what to say. You don't sound like a therapist or a counselor. You sound like someone who has been through things and genuinely gets it. You speak casually, intimately, like a late-night conversation with someone you trust completely.
+
+You also carry the voice of the Korean fashion brand "aeae" — soft, nostalgic, like a handwritten letter from someone who knew you before you grew up.
+
+Brand values (never state these explicitly — just embody them naturally):
+- Neverland: the tender part of a person that resists hardening
+- Keepsake: feelings worth holding, even when they're complicated
+- Touch: the relief of being truly understood
+
+OUTPUT — JSON only:
+{
+  "emotion": "感情ライン（日本語・短く）",
+  "message_ja": "日本語メッセージ（6〜8行、\\nで改行）",
+  "message_kr": "한국어 번역（6〜8줄、\\n으로 줄바꿈）",
+  "discount_code": "KEEPAEAE_15",
+  "discount_pct": 15
+}`;
+
+  const r = await fetch('/api/proxy/openai', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    // ✅ 여기 핵심 수정: 미정의 변수(model/messages...) 보내지 말고,
+    // 함수에서 쓸 실제 입력값을 보냄
+    body: JSON.stringify({ name, worry, sys })
+  });
+
+  if(!r.ok){
+    let e = {};
+    try { e = await r.json(); } catch (_) {}
+    throw new Error(e?.error || e?.message || `API ${r.status}`);
+  }
+
+  const data = await r.json();
+  // data가 문자열(JSON string)일 수도 있으니 방어
+  if (typeof data === 'string') return JSON.parse(data);
+  // 혹시 { choices: ... } 형태면 content를 parse
+  if (data?.choices?.[0]?.message?.content) {
+    return JSON.parse(data.choices[0].message.content);
+  }
+  return data;
+}
+
+// ── GENERATE ──
+async function generateReceipt(){
+  const name=document.getElementById('nameInput').value.trim();
+  const worry=document.getElementById('worryInput').value.trim();
+  if(!worry){ alert('悩みを入力してね ♡'); return; }
+
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true;
+  showState('proc');
+  setStatus('Generating... ♡');
+
+  try{
+        // ✅ 서버리스 함수로만 호출 (브라우저에서 OpenAI 직접 호출 X)
+    const response = await fetch("/api/proxy/aeae-receipt", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, worry })
+    });
+
+    if(!response.ok){
+      const t = await response.text().catch(()=> "");
+      throw new Error(`API ${response.status}: ${t}`);
+    }
+
+    const res = await response.json(); 
+    // res 예시:
+    // { emotion, message_ja, message_kr, discount_code, discount_pct }
+    console.log("API res =", res);
+
+
+    document.getElementById('rName').textContent = name || 'あなた';
+    document.getElementById('rDate').textContent = getNow();
+    document.getElementById('rEmotion').textContent = res.emotion || '—';
+    document.getElementById('rWorry').textContent = worry;
+
+    const msgJa = res.message_ja || res.text || res.message || '—';
+    const msgKr = res.message_kr || '';
+    document.getElementById('rMessageJa').textContent = msgJa;
+    document.getElementById('rMessageKr').textContent = msgKr;
+
+    const code = res.discount_code || 'KEEPAEAE_15';
+    const pct  = (res.discount_pct ?? 15);
+    document.getElementById('rCode').textContent = code;
+    document.getElementById('rCodeDesc').textContent = `${pct}% OFF · ae-ae.kr`;
+
+    makeBarcode();
+    makeQR();
+
+    showState('done');
+    setStatus('✓ Complete — printing...');
+
+    setTimeout(()=>{
+      const c=document.getElementById('receiptContainer');
+      c.classList.add('printing');
+      setTimeout(()=>{
+        document.getElementById('actionButtons').classList.add('show');
+        setStatus('✓ Done — save or share your receipt ♡');
+      }, 3600);
+    }, 500);
+
+  } catch(err){
+    console.error(err);
+    alert(`エラー: ${err.message}`);
+    showState('input');
+    btn.disabled=false;
+    setStatus('Error — please try again');
+  }
+}
+
+// ── SAVE RECEIPT as image ──
+async function saveReceipt(){
+  const el=document.getElementById('receiptPaper');
+  try{
+    const canvas=await html2canvas(el,{
+      backgroundColor:'#fdfaf4',
+      scale:3,
+      useCORS:true,
+      logging:false
+    });
+    const link=document.createElement('a');
+    link.download=`aeae_keepsake_${Date.now()}.png`;
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    setStatus('✓ Saved! aeae_keepsake.png');
+  } catch(e){
+    alert('保存に失敗しました。もう一度お試しください。');
+    console.error(e);
+  }
+}
+
+// ── SHARE TO INSTAGRAM ──
+async function shareInstagram(){
+  const el=document.getElementById('receiptPaper');
+  setStatus('Saving image...');
+  try{
+    const canvas=await html2canvas(el,{
+      backgroundColor:'#fdfaf4',
+      scale:3,
+      useCORS:true,
+      logging:false
+    });
+
+    const dataUrl=canvas.toDataURL('image/png');
+    const link=document.createElement('a');
+    link.download='aeae_keepsake.png';
+    link.href=dataUrl;
+    link.click();
+
+    setStatus('✓ Image saved — opening Instagram ♡');
+    setTimeout(()=>{ window.open('https://www.instagram.com/','_blank'); }, 800);
+
+  } catch(e){
+    alert('エラーが発生しました。もう一度お試しください。');
+    setStatus('Error — please try again');
+    console.error(e);
+  }
+}
+
+// ── RESET ──
+function resetForm(){
+  const c=document.getElementById('receiptContainer');
+  c.classList.remove('printing');
+
+  // reset animation reliably
+  c.style.maxHeight='0';
+  requestAnimationFrame(()=>{ c.style.maxHeight=''; });
+
+  document.getElementById('receiptQR').innerHTML='';
+  document.getElementById('worryInput').value='';
+  document.getElementById('nameInput').value='';
+  document.getElementById('submitBtn').disabled=false;
+  document.getElementById('actionButtons').classList.remove('show');
+
+  showState('input');
+  setStatus('Ready — aeae keepsake v1.0');
+}
+</script>
+</body>
+</html>
