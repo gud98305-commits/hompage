@@ -1,0 +1,20 @@
+{
+  "29cm": {
+    "next_idx": 8,
+    "last_run": "2026-03-03 12:10:01",
+    "total_pages": 12,
+    "last_pages_crawled": 4
+  },
+  "wconcept": {
+    "next_idx": 0,
+    "last_run": "2026-03-03 12:24:54",
+    "total_pages": 7,
+    "last_pages_crawled": 4
+  },
+  "musinsa": {
+    "next_idx": 10,
+    "last_run": "2026-03-03 12:39:35",
+    "total_pages": 12,
+    "last_pages_crawled": 4
+  }
+}

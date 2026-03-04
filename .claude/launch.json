@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "SEOULFIT API (FastAPI)",
+      "runtimeExecutable": ".venv/bin/python",
+      "runtimeArgs": ["-m", "uvicorn", "backend.app:app", "--reload", "--port", "8001"],
+      "port": 8001,
+      "autoPort": false
+    },
+    {
+      "name": "AI Photobooth (Next.js)",
+      "runtimeExecutable": "/tmp/node-v20.11.0-darwin-arm64/bin/node",
+      "runtimeArgs": ["miniproject_2/photobooth/node_modules/next/dist/bin/next", "dev", "miniproject_2/photobooth", "-p", "3001"],
+      "port": 3001
+    }
+  ]
+}

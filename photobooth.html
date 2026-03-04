@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>OttO - AI 포토부스</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500&family=DM+Mono:wght@400;500&family=VT323&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/theme.css"/>
+  <link rel="stylesheet" href="assets/css/fashion.css"/>
+  <link rel="stylesheet" href="assets/css/photobooth.css"/>
+</head>
+<body class="page-bg page-photobooth">
+
+  <!-- ── Header ─────────────────────────────────────────────────────── -->
+  <header class="seoulfit-header">
+    <div class="hd-left">
+      <a class="hd-back-btn" href="index.html#scene" title="홈으로">←</a>
+      <a class="logo" href="index.html#scene">O<em>tt</em>O</a>
+    </div>
+    <nav class="sf-nav">
+      <a class="sf-nav-link" href="fashion.html">패션추천</a>
+      <a class="sf-nav-link active" href="photobooth.html">AI 포토부스</a>
+      <span class="sf-nav-link disabled">픽셀 서울</span>
+    </nav>
+    <div class="hd-right">
+      <button class="lang-btn active" data-lang="ko">한국어</button>
+      <button class="lang-btn" data-lang="ja">日本語</button>
+    </div>
+  </header>
+
+  <!-- ── Main ───────────────────────────────────────────────────────── -->
+  <main class="container">
+
+    <!-- Hero -->
+    <section class="hero">
+      <h1>AI <em data-i18n="hero.title">포토부스</em></h1>
+      <p class="pb-subtitle" data-i18n="hero.desc">사진 한 장으로 완성하는 나만의 감성 컷</p>
+    </section>
+
+    <div class="pb-machine-shell">
+      <div class="pb-machine-screen">
+        <div class="pb-machine-menubar" aria-hidden="true">
+          <span class="pb-menubar-dot">⬤</span>
+          <span>파일</span>
+          <span>편집</span>
+          <span>Goodies</span>
+          <span>Font</span>
+          <span>Style</span>
+        </div>
+
+        <div class="pb-device-window">
+          <div class="pb-window-titlebar" aria-hidden="true">
+            <span class="pb-title-dot"></span>
+            <span class="pb-title-dot"></span>
+            <span class="pb-window-title">OttO photobooth — capture</span>
+          </div>
+
+          <div class="pb-window-body">
+            <div class="pb-device-toolbar" aria-hidden="true">
+              <span class="pb-tool-btn">⬚</span>
+              <span class="pb-tool-btn pb-tool-btn--active">A</span>
+              <span class="pb-tool-btn">✎</span>
+              <span class="pb-tool-btn">◻</span>
+              <span class="pb-tool-btn">◯</span>
+              <span class="pb-tool-btn">⟋</span>
+              <span class="pb-tool-btn">✂</span>
+              <span class="pb-tool-btn">⬡</span>
+            </div>
+
+            <div class="pb-window-workspace">
+              <!-- Step Indicator (3단계) -->
+              <div class="pb-stepper">
+                <div class="pb-step active" data-step="1">
+                  <div class="pb-step-num mono">01</div>
+                  <div class="pb-step-label" data-i18n="step.theme">테마</div>
+                </div>
+                <div class="pb-step-line"></div>
+                <div class="pb-step" data-step="2">
+                  <div class="pb-step-num mono">02</div>
+                  <div class="pb-step-label" data-i18n="step.input">입력</div>
+                </div>
+                <div class="pb-step-line"></div>
+                <div class="pb-step" data-step="3">
+                  <div class="pb-step-num mono">03</div>
+                  <div class="pb-step-label" data-i18n="step.generate">생성</div>
+                </div>
+              </div>
+
+              <section class="stack">
+
+      <!-- ── Step 1: Gallery Selection ──────────────────────────────── -->
+      <div class="panel pb-panel" id="step-1">
+        <div class="result-top">
+          <h2><span data-i18n="s1.title">스타일 선택</span> <span class="mono" style="font-size:.65rem;color:var(--purple-mid);font-weight:400">STYLE</span></h2>
+        </div>
+        <p class="status" data-i18n="s1.desc">원하는 캐릭터 스타일을 선택해 주세요</p>
+
+        <!-- 갤러리 그리드 (JS로 렌더링) -->
+        <div class="style-gallery" id="theme-grid"></div>
+
+        <!-- 선택된 스타일 pill -->
+        <div class="selected-style-pill pb-hidden" id="selected-style-pill">
+          <span class="pill-dot"></span>
+          <span class="pill-label"></span>
+          <button class="pill-remove" id="pill-remove" type="button" title="선택 취소">✕</button>
+        </div>
+
+        <div class="pb-nav">
+          <div></div>
+          <button class="btn primary" id="step1-next" disabled data-i18n="s1.next">다음 단계 →</button>
+        </div>
+      </div>
+
+      <!-- ── Step 2: 입력 선택 ──────────────────────────────── -->
+      <div class="panel pb-panel pb-hidden" id="step-2">
+        <div class="result-top">
+          <h2><span data-i18n="s2.title">입력 방법 선택</span> <span class="mono" style="font-size:.65rem;color:var(--purple-mid);font-weight:400">INPUT</span></h2>
+        </div>
+        <p class="status" data-i18n="s2.desc">셀카 또는 텍스트로 나를 표현해 주세요</p>
+
+        <!-- 입력 탭 -->
+        <div class="pb-tabs">
+          <button class="pb-tab active" data-tab="selfie" type="button" data-i18n="s2.tab.selfie">📷 셀카 업로드</button>
+          <button class="pb-tab" data-tab="text" type="button" data-i18n="s2.tab.text">✏️ 텍스트 설명</button>
+        </div>
+
+        <!-- 탭 패널: 셀카 -->
+        <div class="pb-tab-pane" id="pane-selfie">
+          <div class="dropzone" id="face-dropzone">
+            <div class="dropzone-icon">📸</div>
+            <p data-i18n="s2.drop.title">셀카를 드래그하거나 클릭하여 업로드</p>
+            <p style="font-size:.74rem;color:rgba(10,10,10,.38);margin-top:2px" data-i18n="s2.drop.hint">JPG · PNG · WEBP · 최대 10MB</p>
+            <span class="mono" style="font-size:.58rem;color:var(--purple-mid)" data-i18n="s2.drop.sub">이미지는 자동으로 리사이즈됩니다</span>
+            <input type="file" id="face-file" accept="image/*" hidden>
+          </div>
+          <div class="dropzone-preview pb-hidden" id="face-preview">
+            <img id="face-preview-img" alt="셀카 미리보기">
+            <button class="btn" id="face-remove" type="button" style="margin-top:8px" data-i18n="s2.remove">사진 제거</button>
+          </div>
+        </div>
+
+        <!-- 탭 패널: 텍스트 -->
+        <div class="pb-tab-pane pb-hidden" id="pane-text">
+          <p class="pb-text-guide" data-i18n="s2.guide">📸 셀카를 사용하면 더 정확도가 높아요!</p>
+          <textarea
+            class="pb-textarea"
+            id="pb-text-input"
+            rows="5"
+            data-i18n-placeholder="s2.placeholder"
+            placeholder="예) 긴 검은 머리카락, 동양적인 외모, 흰 티셔츠에 청바지 착용, 20대 여성..."></textarea>
+        </div>
+
+        <!-- 의상 텍스트 입력 (공통, 선택사항) -->
+        <div class="pb-outfit-section">
+          <label class="pb-outfit-label" data-i18n="s2.outfit.label">🧥 원하는 의상 설명 <span class="mono" style="font-size:.6rem;color:var(--purple-mid);font-weight:400">OPTIONAL</span></label>
+          <textarea
+            class="pb-textarea"
+            id="pb-outfit-input"
+            rows="2"
+            data-i18n-placeholder="s2.outfit.placeholder"
+            placeholder="예) 검은 가죽 재킷, 흰 미니 드레스, 청바지에 오버핏 후드..."></textarea>
+        </div>
+
+        <div class="pb-nav">
+          <button class="btn" id="step2-prev" type="button" data-i18n="btn.prev">← 이전</button>
+          <button class="btn primary" id="step2-next" type="button" disabled data-i18n="s2.generate">🎬 이미지 생성</button>
+        </div>
+      </div>
+
+      <!-- ── Step 3: Generate & Result ─────────────────────────────── -->
+      <div class="panel pb-panel pb-hidden" id="step-3">
+        <div class="result-top">
+          <h2><span data-i18n="s3.title">생성 결과</span> <span class="mono" style="font-size:.65rem;color:var(--purple-mid);font-weight:400">RESULT</span></h2>
+        </div>
+
+        <!-- 생성 중 -->
+        <div id="pb-generating">
+          <div class="pb-spinner-wrap">
+            <div class="pb-spinner"></div>
+          </div>
+          <p id="pb-gen-text" style="text-align:center;margin-bottom:6px"></p>
+          <p id="pb-gen-sub" class="mono" style="text-align:center;font-size:.68rem;color:var(--purple-mid)" data-i18n="s3.sub">4장 동시 생성 · 잠시만 기다려 주세요</p>
+        </div>
+
+        <!-- 결과 -->
+        <div id="pb-result" class="pb-hidden">
+          <div class="pb-result-images" id="pb-result-images"></div>
+          <div class="actions" style="justify-content:center;margin-top:20px">
+            <button class="btn primary" id="pb-download" type="button" data-i18n="btn.download">다운로드 ↓</button>
+            <button class="btn" id="pb-restart" type="button" data-i18n="btn.restart">처음부터 다시</button>
+          </div>
+        </div>
+
+        <!-- 오류 -->
+        <div id="pb-error" class="pb-hidden">
+          <div class="pb-error-box" id="pb-error-msg"></div>
+          <div class="actions" style="justify-content:center;margin-top:16px">
+            <button class="btn primary" id="pb-retry" type="button" data-i18n="btn.retry">다시 시도</button>
+            <button class="btn" id="pb-error-restart" type="button" data-i18n="btn.home">처음으로</button>
+          </div>
+        </div>
+      </div>
+
+              </section>
+            </div>
+          </div>
+
+          <div class="pb-pattern-bar" aria-hidden="true">
+            <span class="pb-pattern-tile">▦</span>
+            <span class="pb-pattern-tile">▧</span>
+            <span class="pb-pattern-tile">▨</span>
+            <span class="pb-pattern-tile">▩</span>
+            <span class="pb-pattern-tile">▤</span>
+            <span class="pb-pattern-tile">▥</span>
+            <span class="pb-pattern-tile">▦</span>
+            <span class="pb-pattern-tile">▧</span>
+            <span class="pb-pattern-tile">▨</span>
+            <span class="pb-pattern-tile">▩</span>
+            <span class="pb-pattern-tile">▤</span>
+            <span class="pb-pattern-tile">▥</span>
+            <span class="pb-pattern-tile">▦</span>
+            <span class="pb-pattern-tile">▧</span>
+          </div>
+        </div>
+
+        <div class="pb-screen-statusbar" aria-hidden="true">
+          <span class="pb-status-icon"></span>
+          <span class="pb-status-text">Ready — OttO photobooth v1.0</span>
+        </div>
+      </div>
+      <div class="pb-machine-base" aria-hidden="true">
+        <div class="pb-machine-left">
+          <span class="pb-machine-floppy"></span>
+          <span class="pb-machine-speaker"></span>
+        </div>
+        <span class="pb-machine-logo-btn">
+          <span class="pb-machine-logo-text">O<em>tt</em>O</span>
+        </span>
+        <div class="pb-machine-right">
+          <span class="pb-machine-led"></span>
+        </div>
+      </div>
+      <div class="pb-printer-area" aria-hidden="true">
+        <div class="pb-printer-wrap">
+          <div class="pb-machine-slot">
+            <span class="pb-slot-gap"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ── 라이트박스 ──────────────────────────────────────────────────── -->
+  <div class="pb-lightbox pb-hidden" id="pb-lightbox" role="dialog" aria-modal="true">
+    <button class="pb-lightbox-close" id="pb-lightbox-close" type="button" aria-label="닫기">✕</button>
+    <img class="pb-lightbox-img" id="pb-lightbox-img" alt="">
+    <p class="pb-lightbox-name" id="pb-lightbox-name"></p>
+  </div>
+
+  <script src="assets/js/photobooth.js?v=5"></script>
+</body>
+</html>

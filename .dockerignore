@@ -1,0 +1,19 @@
+# 환경설정
+.env
+.env.*
+!.env.example
+
+# 크롤러 데이터 (대용량)
+data/
+crawler/data/
+
+# 기타
+.DS_Store
+__pycache__/
+*.pyc
+.git/
+
+# 포함 예외 (명시적으로 허용)
+!crawler/
+!shared/
+!backend/

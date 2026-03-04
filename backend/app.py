@@ -1,0 +1,82 @@
+from __future__ import annotations
+
+from pathlib import Path
+from dotenv import load_dotenv
+
+# .env를 가장 먼저 로드해야 routes import 시점에 os.getenv()가 올바른 값을 읽음
+load_dotenv(Path(__file__).resolve().parents[1] / '.env')
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+
+from backend.routes.auth import router as auth_router
+from backend.routes.checkout import router as checkout_router
+from backend.routes.recommend import router as recommend_router
+from backend.routes.translate import router as translate_router
+from backend.routes.webhook import router as webhook_router
+from backend.routes.my import router as my_router
+from backend.routes.game import router as game_router
+from backend.routes.chatbot import router as chatbot_router
+from backend.services.turso_db import init_db
+
+init_db()
+
+app = FastAPI(title='SEOULFIT API', version='0.1.0')
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*'],
+)
+
+app.include_router(auth_router)
+app.include_router(recommend_router)
+app.include_router(checkout_router)
+app.include_router(translate_router)
+app.include_router(webhook_router)
+app.include_router(my_router)
+app.include_router(game_router)
+app.include_router(chatbot_router)
+
+ROOT = Path(__file__).resolve().parents[1]
+app.mount('/assets', StaticFiles(directory=str(ROOT / 'assets')), name='assets')
+app.mount('/images', StaticFiles(directory=str(ROOT / 'images')), name='images')
+app.mount('/data', StaticFiles(directory=str(ROOT / 'data')), name='data')
+
+
+@app.get('/api/health')
+def health() -> dict:
+    return {'status': 'ok'}
+
+
+@app.get('/')
+def root() -> FileResponse:
+    return FileResponse(ROOT / 'index.html')
+
+
+@app.get('/index.html')
+def index_html() -> FileResponse:
+    return FileResponse(ROOT / 'index.html')
+
+
+@app.get('/fashion.html')
+def fashion_html() -> FileResponse:
+    return FileResponse(ROOT / 'fashion.html')
+
+@app.get('/my.html')
+def my_html() -> FileResponse:
+    return FileResponse(ROOT / 'my.html')
+
+
+@app.get('/my')
+def my_page() -> FileResponse:
+    return FileResponse(ROOT / 'my.html')
+
+
+@app.get('/photobooth.html')
+def photobooth_html() -> FileResponse:
+    return FileResponse(ROOT / 'photobooth.html')

@@ -1,0 +1,39 @@
+# SEOULFIT 전체 의존성 (backend + crawler)
+# 설치: pip install -r requirements.txt
+
+# 웹 프레임워크
+fastapi==0.115.8
+uvicorn[standard]==0.34.0
+pydantic==2.10.6
+
+# HTTP
+requests==2.32.3
+httpx==0.28.1
+aiohttp>=3.9.0
+
+# 크롤링
+beautifulsoup4==4.13.3
+playwright==1.50.0
+
+# DB
+libsql>=0.1.11
+
+# 인증
+python-jose[cryptography]==3.3.0
+
+# AI
+openai==1.59.6
+
+# 결제
+stripe==11.6.0
+
+# 환경변수
+python-dotenv==1.0.1
+
+# Google API (크롤러)
+google-api-python-client==2.118.0
+google-auth==2.29.0
+google-auth-httplib2==0.2.0
+
+# 유틸
+tqdm==4.66.4

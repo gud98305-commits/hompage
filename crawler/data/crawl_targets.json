@@ -1,0 +1,20 @@
+{
+  "wconcept": {
+    "seed_urls": [
+      "https://display.wconcept.co.kr/rn/best?displayCategoryType=10101&gnbType=Y"
+    ]
+  },
+  "29cm": {
+    "seed_urls": [
+      "https://www.29cm.co.kr/store/category/list?categoryLargeCode=268100100&sort=RECOMMENDED&defaultSort=RECOMMENDED"
+    ]
+  },
+  "musinsa": {
+    "seed_urls": [
+      "https://www.musinsa.com/category/001/goods?gf=A",
+      "https://www.musinsa.com/category/002/goods?gf=A",
+      "https://www.musinsa.com/category/003/goods?gf=A",
+      "https://www.musinsa.com/category/100/goods?gf=A"
+    ]
+  }
+}
