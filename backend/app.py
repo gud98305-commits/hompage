@@ -4,8 +4,8 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from dotenv import load_dotenv
 
-# .env를 가장 먼저 로드해야 routes import 시점에 os.getenv()가 올바른 값을 읽음
-load_dotenv(Path(__file__).resolve().parents[1] / '.env')
+# .env를 가장 먼저 로드해야 routes import 시점에 os.getenv()가 올바른 값을 읽음 (override=True 지정)
+load_dotenv(Path(__file__).resolve().parents[1] / '.env', override=True)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
