@@ -440,7 +440,10 @@ async function startGeneration() {
     clearProgressTimers();
 
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || `서버 오류 (${res.status})`);
+    console.log('[Photobooth] response status:', res.status);
+    console.log('[Photobooth] resultImage len:', data.resultImage?.length || 0);
+    console.log('[Photobooth] frames:', data.frames?.map((f,i) => `frame${i}=${f?.length||0}`));
+    if (!res.ok) throw new Error(data.error || data.detail || `서버 오류 (${res.status})`);
 
     S.resultImage = data.resultImage;
     S.requestCount++;

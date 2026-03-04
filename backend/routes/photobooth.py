@@ -160,30 +160,34 @@ def _generate_one_sync(prompt: str, selfie_bytes: Optional[bytes]) -> str:
     gpt-image-1로 프레임 1장 생성.
     ⚠️ 동기 함수 — asyncio.run_in_executor로 호출해야 함
     """
+    import logging
+    logger = logging.getLogger("photobooth")
+
     client = _get_openai()
 
-    if selfie_bytes:
-        # ⚠️ 엣지케이스: BytesIO에 .name 속성 필수 (MIME 타입 추론용)
-        selfie_io = io.BytesIO(selfie_bytes)
-        selfie_io.name = "selfie.jpg"
-        response = client.images.edit(
-            model="gpt-image-1",
-            image=selfie_io,
-            prompt=prompt,
-            n=1,
-            size="1024x1536",
-            quality="high",
-        )
-    else:
-        response = client.images.generate(
-            model="gpt-image-1",
-            prompt=prompt,
-            n=1,
-            size="1024x1536",
-            quality="high",
-        )
+    try:
+        if selfie_bytes:
+            selfie_io = io.BytesIO(selfie_bytes)
+            selfie_io.name = "selfie.jpg"
+            response = client.images.edit(
+                model="gpt-image-1",
+                image=selfie_io,
+                prompt=prompt,
+                n=1,
+                size="1024x1536",
+            )
+        else:
+            response = client.images.generate(
+                model="gpt-image-1",
+                prompt=prompt,
+                n=1,
+                size="1024x1536",
+                quality="high",
+            )
+    except Exception as exc:
+        logger.error("[Photobooth] OpenAI API 호출 실패: %s", exc)
+        raise
 
-    # ⚠️ 엣지케이스: gpt-image-1은 항상 b64_json 반환 (url 없음)
     b64 = response.data[0].b64_json
     if not b64:
         raise ValueError("OpenAI 응답에 b64_json이 없습니다.")
@@ -214,8 +218,12 @@ async def _generate_all_frames(
         results: list[dict] = []
         retry_indices: list[int] = []
 
+        import logging
+        logger = logging.getLogger("photobooth")
+
         for i, outcome in enumerate(first_attempt):
             if isinstance(outcome, Exception):
+                logger.error("[Photobooth] Frame %d 실패: %s", i, outcome)
                 retry_indices.append(i)
                 results.append({"success": False, "error": str(outcome)})
             else:
