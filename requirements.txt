@@ -19,7 +19,7 @@ playwright==1.50.0
 libsql>=0.1.11
 
 # 인증
-python-jose[cryptography]==3.3.0
+PyJWT>=2.8.0
 
 # AI
 openai==1.59.6

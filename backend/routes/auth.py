@@ -8,7 +8,8 @@ from urllib.parse import urlencode
 import httpx
 from fastapi import APIRouter, Depends, Header, HTTPException
 from fastapi.responses import RedirectResponse
-from jose import JWTError, jwt
+import jwt
+from jwt.exceptions import PyJWTError
 from pydantic import BaseModel
 
 from backend.services.turso_db import User, Wishlist, get_db
@@ -38,7 +39,7 @@ def create_jwt(user_id: int, email: str) -> str:
 def decode_jwt(token: str) -> dict:
     try:
         return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-    except JWTError:
+    except PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 
