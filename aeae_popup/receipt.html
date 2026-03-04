@@ -457,9 +457,39 @@ body {
   background: var(--skydeep);
   border-color: var(--skydeep);
 }
+
+/* ══════════════════
+   TOAST MESSAGE
+══════════════════ */
+.toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-120%);
+  font-family: 'VT323', monospace;
+  font-size: 15px;
+  letter-spacing: .08em;
+  color: var(--paper);
+  background: var(--ink);
+  border: 1px solid var(--dblue);
+  padding: 10px 24px;
+  border-radius: 6px;
+  box-shadow: 2px 2px 0 var(--border), 0 8px 24px rgba(0,0,0,0.4);
+  z-index: 9999;
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(.22,1,.36,1), opacity 0.4s;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
 </style>
 </head>
 <body>
+
+<div class="toast" id="toast"></div>
 
 <div class="back-btn-wrap">
   <a href="index.html?menu=1" class="back-btn-r">← menu</a>
@@ -662,6 +692,16 @@ function makeQR(){
 
 function setStatus(t){ document.getElementById('statusTxt').textContent=t; }
 
+// ── TOAST ──
+let toastTimer = null;
+function showToast(msg, duration = 3000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), duration);
+}
+
 function showState(s){
   document.getElementById('stateInput').classList.toggle('hide', s!=='input');
   const proc=document.getElementById('stateProc');
@@ -753,6 +793,11 @@ async function generateReceipt(){
   btn.disabled=true;
   showState('proc');
   setStatus('Generating... ♡');
+  showToast('✦ あなたの気持ちを読んでいます… 마음을 읽고 있어요', 4000);
+
+  // 로딩이 길어질 때 추가 토스트
+  const toast2 = setTimeout(() => showToast('✦ もう少しだけ待ってね… 거의 다 됐어요 ♡', 4000), 6000);
+  const toast3 = setTimeout(() => showToast('✦ 心を込めて書いてるよ… 정성껏 쓰고 있어요', 5000), 12000);
 
   try{
         // ✅ 서버리스 함수로만 호출 (브라우저에서 OpenAI 직접 호출 X)
@@ -791,6 +836,9 @@ async function generateReceipt(){
     makeBarcode();
     makeQR();
 
+    clearTimeout(toast2);
+    clearTimeout(toast3);
+    showToast('✓ 完成！レシートを印刷中… 영수증 출력 중!', 3500);
     showState('done');
     setStatus('✓ Complete — printing...');
 
@@ -804,8 +852,10 @@ async function generateReceipt(){
     }, 500);
 
   } catch(err){
+    clearTimeout(toast2);
+    clearTimeout(toast3);
     console.error(err);
-    alert(`エラー: ${err.message}`);
+    showToast('✕ エラーが発生しました… 다시 시도해주세요', 4000);
     showState('input');
     btn.disabled=false;
     setStatus('Error — please try again');

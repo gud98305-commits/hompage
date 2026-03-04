@@ -22,6 +22,7 @@ from backend.routes.game import router as game_router
 from backend.routes.photobooth import router as photobooth_router
 from backend.routes.rpg import router as rpg_router
 from backend.routes.pages import router as pages_router
+from backend.routes.aeae_receipt import router as aeae_receipt_router
 from backend.services.turso_db import init_db
 from backend.services.chatbot_advanced.chat_routes import router as advanced_chat_router
 from backend.services.chatbot_advanced.chat_service import register_chat_exception_handlers
@@ -61,6 +62,7 @@ app.include_router(rpg_router)
 app.include_router(advanced_chat_router)
 app.include_router(photobooth_router)
 app.include_router(pages_router)
+app.include_router(aeae_receipt_router)
 
 # 챗봇 예외 핸들러 등록
 register_chat_exception_handlers(app)
