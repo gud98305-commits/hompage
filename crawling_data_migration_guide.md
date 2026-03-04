@@ -113,7 +113,37 @@ CREATE INDEX IF NOT EXISTS idx_products_price ON products(price_krw);
 
 ---
 
-### 4. [신규] `crawling_data_migration_guide.md` (이 파일)
+### 4. [수정] `backend/services/data_store.py` — 안정성 패치
+
+**배경:** 이전 버전은 앱 시작 후 Turso가 일시적으로 다운되면 fallback 없이 500 에러 발생.
+
+**변경 내용:**
+
+| 항목 | 이전 | 이후 |
+|------|------|------|
+| DB 장애 시 동작 | 500 에러 | 자동 JSON fallback |
+| `_USE_DB` 캐시 | 장애 후 DB 모드 유지 | `None` 리셋 → 다음 요청에서 재체크 |
+| `load_products()` 반복 쿼리 | 매 호출마다 SELECT * | 5분 TTL 메모리 캐시 |
+
+**추가된 전역 변수:**
+```python
+_DB_CACHE: list | None = None   # 5분 TTL 캐시
+_DB_CACHE_TIME: float = 0.0
+_DB_CACHE_TTL: int = 300
+```
+
+**변경된 함수:**
+
+```python
+def load_products():
+    # DB 실패 시 → JSON fallback + _USE_DB = None (다음 요청 재시도)
+    # DB 성공 시 → 5분 캐시 저장
+
+def find_product(product_id):
+    # DB 실패 시 → JSON fallback + _USE_DB = None (다음 요청 재시도)
+```
+
+### 5. [신규] `crawling_data_migration_guide.md` (이 파일)
 변경 이력과 실행 가이드 문서
 
 ---

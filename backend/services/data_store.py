@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -18,6 +19,11 @@ ENRICHED_PATH = DATA_DIR / 'products_enriched.json'
 
 # ── Turso 연결 (products 테이블이 있으면 사용) ─────────────────────────
 _USE_DB: Optional[bool] = None   # None = 아직 체크 안 함
+
+# ── DB 모드 캐시 (5분 TTL) ──────────────────────────────────────────
+_DB_CACHE: Optional[list] = None
+_DB_CACHE_TIME: float = 0.0
+_DB_CACHE_TTL: int = 300  # 초
 
 
 def _check_db_available() -> bool:
@@ -55,7 +61,7 @@ def _load_from_db() -> list[dict]:
 
     products = []
     for row in rows:
-        item = dict(zip(columns, row))
+        item: dict = dict(zip(columns, row))
         # JSON 문자열 필드 → 파이썬 리스트로 파싱
         for key in ('detail_images', 'colors', 'tags'):
             val = item.get(key)
@@ -82,7 +88,7 @@ def _find_from_db(product_id: str) -> dict | None:
         conn.close()
         return None
     columns = [desc[0] for desc in cur.description]
-    item = dict(zip(columns, row))
+    item: dict = dict(zip(columns, row))
     conn.close()
 
     for key in ('detail_images', 'colors', 'tags'):
@@ -181,16 +187,33 @@ def _load_from_json() -> list[dict]:
 
 def load_products() -> list[dict]:
     """상품 목록 로드. Turso에 데이터가 있으면 DB, 없으면 JSON fallback."""
+    global _USE_DB, _DB_CACHE, _DB_CACHE_TIME
     if _check_db_available():
-        return _load_from_db()
+        now = time.time()
+        if _DB_CACHE is not None and (now - _DB_CACHE_TIME) < _DB_CACHE_TTL:
+            return _DB_CACHE
+        try:
+            products = _load_from_db()
+            _DB_CACHE = products
+            _DB_CACHE_TIME = now
+            return products
+        except Exception as e:
+            print(f'[DATA] Turso 조회 실패 → JSON fallback: {e}')
+            _USE_DB = None  # 다음 요청에서 재체크
+            _DB_CACHE = None
     return _load_from_json()
 
 
 def find_product(product_id: str) -> dict | None:
     """단일 상품 조회. Turso 우선, 없으면 JSON fallback."""
+    global _USE_DB
     if _check_db_available():
-        return _find_from_db(product_id)
-    for item in load_products():
+        try:
+            return _find_from_db(product_id)
+        except Exception as e:
+            print(f'[DATA] Turso 조회 실패 → JSON fallback: {e}')
+            _USE_DB = None  # 다음 요청에서 재체크
+    for item in _load_from_json():
         if item.get('id') == product_id:
             return item
     return None
