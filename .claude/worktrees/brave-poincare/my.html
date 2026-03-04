@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>OttO - 마이페이지</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500&family=DM+Mono:wght@400;500&family=VT323&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/theme.css"/>
+  <link rel="stylesheet" href="assets/css/fashion.css"/>
+  <style>
+    /* ── Auth UI ───────────────────────────────────────── */
+    .auth-panel {
+      background: linear-gradient(180deg, #fbf8f0 0%, #f1eee4 100%);
+      border: 1px solid var(--border);
+      border-radius: 18px 18px 14px 14px;
+      padding: 40px 32px;
+      text-align: center;
+      margin-bottom: 24px;
+      color: var(--text);
+      box-shadow: var(--panel-shadow), var(--panel-lift);
+    }
+    .auth-avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      object-fit: cover;
+      margin-bottom: 14px;
+    }
+    .auth-name {
+      font-family: var(--f-disp);
+      font-size: 1.4rem;
+      font-weight: 300;
+      margin-bottom: 4px;
+    }
+    .auth-email {
+      font-family: var(--f-mono);
+      font-size: .62rem;
+      color: var(--accent-soft);
+      letter-spacing: .08em;
+    }
+    .auth-logout-btn {
+      margin-top: 16px;
+      font-family: var(--f-mono);
+      font-size: .64rem;
+      letter-spacing: .1em;
+      color: rgba(24,24,32,.52);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 6px 18px;
+      cursor: pointer;
+      border-radius: 10px;
+      box-shadow: 2px 2px 0 rgba(152,136,120,.18);
+      transition: color .2s, border-color .2s, background .2s;
+    }
+    .auth-logout-btn:hover { color: var(--purple-mid); border-color: rgba(32,112,144,.42); background: #fff; }
+
+    .login-panel {
+      background: linear-gradient(180deg, #fbf8f0 0%, #f1eee4 100%);
+      border: 1px solid var(--border);
+      border-radius: 18px 18px 14px 14px;
+      padding: 48px 32px;
+      text-align: center;
+      margin-bottom: 24px;
+      color: var(--text);
+      box-shadow: var(--panel-shadow), var(--panel-lift);
+    }
+    .login-title {
+      font-family: var(--f-disp);
+      font-size: 1.5rem;
+      font-weight: 300;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .login-sub {
+      font-size: .84rem;
+      color: var(--muted-ink);
+      margin-bottom: 28px;
+      line-height: 1.7;
+    }
+    .btn-google {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 12px 28px;
+      cursor: pointer;
+      font-family: var(--f-body);
+      font-size: .92rem;
+      color: var(--black);
+      border-radius: 10px;
+      box-shadow: 2px 2px 0 rgba(152,136,120,.18);
+      transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+    .btn-google:hover { border-color: rgba(32,112,144,.42); box-shadow: 0 8px 20px rgba(10,12,20,.08); background: #fff; }
+    .btn-google svg { width: 20px; height: 20px; }
+    /* ── My-empty / purchase (existing) ─────────────────── */
+    .my-empty {
+      text-align: center;
+      padding: 64px 24px;
+      color: var(--muted-ink);
+    }
+    .my-empty .my-empty-icon { font-size: 3rem; margin-bottom: 16px; }
+    .my-empty-title { font-family: var(--f-disp); font-size: 1.4rem; font-weight: 300; margin-bottom: 8px; }
+    .my-empty-hint  { font-size: .84rem; }
+    .purchase-list  { display: flex; flex-direction: column; gap: 10px; }
+    .purchase-date  { font-family: var(--f-mono); font-size: .62rem; color: rgba(24,24,32,.42); letter-spacing: .04em; margin-top: 5px; }
+    .purchase-email { font-family: var(--f-mono); font-size: .62rem; color: var(--accent-soft); margin-top: 3px; }
+  </style>
+</head>
+<body class="page-bg page-my">
+  <header class="seoulfit-header">
+    <!-- 왼쪽: 뒤로가기 + 로고 -->
+    <div class="hd-left">
+      <a class="hd-back-btn" href="fashion.html" title="패션추천으로">←</a>
+      <a class="logo" href="index.html#scene">O<em>tt</em>O</a>
+    </div>
+    <!-- 가운데: 메인 네비게이션 -->
+    <nav class="sf-nav">
+      <a class="sf-nav-link" href="fashion.html">패션추천</a>
+      <span class="sf-nav-link disabled">AI 포토부스</span>
+      <span class="sf-nav-link disabled">픽셀 서울</span>
+    </nav>
+    <!-- 오른쪽 -->
+    <div class="hd-right">
+      <a class="my-header-btn active" href="my.html">MY ↗</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>MY <em>PAGE</em></h1>
+    </section>
+
+    <!-- 로그인 상태 패널 (JS로 제어) -->
+    <div id="auth-section"></div>
+
+    <section class="stack">
+
+      <!-- 위시리스트 미리보기 -->
+      <div class="panel">
+        <div class="result-top">
+          <h2>찜 목록 <span style="color:var(--purple)">♡</span></h2>
+          <div class="mono" id="wish-count-label" style="font-size:.66rem;color:var(--accent-soft)"></div>
+        </div>
+        <div id="wish-preview" class="result-list"></div>
+        <div id="wish-empty-my" class="my-empty" style="display:none;padding:32px 0">
+          <p style="color:var(--muted-ink);font-size:.84rem">아직 찜한 상품이 없습니다.</p>
+        </div>
+      </div>
+
+      <!-- 구매 이력 -->
+      <div class="panel">
+        <div class="result-top">
+          <h2>구매 이력</h2>
+          <div class="mono" id="purchase-count" style="font-size:.66rem;color:var(--accent-soft)"></div>
+        </div>
+        <div id="purchase-list" class="purchase-list"></div>
+        <div id="purchase-empty" class="my-empty" style="display:none">
+          <div class="my-empty-icon">🛍️</div>
+          <p class="my-empty-title">아직 구매 이력이 없습니다</p>
+          <p class="my-empty-hint">AI 큐레이터에서 마음에 드는 상품을 찾아보세요.</p>
+          <a href="fashion.html" class="btn primary" style="display:inline-block;margin-top:20px;text-decoration:none">AI 큐레이터 열기 →</a>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <script src="assets/js/auth.js"></script>
+  <script type="module" src="assets/js/my.js"></script>
+  <script>
+    // ── Auth section rendering ───────────────────────────
+    async function renderAuthSection() {
+      const section = document.getElementById('auth-section');
+      const auth    = window.SeoulFitAuth;
+
+      if (!auth || !auth.isLoggedIn()) {
+        section.innerHTML = `
+          <div class="login-panel">
+            <div class="login-title">로그인하고 더 많은 기능을</div>
+            <p class="login-sub">
+              Google 계정으로 로그인하면 찜 목록과 구매 이력이<br/>
+              모든 기기에서 자동으로 동기화됩니다.
+            </p>
+            <button class="btn-google" onclick="window.SeoulFitAuth.googleLogin()">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+              </svg>
+              Google로 로그인
+            </button>
+          </div>`;
+        return;
+      }
+
+      const me = await auth.fetchMe();
+      if (!me) {
+        // 토큰 만료 → 로그인 화면으로
+        auth.logout();
+        return;
+      }
+
+      section.innerHTML = `
+        <div class="auth-panel">
+          ${me.picture ? `<img class="auth-avatar" src="${me.picture}" alt="${me.name}" referrerpolicy="no-referrer"/>` : ''}
+          <div class="auth-name">${me.name || '사용자'}</div>
+          <div class="auth-email">${me.email}</div>
+          <button class="auth-logout-btn" onclick="window.SeoulFitAuth.logout()">로그아웃</button>
+        </div>`;
+    }
+
+    renderAuthSection();
+  </script>
+  <script src="/assets/js/chatbot.js"></script>
+</body>
+</html>

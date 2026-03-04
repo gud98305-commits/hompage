@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>골격 스타일 진단 | AI BODY TYPE ANALYSIS</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+KR:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5F0E8;
+    --dark: #1A1611;
+    --gold: #C9A96E;
+    --gold-light: #E8D5A3;
+    --muted: #8B7D6B;
+    --s-color: #2D4A3E;
+    --w-color: #4A2D4A;
+    --n-color: #3E3A2D;
+    --white: #FDFAF4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    color: var(--dark);
+    font-family: 'Noto Serif KR', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: 0.4;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 40px 60px 30px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 1px solid rgba(201,169,110,0.3);
+  }
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px; font-weight: 400; letter-spacing: 0.25em;
+    color: var(--muted); text-transform: uppercase;
+  }
+  .logo strong {
+    display: block; font-size: 28px; font-weight: 600;
+    color: var(--dark); letter-spacing: 0.05em; margin-bottom: 2px;
+  }
+  .header-right {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; color: var(--muted); text-align: right; letter-spacing: 0.1em;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 60px 60px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(42px, 6vw, 72px);
+    font-weight: 300; line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .hero-title em { font-style: italic; color: var(--gold); }
+  .hero-sub {
+    margin-top: 24px;
+    font-size: 14px; line-height: 1.9; color: var(--muted);
+    font-weight: 300;
+  }
+  .hero-cta {
+    margin-top: 40px;
+    display: inline-flex; align-items: center; gap: 16px;
+    background: var(--dark); color: var(--cream);
+    padding: 16px 36px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    border: none; cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .hero-cta:hover { background: var(--gold); color: var(--dark); }
+  .hero-visual {
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .type-pill {
+    display: flex; align-items: center; gap: 20px;
+    padding: 20px 28px;
+    border: 1px solid rgba(201,169,110,0.3);
+    background: var(--white);
+    transition: all 0.3s;
+    cursor: default;
+  }
+  .type-pill:hover { border-color: var(--gold); transform: translateX(8px); }
+  .type-pill .letter {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 42px; font-weight: 300; font-style: italic;
+    line-height: 1; min-width: 36px;
+  }
+  .type-pill .info .name { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+  .type-pill .info .desc { font-size: 13px; margin-top: 4px; font-weight: 400; }
+
+  /* ── SECTION WRAPPER ── */
+  .section {
+    max-width: 1200px; margin: 0 auto; padding: 0 60px 80px;
+  }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 4vw, 44px); font-weight: 300;
+    line-height: 1.2; margin-bottom: 40px;
+  }
+
+  /* ── QUIZ ── */
+  #quiz-section { display: none; }
+
+  .quiz-container {
+    background: var(--white);
+    border: 1px solid rgba(201,169,110,0.3);
+    padding: 48px;
+  }
+  .quiz-progress {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 40px;
+  }
+  .progress-bar {
+    flex: 1; height: 2px; background: var(--gold-light);
+    position: relative; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: var(--gold);
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+  .progress-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--muted); white-space: nowrap;
+  }
+
+  .question-block { display: none; }
+  .question-block.active { display: block; animation: fadeSlideIn 0.4s ease; }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-number {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.3em; color: var(--gold); margin-bottom: 16px;
+  }
+  .q-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px; font-weight: 400; margin-bottom: 32px;
+    line-height: 1.3;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 14px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 20px;
+    padding: 18px 24px;
+    border: 1px solid rgba(201,169,110,0.25);
+    background: transparent; cursor: pointer;
+    text-align: left;
+    transition: all 0.25s;
+    font-family: 'Noto Serif KR', serif;
+  }
+  .option-btn:hover {
+    border-color: var(--gold);
+    background: rgba(201,169,110,0.06);
+    transform: translateX(6px);
+  }
+  .option-btn.selected {
+    border-color: var(--dark);
+    background: var(--dark); color: var(--cream);
+  }
+  .option-btn .opt-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    min-width: 28px; opacity: 0.5;
+  }
+  .option-btn .opt-text { font-size: 14px; line-height: 1.6; }
+
+  .quiz-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 36px;
+  }
+  .nav-btn {
+    padding: 12px 28px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    border: 1px solid var(--dark); background: transparent; cursor: pointer;
+    transition: all 0.25s; color: var(--dark);
+  }
+  .nav-btn:hover { background: var(--dark); color: var(--cream); }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .nav-btn.primary { background: var(--dark); color: var(--cream); }
+  .nav-btn.primary:hover { background: var(--gold); color: var(--dark); border-color: var(--gold); }
+
+  /* ── AI ANALYSIS LOADER ── */
+  #ai-loader { display: none; }
+  .loader-wrap {
+    padding: 80px 60px;
+    display: flex; flex-direction: column; align-items: center; gap: 24px;
+    text-align: center;
+  }
+  .loader-ring {
+    width: 64px; height: 64px;
+    border: 2px solid var(--gold-light);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loader-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-style: italic; color: var(--muted);
+  }
+  .loader-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.2em; color: var(--gold);
+  }
+
+  /* ── RESULT ── */
+  #result-section { display: none; }
+
+  .result-hero {
+    background: var(--dark); color: var(--cream);
+    padding: 60px; margin-bottom: 48px;
+    display: grid; grid-template-columns: auto 1fr; gap: 48px; align-items: center;
+  }
+  .result-type-badge {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 120px; font-weight: 300; font-style: italic;
+    line-height: 1; color: var(--gold); opacity: 0.9;
+  }
+  .result-type-info .result-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.3em; color: var(--gold); margin-bottom: 8px;
+  }
+  .result-type-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 48px; font-weight: 300; line-height: 1;
+    margin-bottom: 16px;
+  }
+  .result-desc { font-size: 14px; line-height: 1.9; color: rgba(253,250,244,0.7); }
+
+  .score-bar-wrap { margin-top: 24px; }
+  .score-item {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 12px;
+  }
+  .score-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.15em; min-width: 90px; color: rgba(253,250,244,0.6);
+  }
+  .score-track {
+    flex: 1; height: 3px; background: rgba(255,255,255,0.1);
+  }
+  .score-fill {
+    height: 100%; background: var(--gold);
+    transition: width 1s ease 0.3s;
+    width: 0;
+  }
+  .score-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--gold); min-width: 30px; text-align: right;
+  }
+
+  /* AI Analysis Box */
+  .ai-analysis-box {
+    background: var(--white);
+    border: 1px solid rgba(201,169,110,0.3);
+    padding: 40px; margin-bottom: 40px;
+  }
+  .ai-analysis-box .ai-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--dark); color: var(--gold);
+    padding: 5px 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 0.2em;
+    margin-bottom: 20px;
+  }
+  .ai-analysis-text {
+    font-size: 15px; line-height: 2; color: var(--dark);
+  }
+
+  /* Recommendations */
+  .rec-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    margin-bottom: 48px;
+  }
+  .rec-card {
+    border: 1px solid rgba(201,169,110,0.25);
+    padding: 28px 24px;
+    background: var(--white);
+    transition: all 0.3s;
+  }
+  .rec-card:hover { border-color: var(--gold); transform: translateY(-4px); }
+  .rec-card .cat-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 0.25em; color: var(--gold);
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .rec-card .cat-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 400; margin-bottom: 16px;
+  }
+  .rec-items { list-style: none; }
+  .rec-items li {
+    font-size: 13px; padding: 7px 0;
+    border-bottom: 1px solid rgba(201,169,110,0.15);
+    display: flex; align-items: center; gap: 10px; color: var(--dark);
+  }
+  .rec-items li:last-child { border-bottom: none; }
+  .rec-items li::before {
+    content: '—'; color: var(--gold); font-size: 10px;
+  }
+  .rec-items li.avoid { color: var(--muted); }
+  .rec-items li.avoid::before { content: '✗'; color: #B85C5C; font-size: 10px; }
+
+  /* Material section */
+  .material-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 48px;
+  }
+  .material-box {
+    border: 1px solid rgba(201,169,110,0.25);
+    padding: 32px; background: var(--white);
+  }
+  .material-box h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px; font-weight: 400; margin-bottom: 20px;
+    padding-bottom: 14px; border-bottom: 1px solid rgba(201,169,110,0.2);
+  }
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: 10px; }
+  .tag {
+    padding: 6px 14px;
+    border: 1px solid rgba(201,169,110,0.35);
+    font-size: 12px; color: var(--dark);
+    font-family: 'Noto Serif KR', serif;
+  }
+  .tag.featured {
+    background: var(--dark); color: var(--cream); border-color: var(--dark);
+  }
+
+  /* Celebrity */
+  .celeb-section {
+    padding: 40px; background: var(--dark); color: var(--cream);
+    margin-bottom: 48px;
+  }
+  .celeb-section .celeb-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 0.3em; color: var(--gold); margin-bottom: 12px;
+  }
+  .celeb-section h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px; font-weight: 300; margin-bottom: 20px;
+  }
+  .celeb-list {
+    display: flex; flex-wrap: wrap; gap: 12px;
+  }
+  .celeb-chip {
+    padding: 8px 16px;
+    border: 1px solid rgba(201,169,110,0.3);
+    font-size: 13px; color: rgba(253,250,244,0.8);
+  }
+
+  /* Retake btn */
+  .retake-btn {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 14px 32px;
+    border: 1px solid var(--gold); background: transparent; color: var(--dark);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 0.15em; cursor: pointer;
+    transition: all 0.25s;
+  }
+  .retake-btn:hover { background: var(--gold); }
+
+  /* AI Chat Box */
+  .ai-chat-section {
+    background: var(--white);
+    border: 1px solid rgba(201,169,110,0.3);
+    padding: 40px; margin-bottom: 40px;
+  }
+  .chat-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px; font-weight: 400; margin-bottom: 24px;
+  }
+  .chat-messages {
+    min-height: 120px; max-height: 300px; overflow-y: auto;
+    margin-bottom: 20px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .chat-msg {
+    padding: 14px 18px;
+    font-size: 14px; line-height: 1.8;
+    animation: fadeSlideIn 0.3s ease;
+  }
+  .chat-msg.user {
+    background: var(--dark); color: var(--cream);
+    align-self: flex-end; max-width: 80%;
+  }
+  .chat-msg.ai {
+    background: var(--cream);
+    border: 1px solid rgba(201,169,110,0.3);
+    align-self: flex-start; max-width: 85%;
+  }
+  .chat-input-row {
+    display: flex; gap: 12px;
+  }
+  .chat-input {
+    flex: 1; padding: 14px 18px;
+    border: 1px solid rgba(201,169,110,0.3);
+    background: var(--cream); color: var(--dark);
+    font-family: 'Noto Serif KR', serif; font-size: 14px;
+    outline: none;
+  }
+  .chat-input:focus { border-color: var(--gold); }
+  .chat-send-btn {
+    padding: 14px 24px;
+    background: var(--dark); color: var(--cream);
+    border: none; cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 0.1em;
+    transition: background 0.25s;
+  }
+  .chat-send-btn:hover { background: var(--gold); color: var(--dark); }
+  .chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Divider */
+  .divider {
+    border: none; border-top: 1px solid rgba(201,169,110,0.2);
+    margin: 48px 0;
+  }
+
+  @media (max-width: 768px) {
+    header { padding: 24px; }
+    .hero { grid-template-columns: 1fr; padding: 40px 24px; }
+    .section { padding: 0 24px 60px; }
+    .rec-grid { grid-template-columns: 1fr; }
+    .material-row { grid-template-columns: 1fr; }
+    .result-hero { grid-template-columns: 1fr; padding: 36px; }
+    .result-type-badge { font-size: 72px; }
+    .quiz-container { padding: 28px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <strong>SKELETYPE</strong>
+    AI 골격 스타일 진단
+  </div>
+  <div class="header-right">
+    POWERED BY CLAUDE AI<br>
+    BODY TYPE ANALYSIS v2.0
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero" id="hero-section">
+  <div>
+    <div class="section-label">AI BODY ANALYSIS</div>
+    <h1 class="hero-title">
+      나의 몸이 말하는<br>
+      <em>진짜 스타일</em>을<br>
+      찾아드립니다
+    </h1>
+    <p class="hero-sub">
+      10가지 질문으로 당신의 골격 타입(스트레이트/웨이브/내추럴)을<br>
+      정밀 분석하고, AI가 최적의 의류 스타일을 추천해드립니다.<br>
+      체중이나 신장과 무관한 타고난 골격 구조를 기반으로 합니다.
+    </p>
+    <button class="hero-cta" onclick="startQuiz()">
+      진단 시작하기 →
+    </button>
+  </div>
+  <div class="hero-visual">
+    <div class="type-pill">
+      <span class="letter" style="color:#2D7A5B">S</span>
+      <div class="info">
+        <div class="name">Straight Type</div>
+        <div class="desc">탄력 있는 바디감, 메리하리 실루엣</div>
+      </div>
+    </div>
+    <div class="type-pill">
+      <span class="letter" style="color:#7A2D7A">W</span>
+      <div class="info">
+        <div class="name">Wave Type</div>
+        <div class="desc">가냘프고 부드러운 하체 중심 바디</div>
+      </div>
+    </div>
+    <div class="type-pill">
+      <span class="letter" style="color:#7A6E2D">N</span>
+      <div class="info">
+        <div class="name">Natural Type</div>
+        <div class="desc">골격이 도드라지는 프레임 바디</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz-section" class="section">
+  <div class="section-label">SELF DIAGNOSIS</div>
+  <h2 class="section-title">골격 타입 자가진단</h2>
+
+  <div class="quiz-container">
+    <div class="quiz-progress">
+      <span class="progress-text" id="progress-text">01 / 10</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="question-block active" data-q="0">
+      <div class="q-number">QUESTION 01</div>
+      <div class="q-text">전체적인 몸의 인상은?</div>
+      <div class="options">
+        <button class="option-btn" data-type="S" onclick="selectOption(this)">
+          <span class="opt-tag">A</span>
+          <span class="opt-text">두께감이 있고 육감적이다. 체전체에 볼륨감이 있다.</span>
+        </button>
+        <button class="option-btn" data-type="W" onclick="selectOption(this)">
+          <span class="opt-tag">B</span>
+          <span class="opt-text">상체는 얇고 평면적이나, 하체가 무겁게 느껴진다.</span>
+        </button>
+        <button class="option-btn" data-type="N" onclick="selectOption(this)">
+          <span class="opt-tag">C</span>
+          <span class="opt-text">골격과 프레임이 눈에 띄고, 뼈대가 튼튼하다.</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="question-block" data-q="1">
+      <div class="q-number">QUESTION 02</div>
+      <div class="q-text">피부 질감의 특징은?</div>
+      <div class="options">
+        <button class="option-btn" data-type="S" onclick="selectOption(this)">
+          <span class="opt-tag">A</span><span class="opt-text">탄력 있고 하리가 느껴지는 질감</span>
+        </button>
+        <button class="option-btn" data-type="W" onclick="selectOption(this)">
+          <span class="opt-tag">B</span><span class="opt-text">폭신하고 부드러운 질감</span>
+        </button>
+        <button class="option-btn" data-type="N" onclick="selectOption(this)">
+          <span class="opt-tag">C</span><span class="opt-text">약간 두껍고 건조한 느낌, 관절이 도드라짐</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="question-block" data-q="2">
+      <div class="q-number">QUESTION 03</div>
+      <div class="q-text">손의 크기는 신장에 비해 어떤가요?</div>
+      <div class="options">
+        <button class="option-btn" data-type="S" onclick="selectOption(this)">
+          <span class="opt-tag">A</span><span class="opt-text">신장에 비해 작은 편이다</span>
+        </button>
+        <button class="option-btn" data-type="W" onclick="selectOption(this)">
+          <span class="opt-tag">B</span><span class="opt-text">손이 작고 손가락이 가늘고 길다</span>
+        </button>
+        <button class="option-btn" data-type="N" onclick="selectOption(this)">
+          <span class="opt-tag">C</span><span class="opt-text">신장에 비해 크고 손등에 힘줄이 보인다</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="question-block" data-q="3">
+      <div class="q-number">QUESTION 04</div>
+      <div class="q-text">목과 어깨 주변의 특징은?</div>
+      <div class="options">
+        <button class="option-btn" data-type="S" onclick="selectOption(this)">
+          <span class="opt-tag">A</span><span class="opt-text">목이 조금 짧은 편이고 어깨가 넓어 보인다</span>
+        </button>
+        <button class="option-btn" data-type="W" onclick="selectOption(this)">
+          <span class="opt-tag">B</span><span class="opt-text">목이 가늘고 어깨 주변이 둥글고 가냘프다</span>
+        </button>
+        <button class="option-btn" data-type="N" onclick="selectOption(this)">
+          <span class="opt-tag">C</span><span class="opt-text">목이 길고 어깨 관절이 크게 보인다</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="question-block" data-q="4">
+      <div class="q-number">QUESTION 05</div>
+      <div class="q-text">쇄골의 특징은?</div>
+      <div class="options">
+        <button class="option-btn" data-type="S" onclick="selectOption(this)">
+          <span class="opt-tag">A</span><span class="opt-text">그다지 눈에 띄지 않는다, 데콜테에 두께가 있다</span>
+        </button>
+        <button class="option-btn" data-type="W" onclick="selectOption(this)">
+          <span class="opt-tag">B</span><span class="opt-text">가냘프게 살짝 나와 있고 움푹 패인 느낌</span>
+        </button>
+        <button class="option-btn" data-type="N" onclick="selectOption(this)">
+          <span class="opt-tag">C</span><span class="opt-text">크고 뚜렷하게 나와 있으며 뼈가 굵다</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="question-block" data-q="5">
+      <div class="q-number">QUESTION 06</div>
+      <div class="q-text">가슴 두께(흉곽)의 특징은?</div>
+      <div class="options">
+        <button class="option-btn" data-type="S" onclick="selectOption(this)">
+          <span class="opt-tag">A</span><span class="opt-text">옆에서 보면 입체적으로 두껍고 경사가 있다</span>
+        </button>
+        <button class="option-btn" data-type="W" onclick="selectOption(this)">
+          <span class="opt-tag">B</span><span class="opt-text">옆에서 보면 완만하고 얇다. 바스트 위쪽이 빈약하다</span>
+        </button>
+        <button class="option-btn" data-type="N" onclick="selectOption(this)">
+          <span class="opt-tag">C</span><span class="opt-text">어깨 너비에 비해 흉곽이 얇고 평평한 편</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="question-block" data-q="6">
+      <div class="q-number">QUESTION 07</div>
+      <div class="q-text">허리(웨이스트) 특징은?</div>
+      <div class="options">
+        <button class="option-btn" data-type="S" onclick="selectOption(this)">
+          <span class="opt-tag">A</span><span class="opt-text">허리 위치가 높고, 잘록함이 크게 눈에 띄지 않는다</span>
+        </button>
+        <button class="option-btn" data-type="W" onclick="selectOption(this)">
+          <span class="opt-tag">B</span><span class="opt-text">허리 위치가 낮고, 잘록함이 뚜렷하다</span>
+        </button>
+        <button class="option-btn" data-type="N" onclick="selectOption(this)">
+          <span class="opt-tag">C</span><span class="opt-text">허리 위치가 보통이고, 잘록함보다 골반 너비가 눈에 띈다</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="question-block" data-q="7">
+      <div class="q-number">QUESTION 08</div>
+      <div class="q-text">살이 찌면 어디에 주로 붙나요?</div>
+      <div class="options">
+        <button class="option-btn" data-type="S" onclick="selectOption(this)">
+          <span class="opt-tag">A</span><span class="opt-text">전체적으로 한 사이즈 업 되는 느낌, 허리·등 주변</span>
+        </button>
+        <button class="option-btn" data-type="W" onclick="selectOption(this)">
+          <span class="opt-tag">B</span><span class="opt-text">하반신(허벅지·엉덩이)에 주로 붙는다</span>
+        </button>
+        <button class="option-btn" data-type="N" onclick="selectOption(this)">
+          <span class="opt-tag">C</span><span class="opt-text">상반신(이중턱·팔뚝·복부)에 주로 붙는다</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="question-block" data-q="8">
+      <div class="q-number">QUESTION 09</div>
+      <div class="q-text">허벅지와 무릎 아래의 특징은?</div>
+      <div class="options">
+        <button class="option-btn" data-type="S" onclick="selectOption(this)">
+          <span class="opt-tag">A</span><span class="opt-text">허벅지에 탄력이 있고 앞 허벅지 근육이 눈에 띈다. 무릎 아래는 곧고 가늘다</span>
+        </button>
+        <button class="option-btn" data-type="W" onclick="selectOption(this)">
+          <span class="opt-tag">B</span><span class="opt-text">허벅지는 부드러운 편이고 무릎 아래가 O자형(바깥 굽음)으로 보인다</span>
+        </button>
+        <button class="option-btn" data-type="N" onclick="selectOption(this)">
+          <span class="opt-tag">C</span><span class="opt-text">허벅지는 육감적이지 않고 무릎 뼈가 크다. 정강이가 튼튼하다</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="question-block" data-q="9">
+      <div class="q-number">QUESTION 10</div>
+      <div class="q-text">무릎 뼈(슬개골)의 크기는?</div>
+      <div class="options">
+        <button class="option-btn" data-type="S" onclick="selectOption(this)">
+          <span class="opt-tag">A</span><span class="opt-text">작고 눈에 잘 띄지 않는다</span>
+        </button>
+        <button class="option-btn" data-type="W" onclick="selectOption(this)">
+          <span class="opt-tag">B</span><span class="opt-text">크지도 작지도 않다</span>
+        </button>
+        <button class="option-btn" data-type="N" onclick="selectOption(this)">
+          <span class="opt-tag">C</span><span class="opt-text">크고 도드라져 보인다</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="quiz-nav">
+      <button class="nav-btn" id="prev-btn" onclick="prevQ()" disabled>← 이전</button>
+      <button class="nav-btn primary" id="next-btn" onclick="nextQ()" disabled>다음 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI LOADER -->
+<div id="ai-loader">
+  <div class="loader-wrap">
+    <div class="loader-ring"></div>
+    <div class="loader-text">AI가 당신의 골격 타입을 분석하고 있습니다…</div>
+    <div class="loader-sub">CLAUDE AI ANALYZING YOUR BODY TYPE</div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="result-section" class="section">
+  <!-- Result Hero -->
+  <div class="result-hero">
+    <div class="result-type-badge" id="result-badge">S</div>
+    <div class="result-type-info">
+      <div class="result-label">YOUR BODY TYPE DIAGNOSIS</div>
+      <div class="result-type-name" id="result-name">골격 스트레이트</div>
+      <div class="result-desc" id="result-desc">분석 중...</div>
+      <div class="score-bar-wrap" id="score-bars"></div>
+    </div>
+  </div>
+
+  <!-- AI Analysis -->
+  <div class="ai-analysis-box">
+    <div class="ai-tag">✦ AI PERSONAL ANALYSIS</div>
+    <div class="ai-analysis-text" id="ai-analysis-text">분석 중...</div>
+  </div>
+
+  <!-- Recommendations -->
+  <div class="section-label">STYLE RECOMMENDATIONS</div>
+  <h3 class="section-title" style="font-size:32px">추천 아이템 & 스타일링 가이드</h3>
+  <div class="rec-grid" id="rec-grid"></div>
+
+  <!-- Material -->
+  <div class="material-row" id="material-row"></div>
+
+  <!-- Celebrity -->
+  <div class="celeb-section" id="celeb-section"></div>
+
+  <!-- AI Chat -->
+  <div class="ai-chat-section">
+    <div class="ai-tag">✦ AI STYLE ADVISOR</div>
+    <div class="chat-title">스타일 어드바이저에게 더 물어보세요</div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-input-row">
+      <input type="text" class="chat-input" id="chat-input" placeholder="예: 결혼식 하객룩 추천해줘, 직장에 어울리는 코디는?" onkeydown="if(event.key==='Enter')sendChat()"/>
+      <button class="chat-send-btn" id="chat-btn" onclick="sendChat()">전송</button>
+    </div>
+  </div>
+
+  <button class="retake-btn" onclick="resetAll()">↺ 다시 진단하기</button>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────
+const TYPES = {
+  S: {
+    badge: 'S', name: '골격 스트레이트', nameEn: 'STRAIGHT TYPE',
+    keywords: '베이직 · 클래스감 · 저스트사이즈',
+    desc: '근육이 붙기 쉽고 전체에 두께가 있는 입체적인 메리하리 바디. 피부에 탄력과 하리감이 있는 것이 특징입니다. 체형 자체에 존재감이 있어 심플하게 마무리하는 마이너스 스타일이 잘 어울립니다.',
+    color: '#2D7A5B',
+    coord: '세로로 긴 I라인을 만들어 두께감 있는 체형을 스마트하게 연출. 체형 자체에 존재감이 있으므로 심플하게 마이너스 스타일이 포인트.',
+    items: {
+      tops: ['V넥 니트', '스키퍼 셔츠', '카슈쿠르 블라우스', '심플 터틀넥', '버튼다운 셔츠'],
+      pants: ['스트레이트 팬츠', '센터프레스 팬츠', '치노 팬츠', '테이퍼드 팬츠'],
+      skirt: ['타이트 스커트', '랩 스커트', '머메이드 스커트'],
+      onepiece: ['랩 원피스', 'I라인 원피스', '샤츠 원피스'],
+      outer: ['트렌치 코트', '체스터 코트', '테일러드 자켓', '질레'],
+      avoid_tops: ['오버사이즈 스웨터', '과도한 러플·프릴 장식', '하이넥이 너무 높은 것'],
+      avoid_bottoms: ['하이웨이스트 (더 짧아 보임)', '볼륨 미니스커트', '와이드 팬츠 (큰 체형으로 보일 수 있음)'],
+    },
+    materials: ['면 100% (고품질)', '실크', '카시미어', '울', '하이게이지 니트', '레더', '깔끔한 데님'],
+    patterns: ['심플 스트라이프', '큰 도트', '강한 콘트라스트의 큰 플로랄', '와이드 보더'],
+    celebs: ['비비', '닝닝(에스파)', '하니(뉴진스)', '안유진(아이브)', '조이(레드벨벳)', '지효(트와이스)', '권은비']
+  },
+  W: {
+    badge: 'W', name: '골격 웨이브', nameEn: 'WAVE TYPE',
+    keywords: '플리플리 · 화사함 · 섬세함',
+    desc: '근육보다 지방이 붙기 쉽고 뼈가 가늘고 얇은 가녀린 바디라인. 피부는 폭신폭신 부드러운 질감입니다. X라인을 의식하여 아름다운 허리 잘록함을 강조하면 스타일업 효과.',
+    color: '#7A2D7A',
+    coord: 'X라인을 의식해 허리 잘록함을 강조. 상체는 볼륨감 있게, 하체는 A라인·플레어로 균형 연출. 하이웨이스트로 다리를 길어 보이게.',
+    items: {
+      tops: ['크롭 탑', '프릴 블라우스', '오프숄더', '가디건', '리브 니트'],
+      pants: ['테이퍼드 팬츠', '하이웨이스트 팬츠', '와이드 팬츠 (하이웨이스트)'],
+      skirt: ['미니 스커트', '플레어 스커트', 'A라인 스커트', '티어드 스커트'],
+      onepiece: ['허리라인 강조 원피스', '플레어 원피스', '미니 원피스'],
+      outer: ['쇼트 자켓', '볼레로', '코쿤 실루엣 코트', '테일러드 쇼트 자켓'],
+      avoid_tops: ['오버사이즈 니트', '박시 실루엣', '두꺼운 소재의 롱 탑'],
+      avoid_bottoms: ['타이트 롱 스커트', '노 웨이스트 스트레이트 팬츠'],
+    },
+    materials: ['모헤어 (두껍지 않은 것)', '앙고라', '쉬폰', '에나멜', '레이스', '새틴'],
+    patterns: ['작은 도트', '작은 플로랄', '소형 레오파드', '섬세한 지브라'],
+    celebs: ['쯔위(트와이스)', '나연(트와이스)', '제니(블랙핑크)', '윈터(에스파)', '전소미', '박민영', '윤아', '아이유', '손나은']
+  },
+  N: {
+    badge: 'N', name: '골격 내추럴', nameEn: 'NATURAL TYPE',
+    keywords: '캐주얼 · 빈티지 · 오버사이즈',
+    desc: '근육이나 지방보다 뼈에 존재감 있는 프레임 바디. 무릎과 관절이 크게 눈에 띄고 쇄골도 뚜렷합니다. 전체적으로 직사각형의 폼으로 스타일리시한 인상. 오버사이즈도 자연스럽게 입을 수 있는 체형.',
+    color: '#7A6E2D',
+    coord: '골격의 존재감을 살린 루즈·오버사이즈 스타일. 레이어드와 빈티지·캐주얼 믹스로 나만의 스타일 연출. 두꺼운 소재와 볼드한 패턴이 잘 어울림.',
+    items: {
+      tops: ['오버사이즈 티셔츠', '빅 실루엣 니트', '데님 샤츠', '후드 스웨트', '보트넥 탑'],
+      pants: ['와이드 팬츠', '배기 팬츠', '조거 팬츠', '데님 스트레이트'],
+      skirt: ['맥시 스커트', '데님 스커트', '롱 플리츠 스커트'],
+      onepiece: ['맥시 원피스', '데님 원피스', '오버사이즈 롱 원피스'],
+      outer: ['오버사이즈 코트', '빈티지 레더 자켓', '마운틴 파카', '더플 코트'],
+      avoid_tops: ['타이트 니트', '세밀한 하이게이지 소재', '과도한 페미닌 스타일'],
+      avoid_bottoms: ['피부에 딱 붙는 레깅스', '너무 짧은 미니스커트'],
+    },
+    materials: ['로우게이지 울 니트', '트위드', '코듀로이', '빈티지·데미지 레더', '마(린넨)', '굵은 면'],
+    patterns: ['페이즐리 (너무 작지 않은 것)', '보타니컬 (수채화 느낌)', '카무플라주 (큰 것)', '굵은 스트라이프'],
+    celebs: ['한소희', '로제(블랙핑크)', '리사(블랙핑크)', '카즈하(르세라핌)']
+  }
+};
+
+// ── STATE ──────────────────────────────────────────────────
+let currentQ = 0;
+let answers = new Array(10).fill(null); // 'S', 'W', or 'N'
+let finalType = null;
+let chatHistory = [];
+
+// ── QUIZ LOGIC ──────────────────────────────────────────────
+function startQuiz() {
+  document.getElementById('hero-section').style.display = 'none';
+  document.getElementById('quiz-section').style.display = 'block';
+  updateQuizUI();
+}
+
+function selectOption(btn) {
+  const block = btn.closest('.question-block');
+  block.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  answers[currentQ] = btn.dataset.type;
+  document.getElementById('next-btn').disabled = false;
+}
+
+function prevQ() {
+  if (currentQ > 0) {
+    showQ(currentQ - 1);
+  }
+}
+
+function nextQ() {
+  if (answers[currentQ] === null) return;
+  if (currentQ < 9) {
+    showQ(currentQ + 1);
+  } else {
+    finishQuiz();
+  }
+}
+
+function showQ(idx) {
+  document.querySelectorAll('.question-block').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.question-block')[idx].classList.add('active');
+  currentQ = idx;
+  updateQuizUI();
+}
+
+function updateQuizUI() {
+  document.getElementById('progress-text').textContent = `${String(currentQ+1).padStart(2,'0')} / 10`;
+  document.getElementById('progress-fill').style.width = `${(currentQ+1)*10}%`;
+  document.getElementById('prev-btn').disabled = currentQ === 0;
+  const hasAnswer = answers[currentQ] !== null;
+  document.getElementById('next-btn').disabled = !hasAnswer;
+  document.getElementById('next-btn').textContent = currentQ === 9 ? 'AI 분석하기 →' : '다음 →';
+  // Restore selection state
+  const block = document.querySelectorAll('.question-block')[currentQ];
+  block.querySelectorAll('.option-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.type === answers[currentQ]);
+  });
+}
+
+function finishQuiz() {
+  // Tally
+  const counts = { S: 0, W: 0, N: 0 };
+  answers.forEach(a => { if(a) counts[a]++; });
+  finalType = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0][0];
+
+  // Show loader
+  document.getElementById('quiz-section').style.display = 'none';
+  document.getElementById('ai-loader').style.display = 'block';
+
+  // Call Anthropic API
+  callAIAnalysis(counts).then(aiText => {
+    document.getElementById('ai-loader').style.display = 'none';
+    showResult(counts, aiText);
+  });
+}
+
+// ── AI CALL ──────────────────────────────────────────────────
+async function callAIAnalysis(counts) {
+  const type = TYPES[finalType];
+  const answerSummary = answers.map((a,i) => `Q${i+1}: ${a}`).join(', ');
+
+  const prompt = `당신은 전문 퍼스널 스타일리스트입니다. 고객의 골격진단 결과를 분석해주세요.
+
+골격 진단 결과:
+- 최종 타입: ${type.name} (${type.nameEn})
+- 스트레이트 답변: ${counts.S}개, 웨이브 답변: ${counts.W}개, 내추럴 답변: ${counts.N}개
+- 응답 내역: ${answerSummary}
+
+다음 형식으로 한국어로 300자 내외의 개인화된 분석을 작성해주세요:
+1. 이 고객의 골격 특징 요약 (타입의 특성과 답변 패턴 반영)
+2. 체형의 장점과 활용 포인트
+3. 스타일링 핵심 조언 1~2가지
+
+전문적이지만 친근한 어조로, 고객이 자신의 체형에 자신감을 갖도록 격려하는 내용 포함.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    return data.content?.[0]?.text || type.desc;
+  } catch(e) {
+    return type.desc;
+  }
+}
+
+// ── SHOW RESULT ──────────────────────────────────────────────
+function showResult(counts, aiText) {
+  const type = TYPES[finalType];
+
+  // Badge & name
+  document.getElementById('result-badge').textContent = type.badge;
+  document.getElementById('result-badge').style.color = type.color;
+  document.getElementById('result-name').textContent = type.name;
+  document.getElementById('result-desc').textContent = type.keywords;
+
+  // Score bars
+  const total = 10;
+  const barsHtml = [
+    { label: 'STRAIGHT', key: 'S', count: counts.S },
+    { label: 'WAVE', key: 'W', count: counts.W },
+    { label: 'NATURAL', key: 'N', count: counts.N },
+  ].map(item => `
+    <div class="score-item">
+      <span class="score-label">${item.label}</span>
+      <div class="score-track"><div class="score-fill" data-width="${item.count/total*100}" style="width:0%"></div></div>
+      <span class="score-val">${item.count}</span>
+    </div>
+  `).join('');
+  document.getElementById('score-bars').innerHTML = barsHtml;
+
+  // AI analysis
+  document.getElementById('ai-analysis-text').textContent = aiText;
+
+  // Rec grid
+  const items = type.items;
+  document.getElementById('rec-grid').innerHTML = `
+    <div class="rec-card">
+      <div class="cat-tag">TOPS · OUTER</div>
+      <div class="cat-title">상의 & 아우터</div>
+      <ul class="rec-items">
+        ${items.tops.map(i=>`<li>${i}</li>`).join('')}
+        ${items.outer.map(i=>`<li>${i}</li>`).join('')}
+        ${items.avoid_tops.map(i=>`<li class="avoid">${i}</li>`).join('')}
+      </ul>
+    </div>
+    <div class="rec-card">
+      <div class="cat-tag">BOTTOMS</div>
+      <div class="cat-title">하의</div>
+      <ul class="rec-items">
+        ${items.pants.map(i=>`<li>${i}</li>`).join('')}
+        ${items.skirt.map(i=>`<li>${i}</li>`).join('')}
+        ${items.avoid_bottoms.map(i=>`<li class="avoid">${i}</li>`).join('')}
+      </ul>
+    </div>
+    <div class="rec-card">
+      <div class="cat-tag">ONE-PIECE & COORD POINT</div>
+      <div class="cat-title">원피스 & 코디 포인트</div>
+      <ul class="rec-items">
+        ${items.onepiece.map(i=>`<li>${i}</li>`).join('')}
+      </ul>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(201,169,110,0.2);font-size:13px;line-height:1.8;color:#8B7D6B">
+        ${type.coord}
+      </div>
+    </div>
+  `;
+
+  // Materials
+  document.getElementById('material-row').innerHTML = `
+    <div class="material-box">
+      <h3>어울리는 소재</h3>
+      <div class="tag-cloud">
+        ${type.materials.map((m,i)=>`<span class="tag ${i<2?'featured':''}">${m}</span>`).join('')}
+      </div>
+    </div>
+    <div class="material-box">
+      <h3>어울리는 패턴</h3>
+      <div class="tag-cloud">
+        ${type.patterns.map((p,i)=>`<span class="tag ${i<2?'featured':''}">${p}</span>`).join('')}
+      </div>
+    </div>
+  `;
+
+  // Celebs
+  document.getElementById('celeb-section').innerHTML = `
+    <div class="celeb-label">SAME BODY TYPE CELEBRITIES</div>
+    <h3>같은 타입의 유명인</h3>
+    <div class="celeb-list">
+      ${type.celebs.map(c=>`<span class="celeb-chip">${c}</span>`).join('')}
+    </div>
+  `;
+
+  // Show section
+  document.getElementById('result-section').style.display = 'block';
+
+  // Animate bars after paint
+  setTimeout(() => {
+    document.querySelectorAll('.score-fill').forEach(el => {
+      el.style.width = el.dataset.width + '%';
+    });
+  }, 100);
+
+  // Init chat
+  chatHistory = [{
+    role: 'user',
+    content: `나는 ${type.name} 타입이야. 스트레이트 ${counts.S}개, 웨이브 ${counts.W}개, 내추럴 ${counts.N}개로 진단됐어. 앞으로 이 타입에 맞는 패션 조언을 해줘.`
+  }, {
+    role: 'assistant',
+    content: aiText
+  }];
+
+  addChatMessage('ai', `안녕하세요! 저는 ${type.name} 타입 전문 스타일 어드바이저입니다 ✨\n어떤 코디가 고민이신가요? 결혼식 하객룩, 직장 복장, 데이트룩 등 구체적으로 물어보세요!`);
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── CHAT ──────────────────────────────────────────────────────
+function addChatMessage(role, text) {
+  const div = document.createElement('div');
+  div.className = `chat-msg ${role}`;
+  div.style.whiteSpace = 'pre-line';
+  div.textContent = text;
+  const container = document.getElementById('chat-messages');
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const btn = document.getElementById('chat-btn');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  addChatMessage('user', msg);
+  input.value = '';
+  btn.disabled = true;
+
+  const type = TYPES[finalType];
+  chatHistory.push({ role: 'user', content: msg });
+
+  const systemPrompt = `당신은 ${type.name} (${type.nameEn}) 골격 타입 전문 퍼스널 스타일리스트입니다. 
+이 고객은 ${type.name} 타입으로, 키워드는 '${type.keywords}'입니다.
+추천 소재: ${type.materials.join(', ')}
+추천 패턴: ${type.patterns.join(', ')}
+구체적이고 실용적인 조언을 한국어로 200자 내외로 답변해주세요.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || '죄송합니다, 잠시 후 다시 시도해주세요.';
+    addChatMessage('ai', reply);
+    chatHistory.push({ role: 'assistant', content: reply });
+  } catch(e) {
+    addChatMessage('ai', '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+  }
+
+  btn.disabled = false;
+}
+
+function resetAll() {
+  currentQ = 0;
+  answers = new Array(10).fill(null);
+  finalType = null;
+  chatHistory = [];
+  document.querySelectorAll('.question-block').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.question-block')[0].classList.add('active');
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('chat-messages').innerHTML = '';
+
+  document.getElementById('result-section').style.display = 'none';
+  document.getElementById('hero-section').style.display = 'grid';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  updateQuizUI();
+}
+</script>
+</body>
+</html>

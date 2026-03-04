@@ -1,0 +1,111 @@
+인수인계서
+
+프로젝트 인수인계 - 성수동 RPG / Day 3 완료]
+
+■ 프로젝트 개요
+- 성수동 배경 2D 사이드뷰 픽셀 RPG
+- 스택: KAPLAY(Kaboom.js) + Python FastAPI + SQLite
+- 폴더: seongsu_rpg_project/views/ (프론트), models/, services/ (백엔드)
+
+■ 현재 완료 상태
+Day 1: 맵 에셋 준비, Sprite Fusion 타일맵 설계
+Day 2: 아키텍처 스캐폴딩, 백엔드 뼈대, FastAPI 서버 구동
+Day 3 오전: 물리엔진, 플레이어 이동, 카메라, 맵 로딩 완성
+Day 3 오후: NPC 트리거, 대화창(타자기), 자동저장 시스템 완성
+→ 3개 파일 최종 확인 완료: index.html / style.css / game.js
+
+■ 핵심 설계 헌법 (절대 변경 불가)
+
+[물리/이동]
+- setGravity(0): 중력 없는 좌우 이동 전용 사이드뷰. 제거 금지.
+- gravity(0) 사용 금지 (TypeError 발생)
+- player.move(dir * SPEED, 0): dt() 제거 금지
+- 이동 합산 패턴 dir 변수 사용. 별개 if문 2개 금지.
+- body() 필수. 제거 시 벽 통과 버그.
+- onUpdate 내 player.pos.y 강제 덮어쓰기 절대 금지
+
+[맵/카메라]
+- let MAP_WIDTH 선언 필수 (const 금지)
+- MAP_WIDTH = level.numColumns() * TILE_W (addLevel 직후)
+- level.width() / level.numCols() 사용 금지 (TypeError)
+- clampCamX() 필수. MAP_WIDTH <= width() 예외처리 포함.
+- camPos Y = FLOOR_TOP_Y - height() / 4 (FLOOR_TOP_Y 단독 금지)
+- onUpdate 등록 전 초기 camPos 1회 세팅 필수
+- initX 스폰 시점부터 MAP_WIDTH 상한선 클램핑 가드 필수
+- initY = PLAYER_INIT_Y 고정. gameState.player_y 복원 금지.
+
+[상태 관리]
+- gameState.player_x 초기값 -1 (0 금지)
+- gameState.player_x >= 0 조건 (> 0 금지)
+- Dirty Check: X좌표만. Y는 저장 대상 아님.
+- 불러오기 성공 후 go("main") 씬 재시작 필수
+
+[NPC/대화]
+- NPC position → 픽셀 변환 (* TILE_W) 필수
+- get("player")[0] 동적 검색 (player 변수 직접 참조 금지 → ReferenceError)
+- isAdvancing: 찰나의 연타 Debounce 전용
+- 스킵 처리 직전 isAdvancing = false 해제 필수 (데드락 방지)
+- loop() 반환값 = EventController. loopCtrl.cancel() 형태 필수.
+  loopCtrl() 함수 형태 호출 금지 (TypeError)
+- setInterval 타자기 구현 금지. loop() 필수.
+- #dialog-box: pointer-events: none 필수 (포커스 스틸 방지)
+- isDialogOpen 체크로 대화 중 이동 차단 필수
+
+[저장/네트워크]
+- safePost 사용 금지 (미정의 함수 → ReferenceError)
+- 자동저장: lockCall("autoSave", async () => { try/catch 내부 처리 })
+- 외부 .catch() 체이닝 금지 (lockCall 반환값 undefined 가능)
+- 자동저장: discovered_events if 블록 안에서만 호출 (Save Spamming 방지)
+- lockCall fetch는 onUpdate 안에서 호출 금지
+
+[렌더링]
+- 플레이어 z(10), NPC z(5), 맵 타일 z(0) 3단계 고정
+- z() 누락 시 NPC 뒤에 플레이어 숨는 Z-Order 버그
+
+[초기화 순서]
+- loadSprite: scene 외부 전역 선언 필수
+- initScene(): await loadMap() → 플레이어 생성 → await loadNPCs() 순서 보장
+- loadNPCs(): initScene() 내부 마지막에서 await 호출 (씬 루트 단독 호출 금지)
+- onLoad → go("loading") → go("main") 순서 보장
+
+[HTML/CSS]
+- index.html에 <div id="dialog-box"> 반드시 존재 (없으면 TypeError)
+- CSS 경로: /style.css (not /assets/style.css)
+- JS 경로: /game.js (not /assets/game.js)
+- #dialog-box: position:fixed + z-index:100 + pointer-events:none
+- #dialog-text: word-break:keep-all + white-space:pre-wrap (한글 줄바꿈)
+
+[기타 금지]
+- dialog-box를 KAPLAY add()로 구현 금지 (HTML DOM 사용)
+- sprite + rect 동시 선언 금지
+- scene() 없이 전역 add() 금지
+- DOM/HTML 직접 조작 금지 (대화창 제외)
+- 에셋 경로 반드시 /assets/ 프리픽스 사용
+- includes() 가드 없이 discovered_events push() 금지
+
+■ Day 4 남은 작업
+- 백엔드 저장/불러오기 API 완성 (POST /api/save, GET /api/load)
+- models/schemas.py Pydantic 스키마 확장
+- models/database.py ORM 테이블 확인
+- 골드/인벤토리 시스템 연동
+- discovered_events 기반 재방문 NPC 대사 분기
+
+■ 다음 챗창 요청 문구
+"Day 4: 백엔드 저장/불러오기 시스템 완성입니다.
+보완점 발견 후 Cursor 프롬프트를 설계해주세요."
+
+■ 업로드할 파일 목록
+필수:
+- 5일_RPG_게임_개발_설계.txt
+- 프롬프트_스킬.txt
+- B담당_엔진코드_작업가이드.pdf
+- A담당_맵에셋_작업가이드.pdf
+- views/game.js   (Cursor에서 복사)
+- views/index.html (Cursor에서 복사)
+- views/style.css  (Cursor에서 복사)
+
+선택 (Day 4 백엔드 작업 시 필요):
+- services/api_routes.py
+- services/game_logic.py
+- models/schemas.py
+- models/database.py

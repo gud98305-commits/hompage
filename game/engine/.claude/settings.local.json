@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(test -f /c/Users/hyeon/Desktop/engine/seongsu_rpg_project/.env)",
+      "Bash(pip install aiosqlite python-dotenv)",
+      "Bash(pip install \"sqlalchemy[asyncio]\")",
+      "Bash(curl -s http://127.0.0.1:8000/)",
+      "Bash(curl -s http://127.0.0.1:8000/game.js)"
+    ]
+  }
+}

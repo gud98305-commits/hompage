@@ -1,0 +1,152 @@
+성수동 배경 웹 기반 2D 픽셀 RPG 프로젝트(5일 단기 완성) 종합 아키텍처 및 AI 에셋 파이프라인 설계 보고서
+본 설계 보고서는 웹 기반의 2D 픽셀 RPG 게임을 5일이라는 극단적인 단기 마일스톤 내에 개발하고자 하는 목표를 달성하기 위해 작성되었다. 특히, 최근 IT 및 문화의 중심지로 떠오른 성수동의 실제 거리와 건축물들을 레트로 감성의 타일맵으로 변환하는 작업은 기존의 수작업 도트 그래픽 공정을 거칠 경우 단일 맵 제작에만 수 주가 소요되는 고비용 작업이다. 따라서 본 보고서는 최신 생성형 AI(Generative AI) 비전 모델과 오픈소스 에셋 라이브러리를 결합한 하이브리드 에셋 파이프라인을 구축하는 데 집중한다. 아울러 LLM(대규모 언어 모델) 기반의 코딩 어시스턴트인 Cursor AI가 가장 효율적으로 코드를 생성할 수 있도록 함수형 컴포넌트 기반 게임 엔진과 엄격한 3계층(3-Layer) 백엔드 아키텍처를 채택하는 논리적 근거와 구체적인 실행 방안을 제시한다.
+[Phase 1: 요구사항 구체화 및 아키텍처 스코핑 인터뷰]
+성공적인 소프트웨어 아키텍처 설계는 모호한 아이디어를 구체적인 기술 명세로 변환하는 과정에서 시작된다. 사용자의 "웹 기반 2D 픽셀 RPG를 5일 안에 만들고 싶다"는 요구사항은 매우 도전적이다. 프로젝트의 성격을 명확히 규정하고 불필요한 개발 범위를 덜어내기 위해, 시스템 설계 관점에서 다음과 같은 핵심 질문들을 던지고 그에 따른 기술적 함의를 분석해야 한다.
+첫 번째 질문은 배포 환경과 아키텍처의 볼륨에 관한 것이다. 사용자가 혼자 즐기는 로컬 환경의 스탠드얼론(Standalone) 프로그램으로 한정할 것인지, 아니면 불특정 다수가 웹 브라우저를 통해 접속하고 진행 상황을 클라우드에 저장할 수 있는 본격적인 웹 배포형 게임으로 구축할 것인지 결정해야 한다. 웹 기반 배포를 목표로 한다면, 사용자의 브라우저에서 구동되는 프론트엔드 게임 캔버스와 사용자 데이터 및 세션을 관리하는 백엔드 서버의 분리가 필수적이다. 이는 곧 RESTful API 또는 WebSocket 기반의 통신 레이어가 요구됨을 의미한다. 5일이라는 기한을 고려할 때, 복잡한 실시간 동기화보다는 비동기 REST API를 통한 상태 저장 방식이 권장된다.
+두 번째 질문은 데이터베이스 및 상태 관리(State Management) 방식에 대한 결정이다. 플레이어의 인벤토리, 성수동 맵 내의 NPC 호감도, 퀘스트 진행도, 재화 등의 게임 상태 데이터를 단순히 브라우저의 LocalStorage에 임시로 저장할 것인지, 아니면 관계형 데이터베이스(SQL)를 활용하여 서버 측에서 영구적으로 관리할 것인지 묻고자 한다. 단기 프로토타입의 경우 설정이 복잡한 대규모 RDBMS보다는 파일 기반으로 즉시 동작하는 SQLite를 활용하되, ORM(Object-Relational Mapping)을 엄격히 적용하여 향후 PostgreSQL 등으로 스케일업이 용이하도록 데이터 계층을 설계해야 한다.
+세 번째 질문은 맵 생성 방식과 렌더링 파이프라인에 관한 것이다. 성수동의 거리뷰를 미리 AI로 변환하여 고정된 타일맵(Static Tilemap) 파일로 조립해 둘 것인지, 아니면 플레이어의 이동에 따라 실시간으로 맵 블록이 조합되는 절차적 생성(Procedural Generation) 방식을 도입할 것인지가 핵심이다. 5일이라는 극단적인 개발 기한과 AI 이미지 생성 모델이 가지는 시각적 일관성 유지의 어려움을 고려할 때, 절차적 생성 방식은 개발 실패의 주요 원인이 될 수 있다. 따라서 사전 렌더링된 고정 타일맵 방식을 채택하고, 이를 고정된 JSON 데이터로 로드하는 구조가 압도적으로 안정적이다.
+마지막으로 멀티플레이어 동기화 여부를 확인해야 한다. 성수동 맵 안에서 다른 접속자들의 캐릭터가 실시간으로 움직이는 모습을 볼 수 있는 MMO(Massively Multiplayer Online) 형태를 구상하는지, 아니면 철저히 혼자서 스토리를 진행하는 싱글 플레이어 기반인지를 규정해야 한다. 실시간 패킷 동기화가 추가되면 상태 충돌 해결, 지연 시간(Latency) 보정, 서버 사이드 물리 연산 검증 등 백엔드의 복잡도가 최소 3배 이상 증가한다. 따라서 본 프로젝트는 데이터 저장 기능이 포함된 싱글 플레이어 아키텍처로 범위를 한정(Scoping)하여 개발 속도를 극대화하는 방향으로 나아가야 한다.
+[Phase 2: 기술 스택 선정 및 프레임워크 검증]
+요구사항 분석을 통해 도출된 '데이터 저장이 가능한 웹 기반 싱글 플레이어 2D RPG'라는 목표를 달성하기 위해, 단기 개발에 최적화된 프론트엔드 게임 엔진, 백엔드 프레임워크, 그리고 에셋 생성 파이프라인을 선정한다. 이 과정에서 Cursor AI와의 호환성은 도구 선정의 가장 중요한 기준이 된다.
+
+
+계층/기능
+	추천 기술 스택
+	대안 기술
+	선정 사유 및 아키텍처 적합성 분석
+	프론트엔드 (게임 엔진)
+	KAPLAY (Kaboom.js)
+	Phaser.js, Pixi.js
+	함수형 및 컴포넌트 기반 구조로 설계되어 코드가 매우 간결하며, Cursor AI의 코드 생성 시 클래스 상속으로 인한 환각(Hallucination) 오류가 현저히 적음.1
+	백엔드 (API 서버)
+	Python FastAPI
+	Django, Flask
+	비동기(Async) 처리 성능이 우수하며, Pydantic을 통한 강력한 데이터 검증 기능을 내장하여 게임 상태 데이터 조작을 원천 차단할 수 있음.
+	데이터베이스 (저장소)
+	SQLite + SQLAlchemy
+	PostgreSQL, MongoDB
+	별도의 서버 데몬 설정 없이 파일 형태로 즉시 동작하므로 5일 단기 스프린트에 적합. SQLAlchemy ORM을 통해 비즈니스 로직과 쿼리를 분리함.
+	맵 디자인 에디터
+	Sprite Fusion (Web)
+	Tiled (Desktop)
+	웹 브라우저에서 즉시 실행되는 직관적인 환경을 제공하며, 충돌 박스와 자동 타일링이 적용된 데이터를 JSON으로 쉽게 내보내어 게임 엔진에 통합할 수 있음.4
+	프론트엔드 게임 엔진 부문에서는 KAPLAY(과거 Kaboom.js)의 도입을 강력하게 권장한다. 웹 기반 2D 게임 개발 시장에서 Phaser.js는 매우 훌륭하고 방대한 기능을 자랑하지만, 철저한 객체 지향 및 클래스(Class) 기반 아키텍처를 가지고 있어 러닝 커브가 높고 코드가 비대해지는 경향이 있다.1 특히 Cursor AI와 같은 LLM을 활용할 때, 복잡한 상속 구조는 AI가 컨텍스트를 잃어버리고 잘못된 메서드를 호출하는 환각 현상을 유발하기 쉽다.2 반면 KAPLAY는 ECS(Entity-Component-System)와 유사한 함수형 체이닝 방식을 사용하여 단 몇 줄의 직관적인 코드로 캐릭터에 물리 엔진, 중력, 충돌 처리 로직을 부여할 수 있다.1 이는 AI가 특정 기능 모듈을 빠르고 정확하게 생성하는 데 압도적인 이점을 제공하며, 5일이라는 제한된 시간 내에 프로토타입을 완성하는 데 필수적인 요소다.
+백엔드 프레임워크로는 Python 생태계의 FastAPI를 선정한다. 사용자의 획득 아이템, 골드, 퀘스트 진행도 등을 클라이언트 측 자바스크립트에서 직접 계산하는 것은 보안상 치명적인 취약점을 낳는다. FastAPI는 Pydantic 라이브러리를 통해 클라이언트로부터 들어오는 JSON 데이터의 구조와 타입을 엄격하게 검증한다. 이를 통해 비정상적인 데이터 변조를 막고, 순수 비즈니스 로직에만 집중할 수 있는 환경을 제공한다. 또한, 비동기 처리를 기본적으로 지원하여 향후 게임의 규모가 커져 동시 접속자가 늘어나더라도 높은 처리량을 유지할 수 있다. 데이터베이스는 초기 설정 비용이 '0'에 수렴하는 SQLite를 채택하되, SQLAlchemy ORM(Object-Relational Mapping)을 덧씌워 추후 프로덕션 환경에서 PostgreSQL로의 전환이 코드 수정 없이 이루어지도록 유연성을 확보한다.
+타일맵 디자인을 위한 에디터로는 Sprite Fusion을 활용한다. 게임 엔진 내에서 코드로 직접 타일을 배열하는 것은 비효율의 극치다. Sprite Fusion은 웹 브라우저 기반의 무료 타일맵 에디터로, AI를 통해 생성하거나 에셋 스토어에서 다운로드한 성수동 픽셀 타일 이미지를 드래그 앤 드롭으로 업로드하여 시각적으로 맵을 조립할 수 있다.4 이 도구는 플레이어가 통과할 수 없는 벽이나 건물을 지정하는 충돌(Collision) 처리와 자동 타일링(Auto-tiling) 기능을 지원하며, 완성된 맵 데이터를 배열 형태의 JSON 파일로 깔끔하게 추출하여 KAPLAY 엔진으로 원활하게 전달한다.4
+[Phase 3: 아키텍처 & 폴더 구조 설계]
+프로젝트의 생존성과 직결되는 가장 중요한 부분은 디렉토리 구조의 모듈화다. 화면을 그리는 코드, 서버와 통신하는 코드, 데이터베이스에 접근하는 코드가 한 파일에 뒤섞이게 되면, Cursor AI에게 수정 요청을 할 때마다 기존의 정상적인 로직까지 붕괴되는 스파게티 코드 현상이 필연적으로 발생한다. 이를 방지하기 위해 엄격한 관심사 분리(Separation of Concerns) 원칙을 적용한 표준 3계층(3-Layer) 아키텍처를 설계한다. 이 구조 하에서 각 폴더와 파일은 명확히 제한된 역할만을 수행해야 한다.
+seongsu_rpg_project/
+├── core/
+│ ├── config.py # 애플리케이션 환경 변수(API 키, DB URI 등) 및 전역 설정 관리
+│ ├── logger.py # 시스템 상태 및 오류 추적을 위한 중앙 집중식 로깅 설정
+│ └── exceptions.py # 게임 비즈니스 로직 관련 커스텀 예외(예: NotEnoughGoldError) 정의
+├── models/
+│ ├── schemas.py # Pydantic 기반 데이터 스키마 (API 요청/응답 페이로드 검증)
+│ └── database.py # SQLAlchemy 기반 ORM 테이블 정의 (User, Inventory, GameState)
+├── services/
+│ ├── game_logic.py # 순수 비즈니스 로직 (경험치 산식, 아이템 거래 연산 등). UI 코드 접근 절대 금지.
+│ └── api_routes.py # FastAPI 라우터. views로부터 REST 요청을 받아 로직을 처리하고 응답 반환.
+├── views/
+│ ├── index.html # 웹 브라우저 진입 화면이자 KAPLAY 게임 캔버스가 렌더링되는 DOM 컨테이너.
+│ ├── style.css # UI 오버레이 (대화창, 인벤토리 패널 등) 스타일링.
+│ ├── game.js # KAPLAY 프론트엔드 핵심 엔진. 렌더링, 키보드 입력, 애니메이션 처리. 로직 계산 금지.
+│ └── assets/ # AI 생성 타일셋, 캐릭터 스프라이트 시트(PNG), JSON 맵 데이터 저장소.
+├── tests/
+│ ├── test_logic.py # services 계층의 비즈니스 로직 검증을 위한 단위 테스트 코드가 위치.
+│ └── test_api.py # API 엔드포인트의 통합 테스트(응답 코드 및 데이터 정합성 확인).
+├── main.py # 백엔드 진입점. FastAPI 앱 초기화 및 views 디렉토리를 정적 파일로 서빙.
+└── requirements.txt # Python 백엔드 구동에 필요한 패키지 의존성 명세서.
+가장 상위의 실행 진입점인 main.py는 FastAPI 애플리케이션의 인스턴스를 생성하고, api_routes.py에 정의된 라우터들을 연결(Include)하는 역할을 수행한다. 이와 동시에 views/ 디렉토리를 정적 파일(Static Files) 경로로 마운트하여, 사용자가 브라우저를 통해 접속했을 때 index.html과 game.js, 그리고 시각적 에셋들을 성공적으로 다운로드할 수 있도록 서빙하는 웹 서버의 기초적인 임무를 담당한다.
+core/ 디렉토리는 애플리케이션의 척추와 같은 역할을 한다. 데이터베이스 연결 문자열, 외부 API 연동 키, JWT 보안 시크릿과 같은 민감한 설정값들은 하드코딩되지 않고 config.py를 통해 환경 변수에서 동적으로 로드되어야 한다. exceptions.py는 게임 내에서 발생할 수 있는 논리적 오류, 예를 들어 상점에서 아이템을 구매하려 할 때 골드가 부족한 상황을 HTTPException으로 추상화하여 일관된 에러 메시지를 프론트엔드에 전달하도록 돕는다.
+models/ 디렉토리는 시스템의 데이터 구조를 정의하는 핵심 영역으로, 두 가지 분리된 관점을 가진다. 첫째, database.py는 SQLAlchemy를 사용하여 데이터베이스 내부에 생성될 실제 테이블(예: 사용자 정보, 소지품, 맵 상의 위치)의 구조를 클래스 형태로 선언한다. 둘째, schemas.py는 Pydantic을 활용하여 클라이언트와 서버 간에 오가는 JSON 데이터의 구조와 제약 조건(예: 레벨은 1 이상이어야 함, 골드는 음수가 될 수 없음)을 검증하는 데이터 전송 객체(DTO) 역할을 수행한다. 이러한 분리는 데이터베이스의 내부 구조가 외부 API로 직접 노출되는 것을 막아준다.
+services/ 디렉토리는 게임의 순수한 비즈니스 로직이 격리된 공간이다. api_routes.py는 프론트엔드로부터 들어오는 HTTP 요청을 받아들이는 접점(Endpoint) 역할을 하며, 요청을 수신하면 즉시 game_logic.py에 정의된 함수들을 호출하여 처리를 위임한다. 중요한 아키텍처 원칙은 이곳에 어떠한 화면 렌더링 코드나 UI 조작 코드도 포함되어서는 안 된다는 점이다. 오로지 입력된 데이터를 바탕으로 상태를 변화시키고, 그 결과를 반환하는 순수 함수들의 집합으로 구성되어야 단위 테스트가 용이해지고 시스템의 안정성이 확보된다.
+마지막으로 views/ 디렉토리는 사용자의 눈에 보이는 모든 시각적 요소와 상호작용을 담당하는 프론트엔드 계층이다. 이 계층의 절대적인 규칙은 '비즈니스 로직의 계산 금지'다. game.js에 작성되는 KAPLAY 코드는 캐릭터의 스프라이트를 캔버스에 그리고, 방향키 입력을 받아 애니메이션 상태를 갱신하며, 맵 타일과 캐릭터 간의 물리적 충돌을 감지하는 역할에만 집중해야 한다. 몬스터 처치로 인한 경험치 증가나 아이템 획득 시 최종 인벤토리 갱신 등의 로직은 JavaScript에서 직접 더하거나 빼는 것이 아니라, FastAPI 백엔드로 fetch() 요청을 보내 계산된 결과값만을 응답받아 화면에 반영하는 덤 클라이언트(Dumb Client) 패턴을 준수해야 한다.
+사용자가 직면한 프로젝트의 가장 거대한 병목 현상은 기획된 가상 세계의 시각적 구현, 즉 "실제 구글 맵스나 거리뷰, 성수동의 풍경을 스타듀밸리 스타일의 2D 픽셀 타일맵으로 5일 내에 변환하는 작업"이다. 전문 도트 아티스트가 없는 환경에서 이를 해결하기 위해서는 AI 이미지 생성 기술과 오픈소스 에셋 라이브러리를 극도로 효율적으로 조합하는 전략이 필수적이다. 이를 위해 성수동이라는 공간의 시각적 아이덴티티를 분석하고, 이에 기반한 프롬프트 엔지니어링 기법과 각 AI 비전 모델의 장단점을 심층적으로 분석한다.
+1. 성수동의 시각적 아이덴티티 분석 및 프롬프트 토큰 최적화
+AI 비전 모델에게 정확한 픽셀 아트를 지시하기 위해서는 대상의 본질적 특징을 텍스트 토큰(Token)으로 명확히 추출해야 한다. 성수동의 건축적 정체성은 1970년대 경공업 시대의 공장과 창고 시설들이 현대식 베이커리 카페나 팝업 스토어로 개조되면서 형성된 특유의 '붉은 벽돌(Red Brick)' 아키텍처에 근간을 두고 있다.6 물결치듯 굴곡진 붉은 벽돌 파사드, 노출된 콘크리트 프레임, 거대한 반투명 유리창, 그리고 과거와 현재가 교차하는 인더스트리얼 감성이 이 지역의 핵심 아이덴티티다.7 이러한 현실의 입체적 공간을 스타듀밸리 특유의 탑다운(Top-down) RPG 스타일로 변환하기 위해서는 다음과 같은 정교한 프롬프트 키워드 조각들이 유기적으로 결합되어야 한다.
+스타일 및 화풍 측면에서는 16-bit pixel art, 8-bit style, SNES and Sega Genesis era JRPG style, Stardew Valley aesthetic과 같은 명확한 레퍼런스 토큰을 사용하여 AI가 생성해야 할 전반적인 렌더링 방식을 고전 게임의 화풍으로 강제해야 한다.10 카메라의 원근감과 시점을 제어하기 위해서는 top-down RPG perspective, isometric view, characteristic side-view or three-quarter perspective 등의 공간적 지시어가 필수적이다.10 가장 중요한 기술적 제약 사항의 경우, 픽셀 아트 특유의 거칠고 선명한 느낌을 구현하기 위해 seamless repeating tilemap, distinct pixel clusters, crisp pixel-perfect edges using nearest neighbor interpolation, posterized colors reduced to 8-16 shades와 같은 지시를 덧붙여 AI 모델이 부드러운 그라데이션을 사용하지 못하도록 억제해야 한다.10 마지막으로 피사체 자체를 묘사할 때는 industrial red brick architecture, red brick cafe with warm lighting, urban street with asphalt and crosswalk 등 성수동의 물리적 실체를 묘사하는 문맥을 제공한다.6
+2. AI 툴 기반 타일맵 생성 방법론 및 메커니즘 심층 분석
+현존하는 주요 생성형 AI 도구들이 사용자의 요구사항에 어떻게 부합하는지 그 구동 메커니즘과 워크플로우를 세밀하게 분석한다.
+A. Google AI Studio (Gemini 1.5 Pro 및 Imagen 3)
+구글의 최신 이미지 생성 모델인 Imagen 3(내부 코드명 Nano Banana)는 텍스트 프롬프트에 대한 정밀한 이해도와 원본 이미지의 디테일을 유지하면서 화풍만을 변환하는 기능에 있어 최고 수준의 성능을 제공한다.10 특히 Google AI Studio 플랫폼에서는 코딩 지식 없이도 'Build' 기능을 활용하여 자신만의 커스텀 픽셀 아트 제너레이터를 손쉽게 생성할 수 있는 인터페이스를 제공한다.18
+가장 효율적인 활용법은 구글 스트리트 뷰에서 캡처한 성수동 대림창고나 카페 사진을 Google AI Studio의 프롬프트 창에 첨부하여 Image-to-Image 파이프라인을 가동하는 것이다.19 이때 앞서 도출한 최적화된 시스템 프롬프트를 하달하여 시각적 출력을 엄격하게 통제한다. "입력된 사진의 붉은 벽돌 건물과 거리를 Final Fantasy나 Stardew Valley 스타일의 16비트 JRPG 배경 스프라이트로 변환하라. 레트로 색상 팔레트를 사용하고, 색상 범위를 8-16단계로 단순화(Posterized)하여 그리드 기반의 픽셀 타일맵 구조를 준수하라"는 지침은 AI가 피사체의 구조를 무너뜨리지 않고 화풍만 치환하게 만든다.10 이 방식은 배경 타일보다는 맵 상에서 상호작용의 중심이 되는 특정 랜드마크나 오브젝트(카페 간판, 가로등, 벤치)를 단일 스프라이트 에셋으로 정교하게 추출해 낼 때 가장 강력한 효과를 발휘한다.
+B. PixelLab (게임 에셋 특화 AI)
+일반적인 확산 모델(Diffusion Model) 기반의 AI는 단일 일러스트 생성에는 뛰어나지만, 생성된 이미지들을 타일처럼 이어 붙일 경우 경계선이 어색해지는 이음새(Seam) 문제가 필연적으로 발생한다. 이 한계를 극복하기 위해 등장한 PixelLab(pixellab.ai)은 단순한 이미지 생성이 아니라, 실제 게임 개발에 즉시 투입 가능한 '에셋(Asset)'과 '타일셋(Tileset)' 생성에 특화된 AI 플랫폼이다.22
+PixelLab의 핵심 기능인 'Create tileset' 알고리즘은 상하좌우가 매끄럽게 연결되는 반복 가능한 텍스처 패턴과 맵 조립용 스프라이트 시트를 수학적으로 계산하여 생성한다.22 성수동의 거리 사진을 레퍼런스로 제공한 뒤, 'Extend map (Inpainting)' 기능을 연계하여 사용하면, 좁은 골목 사진 한 장을 바탕으로 거대한 맵을 끝없이 확장해 나갈 수 있다.23 더욱이 생성된 결과물을 복잡한 컨버팅 과정 없이 Godot 게임 엔진이나 웹 기반 맵 에디터인 Sprite Fusion에 즉시 적용 가능한 포맷으로 추출(Export)하는 파이프라인을 기본으로 지원하므로, 단기 프로젝트에서의 효용 가치가 가장 높다.4
+C. Midjourney (V6 알고리즘)
+Midjourney는 본질적인 예술적 퀄리티와 시각적 디테일 묘사 측면에서는 현존하는 상용 AI 도구 중 가장 뛰어난 결과물을 산출한다. 하지만 게임 엔진의 격자(Grid)에 정확히 맞아떨어지는 규격화된 타일맵을 추출하려면 모델의 동작을 제어하는 추가적인 파라미터 엔지니어링이 동반되어야 한다.
+Midjourney의 잠재력을 게임 개발로 끌어오는 첫 번째 단계는 역설계(Reverse-engineering)다. /describe 명령어를 사용하여 성수동 거리뷰 사진을 봇에 업로드하면, AI 비전 모델이 해당 이미지를 분석하여 4개의 디테일한 텍스트 프롬프트를 제안한다.11 이렇게 확보된 토큰을 바탕으로 프롬프트를 재구성할 때, 명령어 끝에 반드시 --tile 파라미터를 명시해야 한다.14 --tile 옵션이 적용된 이미지는 생성 과정에서 텐서(Tensor)의 엣지 픽셀 값이 순환되도록 연산되어, 이미지의 상단 픽셀 배열이 하단 픽셀 배열과, 좌측 배열이 우측 배열과 완벽하게 일치하게 된다.14 이 기법을 사용하면 맵을 채우는 데 막대한 양이 필요한 아스팔트 도로, 보도블록, 잔디밭, 연속된 붉은 벽돌 벽면 등의 심리스(Seamless) 텍스처 타일을 무한대로 생성할 수 있어 배경 작업 시간을 극적으로 단축시킬 수 있다.14
+D. Stable Diffusion (ControlNet 파이프라인)
+오픈소스 기반의 Stable Diffusion은 가중치 모델의 조작이 자유로워 형태에 대한 통제력이 가장 높지만, 그에 비례하여 시스템 구축 및 학습 곡선이라는 가파른 진입 장벽이 존재한다. 특히 SD 모델의 잠재 공간(Latent Space)은 기본적으로 512x512 또는 1024x1024 해상도의 이미지 특징을 학습하도록 설계되어 있어, 프롬프트만으로 32x32 사이즈의 네이티브 픽셀 아트를 직접 렌더링하도록 지시하면 형태가 뭉개지거나 형형색색의 노이즈(Garbage)만이 출력되는 현상이 발생한다.27
+이 모델을 성공적으로 타일맵 변환에 활용하기 위해서는 다단계의 복잡한 워크플로우가 요구된다. 먼저 ControlNet의 Canny(윤곽선 추출) 또는 Depth(깊이 맵) 모델에 성수동 거리뷰 사진을 입력하여 건물의 원근감과 뼈대를 추출한다.27 그 후, 픽셀 아트 화풍을 집중적으로 학습한 8bitdiffuser와 같은 LoRA(Low-Rank Adaptation) 모델을 병합하여 고해상도(512x512) 상태에서 명확한 외곽선을 가진 픽셀 아트 스타일의 이미지를 렌더링해 낸다.27 마지막으로, 이렇게 생성된 고해상도 이미지를 포토샵이나 Aseprite 같은 이미지 에디터로 가져와 Nearest-neighbor(최근접 이웃) 보간 알고리즘을 강제 적용하여 32x32 크기로 축소(Downscale)해야 비로소 게임에 사용 가능한 안티앨리어싱 없는 선명한 도트 그래픽을 얻을 수 있다.27 이러한 복잡한 공정은 높은 퀄리티를 보장하지만, 5일 이내에 게임을 완성해야 하는 본 프로젝트의 현실적인 제약 사항을 고려할 때 핵심 전략으로 권장하기는 어렵다.
+3. 고품질 무료 2D 픽셀 오픈소스 에셋 확보 전략 (Kitbashing)
+AI 툴을 활용하여 성수동의 시그니처 랜드마크 건물들을 고유한 에셋으로 생성하는 동안, 맵의 기반을 구성하는 도로, 인도, 일반적인 건물, 차량, 표지판 등 반복적인 배경 타일은 검증된 고품질의 무료 에셋을 조립(Kitbashing)하는 방식으로 수급해야 한다. 에셋 수작업에 낭비되는 시간을 최소화하는 것이 단기 스프린트의 핵심 비결이다. 글로벌 인디 게임 개발자들의 허브인 itch.io에는 이 목적에 완벽하게 부합하는 방대한 리소스가 존재한다.
+
+
+제작자 / 패키지명
+	에셋 특징 및 성수동 시각 구현 적합성 분석
+	라이선스 정책 및 획득처
+	Kenney (RPG Urban Kit)
+	480개 이상의 타일 스프라이트를 포함하는 초대형 패키지. 현대 도시 풍경을 구성하는 고층 건물, 자동차 애니메이션, 도로, 횡단보도 표지판 등을 완벽하게 지원한다.29 화려함보다는 깔끔함을 추구하여 성수동의 격자형 도로망과 일반 건물 배치를 위한 뼈대로 사용하기에 가장 적합한 완성도를 보여준다.29
+	CC0 라이선스 (상업적 이용 무제한 무료, 출처 표기 의무조차 없음). itch.io 및 kenney.nl을 통해 즉시 다운로드 가능.29
+	LimeZu (Modern Exteriors)
+	수천 시간에 걸쳐 제작된 압도적인 디테일의 현대 도시 외관 에셋 콜렉션이다. 바람에 흔들리는 애니메이션이 적용된 나무, 트럭과 승용차, 다양한 상점의 네온 간판, 질감이 살아있는 아스팔트 바닥 등 맵의 밀도와 디테일을 극적으로 끌어올리는 데 필수적이다.32 카메라 앵글이 스타듀밸리와 정확히 일치하여 위화감이 전혀 없다.32
+	부분 무료 제공. 수천 개의 에셋이 포함된 완전판도 2.5달러 수준의 매우 저렴한 후원금으로 평생 라이선스 획득 가능. itch.io 배포.32
+	Zeal (PicoVillage)
+	16비트 레트로 감성에 충실한 스타듀밸리 스타일 타일셋 패키지다. 부드러운 색감의 잔디밭, 흙길, 아기자기한 상점, 연못 등의 자연 타일을 제공하여, 서울숲과 맞닿아 있는 성수동 외곽 지역의 자연 친화적이고 포근한 공간감을 표현하는 데 매우 탁월한 선택지다.33
+	완전 무료 제공 (오픈소스 개념으로 자유로운 수정 및 배포 허용, 상업적 이용 가능). itch.io 배포.33
+	[요약: 당장 오늘부터 쓸 수 있는 가장 현실적인 해결 방법 3가지]
+상기 서술된 방대한 AI 모델 분석과 리소스 조사 결과를 종합하여, 제한된 5일의 기한 내에 사용자가 오늘 당장 시스템에 적용하여 성과를 낼 수 있는 가장 현실적이고 강력한 3가지 구체적인 워크플로우를 도출한다.
+첫 번째 방법: "Kenney & LimeZu 에셋 패키지와 Sprite Fusion의 조립(Kitbashing) 워크플로우" (가장 안정적이고 빠른 방법) 이 방식은 코딩이나 프롬프트 엔지니어링에 소비되는 시간을 최소화하고, 이미 완성도와 일관성이 검증된 픽셀 아트를 레고 블록처럼 조립하는 전략이다. itch.io에 접속하여 Kenney의 'RPG Urban Kit'과 LimeZu의 'Modern Exteriors' 타일셋 스프라이트 시트를 데스크톱에 다운로드한다.29 이후 브라우저 기반의 레벨 에디터인 'Sprite Fusion(spritefusion.com)'을 열고, 다운로드한 이미지 파일들을 드래그 앤 드롭으로 작업 환경에 로드한다.4 Sprite Fusion이 제공하는 직관적인 페인트 붓 툴과 자동 타일링(Auto-tiling) 기능을 활용하여 화면 위에 성수동의 메인 스트리트 골격, 카페가 늘어선 거리, 도로망을 1~2시간 이내에 신속하게 스케치하듯 그려낸다. 이 방법은 스프라이트의 시각적 퀄리티가 100% 보장될 뿐만 아니라, 플레이어가 통과할 수 없는 물리적 장벽(Collision) 레이어 설정이 완료된 상태의 데이터를 JSON 포맷으로 즉시 추출하여 KAPLAY 게임 엔진으로 에러 없이 전달할 수 있다는 압도적인 장점을 지닌다.
+두 번째 방법: "PixelLab AI를 활용한 성수동 시그니처 랜드마크의 직접 변환 워크플로우" (가장 혁신적인 방법) 성수동 특유의 분위기를 자아내는 특정 붉은 벽돌 카페나 대림창고와 같은 고유한 랜드마크 건물을 구현할 때 사용하는 고부가가치 전략이다. 먼저 구글 스트리트 뷰 시스템을 캡처하여 해당 건물의 정면 또는 측면 뷰 사진 이미지를 확보한다. 게임 에셋 전문 플랫폼인 'PixelLab(pixellab.ai)'에 접속하여 확보한 사진을 기준 레퍼런스로 업로드한 뒤, 프롬프트 입력창에 16-bit RPG top-down red brick building과 같은 명확한 지시어를 입력하고 'Create tileset' 기능을 구동한다.22 변환된 결과물이 일부 잘려 있거나 크기가 부족하다면, 'Extend map (Inpainting)' 기능을 연계하여 누락된 지붕이나 주변 골목을 AI가 문맥에 맞게 추론하여 그려내도록 확장시킨다.23 이 방법은 완전히 독창적이고 저작권 문제에서 상대적으로 자유로운 나만의 게임 에셋을 확보할 수 있게 하며, 실제 사진의 구조적 디테일을 기반으로 연산하므로 성수동 특유의 '오래된 인더스트리얼 빨간 벽돌 감성'이 픽셀 텍스처 안에 그대로 응축되는 훌륭한 결과물을 보장한다.
+세 번째 방법: "Midjourney의 --tile 매개변수를 활용한 바닥/배경 심리스 텍스처 무한 복제 워크플로우" 게임을 개발할 때 가장 많은 렌더링 공간을 차지하고, 수작업으로 제작할 때 가장 골칫거리가 되는 아스팔트 바닥, 보도블록 패턴, 잔디밭, 넓은 벽면 등의 베이스 텍스처를 효율적으로 수급하는 전략이다. Discord 메신저의 Midjourney 봇 서버에 접속하여, /imagine prompt: 16-bit pixel art of asphalt road with yellow lines, top-down isometric view, --tile 또는 /imagine prompt: 16-bit red brick wall texture, seamless, --tile과 같은 프롬프트 명령어를 입력한다.11 AI가 생성한 4개의 시안 중 가장 도트감이 선명한 것을 업스케일링하여 저장한다. --tile 옵션의 알고리즘적 특성 덕분에, 이 이미지는 상하좌우를 수학적으로 복제하여 이어 붙여도 경계선이 전혀 보이지 않는 완벽한 심리스(Seamless) 텍스처 타일로 작동한다.14 따라서 넓은 성수동 맵의 지형 뼈대를 단 1장의 생성 이미지만으로 끝없이 렌더링할 수 있어 작업 효율이 극대화된다.
+[Phase 4: 5일 완성 단기 스프린트 개발 로드맵]
+초보 개발자가 Cursor AI라는 강력한 도구를 손에 쥐었음에도 불구하고 복잡한 기술 스택 사이에서 길을 잃거나 환각 코드에 빠져 프로젝트를 포기하지 않도록, 엄격하고 체계적인 5일간의 단계별 마일스톤(Milestone)을 제시한다.
+Step 1 (Day 1): 리소스 파이프라인 가동 및 맵 레벨 디자인 (코딩 제로 데이)
+개발 첫날에는 코드를 한 줄도 작성하지 않고 오직 시각적 자원을 확보하고 가상 공간을 구축하는 데 모든 에너지를 집중한다. 오전 세션에는 itch.io 플랫폼에 접속하여 앞서 분석된 추천 에셋 팩인 Kenney의 RPG Urban Kit과 LimeZu의 Modern Exteriors를 다운로드하고 압축을 해제하여 타일 이미지를 분류한다.29 이와 병행하여 구글 스트리트 뷰에서 성수동의 상징적인 붉은 벽돌 건물 2~3곳의 뷰를 캡처한 뒤, PixelLab과 Google AI Studio(Imagen 3)를 활용하여 해당 사진들을 16비트 JRPG 스타일의 타일셋 스프라이트로 변환 생성한다.16 오후 세션에는 충분히 확보된 타일 이미지 파일들을 웹 브라우저 상의 Sprite Fusion 캔버스에 업로드하여 본격적인 맵 레벨 디자인을 시작한다.4 중앙에 넓은 교차로를 배치하고, 사이사이에 붉은 벽돌 카페 건물을 배열하여 성수동의 메인 스트리트 공간 구조를 시각화한다. 작업이 완료되면, 해당 맵의 시각 정보와 충돌 레이어 데이터가 포함된 배열 형식의 JSON 데이터 파일을 Export하여 로컬 스토리지에 안전하게 저장한다.4
+Step 2 (Day 2): 아키텍처 스캐폴딩(Scaffolding) 및 백엔드 뼈대 셋업
+둘째 날부터는 Cursor AI를 적극적인 페어 프로그래밍 파트너로 가동한다.
+오전 세션에는 코드 편집기에서 프로젝트 루트 디렉토리를 열고, 본 보고서의 Phase 3에서 정의한 엄격한 3계층 아키텍처 폴더 트리(core/, models/, services/, views/)를 정확히 생성한다. Python 가상 환경(venv)을 구축한 뒤, pip install fastapi uvicorn sqlalchemy pydantic 명령어를 통해 필수 백엔드 의존성 패키지들을 설치한다.
+오후 세션에는 main.py 파일에 FastAPI의 기본 앱 초기화 로직을 작성한다. Cursor AI 프롬프트 창에 "FastAPI를 사용하여 views 폴더의 내부에 위치한 index.html을 정적 파일로 서빙(Mount)하는 가장 기초적인 웹 서버 구동 코드를 작성해 줘"라고 명확히 지시한다. 코드가 생성되면 로컬에서 서버를 구동하여 웹 브라우저(localhost:8000) 화면에 오류 없이 빈 캔버스가 출력되는지 확인하는 것으로 하루를 마무리한다.
+Step 3 (Day 3): 엔진 연동, 맵 렌더링 및 물리 충돌(Collision) 구현
+셋째 날은 정적인 HTML 화면에 KAPLAY(Kaboom.js) 엔진의 생명력을 불어넣는 핵심적인 작업일이다. 오전 세션에는 Day 1에서 Sprite Fusion을 통해 심혈을 기울여 추출한 JSON 맵 데이터 파일과 각종 타일셋 PNG 이미지 파일들을 일괄적으로 views/assets/ 폴더 경로 내에 복사하여 위치시킨다. 오후 세션에는 views/game.js 스크립트 파일 내에서 KAPLAY의 맵 로드 전용 함수(addLevel 또는 loadSprite)를 사용하여 JSON 데이터 배열을 파싱하고, 게임 캔버스 위에 거대한 성수동 맵을 렌더링하도록 코드를 작성한다. 건물 외벽, 쓰레기통, 카페 유리창 등 플레이어 캐릭터가 통과해서는 안 되는 타일 요소들에 대해 KAPLAY 엔진의 area() 및 solid() 물리 컴포넌트를 체이닝하여 보이지 않는 강체(Rigid Body) 충돌 박스(Hitbox) 경계선을 완벽하게 설정한다.2 Cursor AI에게 "Kaboom.js를 사용해서 제공된 JSON 타일맵 2차원 배열을 화면 루프에 렌더링하고, 'wall' 또는 'building' 태그가 있는 특정 타일 인덱스에 solid() 물리 속성을 부여해 줘"라고 지시하면 함수형 컴포넌트 코드가 깔끔하게 도출된다.
+Step 4 (Day 4): 플레이어 컨트롤러 구현 및 상호작용 로직 개발
+넷째 날은 플레이어가 게임 세계와 실제로 소통할 수 있도록 동적인 시스템을 구현하는 단계다. 오전 세션에는 맵의 정중앙 좌표에 위치할 플레이어 캐릭터 스프라이트(Kenney 에셋 팩 내부에 포함된 기본 캐릭터 활용 권장 29)를 로드하여 화면에 배치한다. 사용자의 화살표 키(또는 W, A, S, D) 입력에 즉각적으로 반응하여 캐릭터가 4방향으로 부드럽게 걷는 애니메이션 프레임 전환과 이동 좌표 갱신 로직을 KAPLAY의 onKeyDown() 함수 블록 내부에 구현한다. 맵이 브라우저 창보다 크므로, 가상의 카메라가 항상 플레이어의 이동 궤적을 부드럽게 따라가도록 camPos(player.pos) 함수를 호출 설정한다. 오후 세션에는 성수동 맵 곳곳의 핫플레이스(예: 유명 베이커리 입구, 길거리 자판기, 특정 NPC) 좌표에 상호작용이 가능한 보이지 않는 트리거 오브젝트를 배치한다. 플레이어 캐릭터가 해당 반경에 접근하여 Space 키를 누르는 이벤트가 발생하면, 화면 하단에 텍스트 대화창(Dialog Box) UI가 나타나도록 오버레이 처리한다. 향후 게임의 상태(재화 변동, 아이템 획득)를 영구적으로 변화시켜야 하는 로직은 브라우저에서 직접 계산하지 않고, 백엔드의 services/game_logic.py 로직 엔진 방향으로 안전하게 분리될 수 있도록 JavaScript의 fetch() API 호출 구조를 이벤트 핸들러 내부에 선제적으로 심어둔다.
+Step 5 (Day 5): 백엔드 데이터 연동, 폴리싱 및 클라우드 배포
+대망의 마지막 날은 그동안 작성한 프론트엔드와 백엔드를 데이터베이스로 봉합하고 세상에 결과물을 공개하는 단계다.
+오전 세션에는 프론트엔드에서 수집한 플레이어의 상태 데이터(현재 좌표, 획득한 골드량, 인벤토리 구성품 등)를 영구히 저장하기 위해, FastAPI 백엔드의 models/schemas.py에 Pydantic 데이터 검증 스키마를 꼼꼼히 정의한다. 게임 화면 내의 시스템 메뉴에서 '저장하기(Save)' 버튼을 누르면 이 데이터 페이로드가 POST 요청을 타고 들어와 SQLite 데이터베이스 파일에 현재 상태 레코드로 저장되는 API 엔드포인트 파이프라인을 최종 완성하고 디버깅한다.
+오후 세션에는 로컬 환경에서의 통합 테스트 플레이를 통해 버그를 수정(Polishing)하고, 프로젝트 전체 코드를 Git 저장소에 커밋한다. 프론트엔드 정적 파일과 FastAPI 백엔드를 통합하여 지원하는 Render, Heroku, 또는 Vercel과 같은 무료 클라우드 호스팅 서비스에 프로젝트 컨테이너를 빌드 및 배포함으로써, 지인들이 웹 브라우저를 통해 실시간으로 접속하여 성수동 맵을 거닐 수 있는 라이브 URL 링크를 획득하며 전체 5일간의 극단적 단기 스프린트 대장정을 성공적으로 마무리한다.
+참고 자료
+1. ourcade/phaser3-vs-kaboomjs: Compare and contrast Phaser 3 and Kaboom.js to create similar game mechanics - GitHub, 2월 25, 2026에 액세스, https://github.com/ourcade/phaser3-vs-kaboomjs
+2. Whats better between kaboom/kaplay and phaser for game dev : r/gamedev - Reddit, 2월 25, 2026에 액세스, https://www.reddit.com/r/gamedev/comments/1ii81x4/whats_better_between_kaboomkaplay_and_phaser_for/
+3. I made a video explaining why I prefer to use Kaplay. It's 12 min long. It's not... | Hacker News, 2월 25, 2026에 액세스, https://news.ycombinator.com/item?id=42752324
+4. Sprite Fusion: A simple, free tilemap Editor Online, 2월 25, 2026에 액세스, https://www.spritefusion.com/
+5. I made a tutorial on how you can generate pixel art tilesets : r/aigamedev - Reddit, 2월 25, 2026에 액세스, https://www.reddit.com/r/aigamedev/comments/1isje8e/i_made_a_tutorial_on_how_you_can_generate_pixel/
+6. Red Bricks Link Past and Present - 코리아나-Features > 상세화면, 2월 25, 2026에 액세스, https://koreana.or.kr/koreana/na/ntt/selectNttInfo.do?nttSn=125704&bbsId=1114
+7. undulating red brick facade envelops 'wave' commercial building by JYA-rchitects in seoul, 2월 25, 2026에 액세스, https://www.designboom.com/architecture/undulating-red-brick-facade-wave-commercial-building-jya-rchitects-seoul-08-17-2022/
+8. Arches and bricks to dialogue with memory. Fillome Building by Sosu Architects - Metalocus, 2월 25, 2026에 액세스, https://www.metalocus.es/en/news/arches-and-bricks-dialogue-memory-fillome-building-sosu-architects
+9. Wavy Red Bricks Cover The Facade of This Commercial Building in South Korea | JYA-rchitects - Surfaces Reporter, 2월 25, 2026에 액세스, https://surfacesreporter.com/articles/134388/wavy-red-bricks-cover-the-facade-of-this-commercial-building-in-south-korea-jya-rchitects
+10. How to Turn Your Photo into a REALISTIC Retro Pixel Art Character with Gemini AI, 2월 25, 2026에 액세스, https://www.youtube.com/watch?v=zUuZj1XFlo8
+11. The Best 25 Midjourney Prompts for Pixel Art - OpenArt, 2월 25, 2026에 액세스, https://openart.ai/blog/post/midjourney-prompts-for-pixel-art
+12. 20 AI Pixel Art Generator Prompts for Midjourney - Rareconnections, 2월 25, 2026에 액세스, https://www.rareconnections.io/ai-pixel-art-generator-prompts
+13. Best 30 Pixel Art Prompts for PicLumen, 2월 25, 2026에 액세스, https://www.piclumen.com/tutorial/best-pixel-art-prompts-for-piclumen/
+14. Tile - Midjourney, 2월 25, 2026에 액세스, https://docs.midjourney.com/hc/en-us/articles/32197978340109-Tile
+15. Blending old and new for sustainable Seongdong-gu - The Korea Herald, 2월 25, 2026에 액세스, https://www.koreaherald.com/article/3255881
+16. Remix Photos with Nano Banana in Gemini | AI Image Editing on Pixel - Store for Google, 2월 25, 2026에 액세스, https://store.google.com/intl/en/ideas/articles/pixel-image-gen/
+17. Imagen — Google DeepMind, 2월 25, 2026에 액세스, https://deepmind.google/models/imagen/
+18. Build a Pixel Art Generator with Google AI Studio (No Coding Needed) - YouTube, 2월 25, 2026에 액세스, https://www.youtube.com/shorts/ysjCubtuLRk
+19. Prompt and image attribute guide | Generative AI on Vertex AI, 2월 25, 2026에 액세스, https://docs.cloud.google.com/vertex-ai/generative-ai/docs/image/img-gen-prompt-guide
+20. Create images with Pixel Studio - Pixel Phone Help - Google Help, 2월 25, 2026에 액세스, https://support.google.com/pixelphone/answer/15236074?hl=en
+21. Generate images using Imagen | Gemini API | Google AI for Developers, 2월 25, 2026에 액세스, https://ai.google.dev/gemini-api/docs/imagen
+22. PixelLab - AI Generator for Pixel Art Game Assets, 2월 25, 2026에 액세스, https://www.pixellab.ai/
+23. Tutorial: How to create tilesets and maps using AI - YouTube, 2월 25, 2026에 액세스, https://www.youtube.com/watch?v=jPPznIEK7HY
+24. Tutorial: Generating pixel art tilesets - YouTube, 2월 25, 2026에 액세스, https://www.youtube.com/watch?v=q9z2Vhpz-Z8
+25. Describe - MidJourney Docs, 2월 25, 2026에 액세스, https://docs.midjourney.com/hc/en-us/articles/32497889043981-Describe
+26. Art of Prompting - MidJourney Docs, 2월 25, 2026에 액세스, https://docs.midjourney.com/hc/en-us/articles/32835253061645-Art-of-Prompting
+27. How do I generate sprite tilemaps in Stable Diffusion? : r ... - Reddit, 2월 25, 2026에 액세스, https://www.reddit.com/r/StableDiffusion/comments/1ce5zxm/how_do_i_generate_sprite_tilemaps_in_stable/
+28. Pixel Art Style + ControlNet openpose : r/StableDiffusion - Reddit, 2월 25, 2026에 액세스, https://www.reddit.com/r/StableDiffusion/comments/119daer/pixel_art_style_controlnet_openpose/
+29. RPG Urban Kit by Kenney (Assets), 2월 25, 2026에 액세스, https://kenney-assets.itch.io/rpg-urban-kit
+30. Best "complete" asset packs you know of? : r/godot - Reddit, 2월 25, 2026에 액세스, https://www.reddit.com/r/godot/comments/1ahft38/best_complete_asset_packs_you_know_of/
+31. Kenney (Assets) - itch.io, 2월 25, 2026에 액세스, https://kenney-assets.itch.io/
+32. Modern Exteriors - RPG Tileset [16X16] by LimeZu - LimeZu - itch.io, 2월 25, 2026에 액세스, https://limezu.itch.io/modernexteriors
+33. PicoVillage Tileset - FREE RPG Pixel Art Tileset by Zeal - Itch.io, 2월 25, 2026에 액세스, https://zealxy.itch.io/picovillage-tileset

@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>aeae LOOKBOOK — Style Roulette</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #fdf6f0;
+    --blush: #f5d9d0;
+    --dusty-rose: #e8b4a8;
+    --warm-pink: #d4847a;
+    --deep-rose: #b5635a;
+    --sage: #c8d4c0;
+    --mist: #e8eee8;
+    --warm-brown: #8b6b5a;
+    --text-dark: #2a1f1a;
+    --text-mid: #6b4f44;
+    --gold: #c9a96e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    font-family: 'Noto Sans JP', sans-serif;
+    color: var(--text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.5;
+  }
+
+  header {
+    text-align: center;
+    padding: 48px 24px 32px;
+    position: relative;
+  }
+
+  .back-btn {
+    position: fixed;
+    left: 22px;
+    top: 18px;
+    z-index: 10000;
+    pointer-events: auto;
+    cursor: pointer;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    letter-spacing: 0.2em;
+    color: var(--text-mid);
+    text-decoration: none;
+    background: rgba(253,246,240,0.92);
+    border: 1px solid var(--dusty-rose);
+    border-radius: 999px;
+    padding: 6px 12px;
+    box-shadow: 2px 2px 0 rgba(180,100,90,0.18);
+  }
+  .back-btn:hover { color: var(--warm-pink); border-color: var(--warm-pink); }
+
+  .brand-heart {
+    font-size: 20px;
+    display: block;
+    margin-bottom: 8px;
+    animation: heartbeat 2.5s ease-in-out infinite;
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 6vw, 56px);
+    font-weight: 350;
+    font-style: italic;
+    letter-spacing: 0.05em;
+    color: var(--text-dark);
+  }
+
+  header p {
+    font-size: 14px;
+    letter-spacing: 0.25em;
+    color: var(--text-mid);
+    margin-top: 8px;
+    text-transform: uppercase;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 16px auto;
+    max-width: 320px;
+  }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--dusty-rose), transparent); }
+  .divider-icon { color: var(--dusty-rose); font-size: 10px; }
+
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  .machine-container {
+    position: relative;
+    max-width: 560px;
+    margin: 0 auto 40px;
+  }
+
+  .machine-frame {
+    background: linear-gradient(145deg, #f8e8e0, #f0d4c8);
+    border-radius: 32px 32px 28px 28px;
+    padding: 32px 28px 28px;
+    box-shadow:
+      0 8px 32px rgba(180,100,90,0.15),
+      inset 0 2px 4px rgba(255,255,255,0.8),
+      inset 0 -2px 4px rgba(180,100,90,0.1);
+    border: 2px solid rgba(201,169,110,0.3);
+    position: relative;
+  }
+
+  .machine-top-deco {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .top-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .top-dot.pink { background: var(--warm-pink); }
+  .top-dot.sage { background: var(--sage); }
+
+  .hearts-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .hearts-row span {
+    font-size: 13px;
+    color: var(--warm-pink);
+    animation: heartpulse 1.5s ease-in-out infinite;
+  }
+  .hearts-row span:nth-child(2) { animation-delay: 0.2s; }
+  .hearts-row span:nth-child(3) { animation-delay: 0.4s; }
+  .hearts-row span:nth-child(4) { animation-delay: 0.6s; }
+  .hearts-row span:nth-child(5) { animation-delay: 0.8s; }
+  @keyframes heartpulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.15); }
+  }
+
+  .slots-wrapper {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    background: #2a1f1a;
+    border-radius: 16px;
+    padding: 12px;
+    box-shadow: inset 0 4px 12px rgba(0,0,0,0.4);
+  }
+
+  .slot {
+    flex: 1;
+    background: #1a120e;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 0.75;
+    border: 1px solid rgba(201,169,110,0.2);
+  }
+
+  .slot-label {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    background: rgba(42,31,26,0.85);
+    color: var(--gold);
+    font-size: 15px;
+    letter-spacing: 0.2em;
+    text-align: center;
+    padding: 4px;
+    text-transform: uppercase;
+    z-index: 2;
+  }
+
+  .slot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.08) 0%,
+      transparent 30%,
+      transparent 70%,
+      rgba(0,0,0,0.1) 100%);
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .slot::after {
+    content: '';
+    position: absolute;
+    top: 10%; bottom: 10%;
+    left: 8px;
+    width: 2px;
+    background: linear-gradient(180deg, transparent, rgba(255,255,255,0.12), transparent);
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .slot-reel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .slot-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 8px;
+    transition: none;
+  }
+
+  .slot-img.spinning {
+    animation: slotSpin 0.1s steps(1) infinite;
+  }
+
+  @keyframes slotSpin {
+    0% { opacity: 1; transform: translateY(0); }
+    50% { opacity: 0.3; transform: translateY(-4px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .slot-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(201,169,110,0.3);
+    font-size: 35px;
+  }
+
+  .machine-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 4px;
+  }
+
+  .brand-badge {
+    background: rgba(201,169,110,0.15);
+    border: 1px solid rgba(201,169,110,0.3);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+
+  .spin-btn {
+    background: linear-gradient(135deg, var(--warm-pink), var(--deep-rose));
+    color: white;
+    border: none;
+    border-radius: 24px;
+    padding: 14px 36px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-style: italic;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(181,99,90,0.35),
+                inset 0 1px 2px rgba(255,255,255,0.3);
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .spin-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+  }
+
+  .spin-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(181,99,90,0.45);
+  }
+
+  .spin-btn:active { transform: translateY(0); }
+  .spin-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .lever-container {
+    position: absolute;
+    right: -36px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .lever-arm {
+    width: 8px;
+    height: 80px;
+    background: linear-gradient(90deg, var(--gold), #a87c40);
+    border-radius: 4px;
+    transform-origin: bottom center;
+    transition: transform 0.3s ease;
+    margin: 0 auto;
+  }
+
+  .lever-arm.pulled { transform: rotate(30deg); }
+
+  .lever-ball {
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle at 35% 35%, #e8c880, var(--gold));
+    border-radius: 50%;
+    margin: -2px auto 0;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  }
+
+  .result-section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease;
+    pointer-events: none;
+  }
+
+  .result-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+
+  .result-label {
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-style: italic;
+    letter-spacing: 0.3em;
+    color: var(--text-mid);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .look-result {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .full-look-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(180,100,90,0.1);
+    position: relative;
+  }
+
+  .full-look-card::before {
+    content: 'RECOMMENDED LOOK';
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font-size: 8px;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    background: rgba(255,255,255,0.9);
+    padding: 3px 8px;
+    border-radius: 10px;
+    z-index: 2;
+  }
+
+  .full-look-img {
+    width: 100%;
+    aspect-ratio: 0.65;
+    object-fit: contain;
+    background: linear-gradient(180deg, #f8f4f0, #f0e8e4);
+    padding: 20px 16px 16px;
+    display: block;
+  }
+
+  .look-number {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--text-mid);
+    background: rgba(255,255,255,0.9);
+    padding: 3px 8px;
+    border-radius: 10px;
+  }
+
+  .items-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .item-card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(180,100,90,0.08);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    transition: transform 0.2s;
+  }
+
+  .item-card:hover { transform: translateX(4px); }
+
+  .item-img-wrap {
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(135deg, #f8f4f0, #f0e8e4);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .item-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 6px;
+  }
+
+  .item-info { flex: 1; min-width: 0; }
+
+  .item-category {
+    font-size: 14px;
+    letter-spacing: 0.25em;
+    color: var(--dusty-rose);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .item-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-style: italic;
+    color: var(--text-dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .item-none {
+    color: var(--text-mid);
+    font-size: 13px;
+    font-style: italic;
+  }
+
+  .action-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    justify-content: center;
+  }
+
+  .btn-outline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-style: italic;
+    letter-spacing: 0.12em;
+    color: var(--text-mid);
+    background: transparent;
+    border: 1px solid var(--dusty-rose);
+    border-radius: 24px;
+    padding: 10px 28px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-outline:hover {
+    background: var(--blush);
+    color: var(--deep-rose);
+  }
+
+  .item-none-card {
+    background: var(--mist);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .item-none-icon {
+    width: 72px;
+    height: 72px;
+    background: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: var(--sage);
+    flex-shrink: 0;
+  }
+
+  .float-deco {
+    position: fixed;
+    font-size: 10px;
+    color: var(--dusty-rose);
+    opacity: 0.3;
+    animation: floatUp 8s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .float-deco:nth-child(2) { left: 5%; animation-delay: 2s; animation-duration: 10s; }
+  .float-deco:nth-child(3) { left: 90%; animation-delay: 4s; animation-duration: 7s; }
+  @keyframes floatUp {
+    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
+    50% { transform: translateY(-20px) rotate(10deg); opacity: 0.4; }
+  }
+
+  @media (max-width: 600px) {
+    .look-result { grid-template-columns: 1fr; }
+    .full-look-card { max-width: 280px; margin: 0 auto; }
+    .machine-frame { padding: 24px 16px 20px; }
+    .lever-container { right: -28px; }
+  }
+
+  .ai-section {
+    margin: 28px auto 0;
+    max-width: 580px;
+    padding: 0 16px;
+  }
+  .ai-loading {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 22px 0;
+    color: var(--dusty-rose);
+    font-size: 20px;
+  }
+  .ai-loading span { animation: aiPulse 1.2s ease-in-out infinite; }
+  .ai-loading span:nth-child(2) { animation-delay: 0.3s; }
+  .ai-loading span:nth-child(3) { animation-delay: 0.6s; }
+  @keyframes aiPulse { 0%,100%{opacity:.15} 50%{opacity:1} }
+
+  .ai-content { display: flex; flex-direction: column; gap: 14px; }
+  .ai-block {
+    background: rgba(255,255,255,0.65);
+    border: 1px solid var(--dusty-rose);
+    border-radius: 8px;
+    padding: 14px 18px;
+    text-align: center;
+  }
+  .ai-block-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    color: var(--warm-pink);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .ai-text {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.9;
+    color: var(--text-mid);
+    white-space: pre-wrap;
+  }
+
+  .shop-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px auto 0;
+    max-width: 580px;
+    padding: 0 16px;
+  }
+  .shop-btn {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    color: var(--text-mid);
+    background: rgba(255,255,255,0.7);
+    border: 1px solid var(--dusty-rose);
+    padding: 8px 20px;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: all 0.22s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .shop-btn:hover {
+    background: var(--warm-pink);
+    color: #fff;
+    border-color: var(--warm-pink);
+  }
+</style>
+</head>
+<body>
+
+<div class="float-deco" style="left:8%; top:20%">✦</div>
+<div class="float-deco" style="left:5%; top:60%">♡</div>
+<div class="float-deco" style="left:90%; top:40%">✧</div>
+
+<header>
+  <a href="index.html?menu=1" class="back-btn">← menu</a>
+  <span class="brand-heart">♡</span>
+  <h1>Lucky Roulette</h1>
+  <p>₊⁺·₊˚♡˚₊·⁺₊₊⁺·₊˚♡˚₊·⁺⁺·₊˚♡˚₊·⁺₊₊⁺·₊˚♡˚₊·⁺₊</p>
+  <p>今日のきみへ、小さな運命を。</p>
+  <p>くるっと回せば、今日のコーデが決まるよ。</p>
+  <p>.    +*.｡ﾟ ･*･:*:｡*+。*｡:ﾟ+</p>
+  <p>오늘의 너에게, 작은 운명을.</p>
+  <p>룰렛을 돌리면, 오늘의 코디가 정해져.</p>
+  <p>. +.｡ﾟ ･･::｡+。*｡:ﾟ+</p>
+  <p>.    ✦  さあ、運命を回してみよう  ✦</p>
+  <p>.    ✦  자, 운명의 룰렛을 돌려봐 ✦  </p>
+  <p>.    +*.｡ﾟ ･*･:*:｡*+。*｡:ﾟ+</p>
+</header>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <span class="divider-icon">✦</span>
+  <div class="divider-line"></div>
+</div>
+
+<main>
+  <div class="machine-container">
+    <div class="machine-frame">
+
+      <div class="machine-top-deco">
+        <div class="top-dot pink"></div>
+        <div class="top-dot"></div>
+        <div class="top-dot sage"></div>
+        <div class="top-dot"></div>
+        <div class="top-dot pink"></div>
+      </div>
+
+      <div class="hearts-row">
+        <span>♥</span><span>♥</span><span>♥</span><span>♥</span><span>♥</span>
+      </div>
+
+      <div class="slots-wrapper">
+        <div class="slot" id="slot-top">
+          <div class="slot-reel" id="reel-top">
+            <div class="slot-placeholder">👕</div>
+          </div>
+          <div class="slot-label">TOP</div>
+        </div>
+        <div class="slot" id="slot-bottom">
+          <div class="slot-reel" id="reel-bottom">
+            <div class="slot-placeholder">👗</div>
+          </div>
+          <div class="slot-label">BOTTOM</div>
+        </div>
+        <div class="slot" id="slot-acc">
+          <div class="slot-reel" id="reel-acc">
+            <div class="slot-placeholder">🎀</div>
+          </div>
+          <div class="slot-label">ACC</div>
+        </div>
+      </div>
+
+      <div class="machine-bottom">
+        <div class="brand-badge">aeae</div>
+        <button class="spin-btn" id="spinBtn" onclick="startSpin()">spin ✦</button>
+      </div>
+
+    </div>
+
+    <div class="lever-container">
+      <div class="lever-ball"></div>
+      <div class="lever-arm" id="leverArm"></div>
+    </div>
+  </div>
+
+  <!-- ✅ resultSection은 하나만 유지 (중복 제거) -->
+  <div class="result-section" id="resultSection">
+    <div class="result-label">— your look today —</div>
+
+    <div class="look-result">
+      <div class="full-look-card" id="fullLookCard">
+        <img class="full-look-img" id="fullLookImg" src="" alt="Full Look">
+        <div class="look-number" id="lookNumber">#</div>
+      </div>
+
+      <div class="items-breakdown">
+        <div class="item-card" id="topCard">
+          <div class="item-img-wrap">
+            <img id="topImg" src="" alt="Top">
+          </div>
+          <div class="item-info">
+            <span class="item-category">top</span>
+            <div class="item-name" id="topName">-</div>
+          </div>
+        </div>
+
+        <div class="item-card" id="bottomCard">
+          <div class="item-img-wrap">
+            <img id="bottomImg" src="" alt="Bottom">
+          </div>
+          <div class="item-info">
+            <span class="item-category">bottom</span>
+            <div class="item-name" id="bottomName">-</div>
+          </div>
+        </div>
+
+        <div id="accCardWrap">
+          <div class="item-card" id="accCard">
+            <div class="item-img-wrap">
+              <img id="accImg" src="" alt="Acc">
+            </div>
+            <div class="item-info">
+              <span class="item-category">acc</span>
+              <div class="item-name" id="accName">-</div>
+            </div>
+          </div>
+
+          <div class="item-none-card" id="accNoneCard" style="display:none">
+            <div class="item-none-icon">○</div>
+            <div class="item-info">
+              <span class="item-category">acc</span>
+              <span class="item-none">アクセなし — simple & clean</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-section" id="aiSection" style="display:none">
+      <div class="ai-loading" id="aiLoading">
+        <span>✦</span><span>✦</span><span>✦</span>
+      </div>
+      <div class="ai-content" id="aiContent" style="display:none">
+        <div class="ai-block">
+          <div class="ai-block-title">✦ today's style</div>
+          <div class="ai-text" id="aiStyle"></div>
+        </div>
+        <div class="ai-block">
+          <div class="ai-block-title">♡ today's fortune</div>
+          <div class="ai-text" id="aiFortune"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="shop-row" id="shopRow" style="display:none">
+      <a class="shop-btn" id="shopTop"    href="#" target="_blank">top を見る →</a>
+      <a class="shop-btn" id="shopBottom" href="#" target="_blank">bottom を見る →</a>
+      <a class="shop-btn" id="shopAcc"    href="#" target="_blank">acc を見る →</a>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-outline" onclick="startSpin()">もう一度 ↺</button>
+    </div>
+  </div>
+</main>
+
+<script>
+/* =========================
+   Data
+========================= */
+
+// acc 없는 룩 번호
+const NO_ACC = new Set([3, 5, 6, 7, 8, 10, 18, 19, 21, 28]);
+
+// ✅ atob로 키 디코딩하던 라인 제거 (로드 단계 에러 방지)
+// const _AK = atob('YOUR_OPENAI_API_KEY');
+
+const PURLS = {
+  'a_1_top':    'https://ae-ae.kr/product/cinnamoroll-stripe-knit-hoodie-blue/1032/category/69/display/1/',
+  'a_1_bottom': 'https://ae-ae.kr/product/check-midi-tiered-skirt-brown/901/category/50/display/1/',
+  'a_1_item':   'https://ae-ae.kr/product/button-knit-trooper-beanie-dark-brown/987/category/67/display/1/',
+  'a_2_top':    'https://ae-ae.kr/product/fur-hood-duffle-coat-dark-brown/1008/category/43/display/1/',
+  'a_2_bottom': 'https://ae-ae.kr/product/round-pocket-corduroy-pants-khaki/948/category/50/display/1/',
+  'a_2_item':   'https://ae-ae.kr/product/stripe-tassel-muffler-burgundy/977/category/44/display/1/',
+  'a_3_top':    'https://ae-ae.kr/product/symbol-fleece-anorak-olive/1002/category/69/display/1/',
+  'a_3_bottom': 'https://ae-ae.kr/product/balloon-fleece-skirt-olive/999/category/50/display/1/',
+  'a_4_top':    'https://ae-ae.kr/product/stripe-high-neck-zip-up-black/1004/category/43/display/1/',
+  'a_4_bottom': 'https://ae-ae.kr/product/star-pocket-denim-pants-black/898/category/50/display/1/',
+  'a_4_item':   'https://ae-ae.kr/product/check-ball-cap-navy/936/category/67/display/1/',
+  'a_5_bottom': 'https://ae-ae.kr/product/check-midi-tiered-skirt-brown/901/category/50/display/1/',
+  'a_5_item':   'https://ae-ae.kr/product/snow-tassel-beanie-grey/992/category/67/display/1/',
+  'a_6_top':    'https://ae-ae.kr/product/web-logo-loosed-hoodie-taupe/912/category/69/display/1/',
+  'a_6_bottom': 'https://ae-ae.kr/product/star-pocket-denim-pants-black/898/category/50/display/1/',
+  'a_7_top':    'https://ae-ae.kr/product/symbol-light-down-jacket-cream/970/category/43/display/1/',
+  'a_7_bottom': 'https://ae-ae.kr/product/boucle-fleece-pants-brown/942/category/50/display/1/',
+  'a_8_top':    'https://ae-ae.kr/product/stripe-hood-knit-zip-up-khaki/960/category/43/display/1/',
+  'a_8_bottom': 'https://ae-ae.kr/product/boucle-fleece-pants-brown/942/category/50/display/1/',
+  'a_9_bottom': 'https://ae-ae.kr/product/star-patch-capri-corduroy-pants-black/949/category/50/display/1/',
+  'a_9_item':   'https://ae-ae.kr/product/suede-trooper-cap-brown/983/category/67/display/1/',
+  'a_10_top':   'https://ae-ae.kr/product/star-jacquard-cowichan-khaki/1007/category/43/display/1/',
+  'a_10_bottom':'https://ae-ae.kr/product/check-midi-tiered-skirt-brown/901/category/50/display/1/',
+  'a_11_top':   'https://ae-ae.kr/product/symbol-light-down-jacket-olive/969/category/43/display/1/',
+  'a_11_bottom':'https://ae-ae.kr/product/boucle-fleece-pants-grey/943/category/50/display/1/',
+  'a_11_item':  'https://ae-ae.kr/product/stripe-mitten-gloves-khaki/980/category/44/display/1/',
+  'a_12_top':   'https://ae-ae.kr/product/stripe-combi-tee-navy/920/category/69/display/1/',
+  'a_12_bottom':'https://ae-ae.kr/product/star-patch-capri-corduroy-pants-black/949/category/50/display/1/',
+  'a_12_item':  'https://ae-ae.kr/product/fur-trooper-hat-brown/985/category/67/display/1/',
+  'a_13_top':   'https://ae-ae.kr/product/web-logo-star-loosed-hoodie-grey/914/category/69/display/1/',
+  'a_13_bottom':'https://ae-ae.kr/product/star-pocket-denim-pants-light-blue/899/category/50/display/1/',
+  'a_13_item':  'https://ae-ae.kr/product/check-ball-cap-navy/936/category/67/display/1/',
+  'a_14_top':   'https://ae-ae.kr/product/dot-small-letter-ls-melange-grey/924/category/69/display/1/',
+  'a_14_bottom':'https://ae-ae.kr/product/angel-stripe-pants-grey/945/category/50/display/1/',
+  'a_14_item':  'https://ae-ae.kr/product/ae-symbol-corduroy-angel-wing-cap-navy/941/category/67/display/1/',
+  'a_15_top':   'https://ae-ae.kr/product/strawberry-tee-grey/919/category/69/display/1/',
+  'a_15_bottom':'https://ae-ae.kr/product/check-midi-tiered-skirt-brown/901/category/50/display/1/',
+  'a_15_item':  'https://ae-ae.kr/product/mini-pocket-2way-bag-dot-charcoal/974/category/44/display/1/',
+  'a_16_bottom':'https://ae-ae.kr/product/boucle-fleece-pants-brown/942/category/50/display/1/',
+  'a_16_item':  'https://ae-ae.kr/product/stripe-button-beanie-khaki/934/category/67/display/1/',
+  'a_17_bottom':'https://ae-ae.kr/product/star-pocket-denim-pants-light-blue/899/category/50/display/1/',
+  'a_17_item':  'https://ae-ae.kr/product/web-logo-trooper-cap-navy/990/category/67/display/1/',
+  'a_18_top':   'https://ae-ae.kr/product/hooded-henley-neck-tee-khaki/917/category/69/display/1/',
+  'a_18_bottom':'https://ae-ae.kr/product/round-pocket-corduroy-pants-khaki/948/category/50/display/1/',
+  'a_19_top':   'https://ae-ae.kr/product/round-pocket-check-shirts-blue/910/category/85/display/1/',
+  'a_19_bottom':'https://ae-ae.kr/product/star-pocket-denim-pants-black/898/category/50/display/1/',
+  'a_20_top':   'https://ae-ae.kr/product/symbol-fleece-anorak-light-grey/1003/category/69/display/1/',
+  'a_20_bottom':'https://ae-ae.kr/product/boucle-fleece-pants-grey/943/category/50/display/1/',
+  'a_20_item':  'https://ae-ae.kr/product/embroidery-tote-bag-star-grey/973/category/44/display/1/',
+  'a_21_top':   'https://ae-ae.kr/product/star-high-neck-zip-up-grey/963/category/43/display/1/',
+  'a_21_bottom':'https://ae-ae.kr/product/round-pocket-corduroy-pants-navy/947/category/50/display/1/',
+  'a_22_top':   'https://ae-ae.kr/product/check-padded-vest-blue/1010/category/43/display/1/',
+  'a_22_bottom':'https://ae-ae.kr/product/balloon-fleece-skirt-navy/998/category/50/display/1/',
+  'a_22_item':  'https://ae-ae.kr/product/cinnamoroll-pocket-muffler-star-grey/1022/category/44/display/1/',
+  'a_23_top':   'https://ae-ae.kr/product/stripe-combi-tee-navy/920/category/69/display/1/',
+  'a_23_bottom':'https://ae-ae.kr/product/check-midi-tiered-skirt-navy/900/category/50/display/1/',
+  'a_23_item':  'https://ae-ae.kr/product/star-patch-ae-symbol-cap-navy/997/category/67/display/1/',
+  'a_24_top':   'https://ae-ae.kr/product/star-jacquard-cowichan-navy/1006/category/43/display/1/',
+  'a_24_bottom':'https://ae-ae.kr/product/round-pocket-corduroy-pants-navy/947/category/50/display/1/',
+  'a_24_item':  'https://ae-ae.kr/product/mini-pocket-2way-bag-dot-navy/975/category/44/display/1/',
+  'a_25_top':   'https://ae-ae.kr/product/stripe-hood-knit-zip-up-light-grey/961/category/43/display/1/',
+  'a_25_bottom':'https://ae-ae.kr/product/check-midi-tiered-skirt-navy/900/category/50/display/1/',
+  'a_25_item':  'https://ae-ae.kr/product/embroidery-tote-bag-check-black/971/category/44/display/1/',
+  'a_26_top':   'https://ae-ae.kr/product/dot-small-letter-ls-white/925/category/69/display/1/',
+  'a_26_bottom':'https://ae-ae.kr/product/angel-stripe-pants-grey/945/category/50/display/1/',
+  'a_26_item':  'https://ae-ae.kr/product/star-patch-ae-symbol-cap-navy/997/category/67/display/1/',
+  'a_27_top':   'https://ae-ae.kr/product/star-puffer-down-jacket-navy/1013/category/43/display/1/',
+  'a_27_bottom':'https://ae-ae.kr/product/star-pocket-denim-pants-black/898/category/50/display/1/',
+  'a_27_item':  'https://ae-ae.kr/product/stripe-symbol-muffler-navy/930/category/44/display/1/',
+  'a_28_top':   'https://ae-ae.kr/product/dot-small-letter-crop-hood-zip-up-navy/964/category/43/display/1/',
+  'a_28_bottom':'https://ae-ae.kr/product/round-pocket-corduroy-pants-navy/947/category/50/display/1/',
+  'a_29_bottom':'https://ae-ae.kr/product/star-pocket-denim-pants-light-blue/899/category/50/display/1/',
+  'a_29_item':  'https://ae-ae.kr/product/snow-tassel-beanie-light-grey/993/category/67/display/1/',
+  'a_30_top':   'https://ae-ae.kr/product/stella-fleece-zip-up-hoodie-grey/967/category/43/display/1/',
+  'a_30_bottom':'https://ae-ae.kr/product/round-pocket-corduroy-pants-navy/947/category/50/display/1/',
+  'a_30_item':  'https://ae-ae.kr/product/stripe-symbol-muffler-light-grey/932/category/44/display/1/',
+};
+
+const looks = [];
+for (let i = 1; i <= 30; i++) {
+  const hasAcc = !NO_ACC.has(i);
+  looks.push({
+    id: i,
+    full:      `images/a_${i}.png`,
+    top:       `images/a_${i}_top.png`,
+    bottom:    `images/a_${i}_bottom.png`,
+    acc:       hasAcc ? `images/a_${i}_item.png` : null,
+    topUrl:    PURLS[`a_${i}_top`]    || '',
+    bottomUrl: PURLS[`a_${i}_bottom`] || '',
+    accUrl:    hasAcc ? (PURLS[`a_${i}_item`] || '') : '',
+    topName:   `Look ${String(i).padStart(2,'0')} — Top`,
+    bottomName:`Look ${String(i).padStart(2,'0')} — Bottom`,
+    accName:   hasAcc ? `Look ${String(i).padStart(2,'0')} — Acc` : null
+  });
+}
+
+/* =========================
+   Spin logic
+========================= */
+
+let isSpinning = false;
+let currentLook = null;
+
+function startSpin() {
+  if (isSpinning) return;
+  isSpinning = true;
+
+  const btn = document.getElementById('spinBtn');
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  const resultSection = document.getElementById('resultSection');
+  resultSection.classList.remove('visible');
+
+  const lever = document.getElementById('leverArm');
+  lever.classList.add('pulled');
+  setTimeout(() => lever.classList.remove('pulled'), 400);
+
+  const chosen = looks[Math.floor(Math.random() * looks.length)];
+  currentLook = chosen;
+
+  const reelTop = document.getElementById('reel-top');
+  const reelBottom = document.getElementById('reel-bottom');
+  const reelAcc = document.getElementById('reel-acc');
+
+  const spinDuration = 2200;
+  const stopDelays = [0, 300, 600];
+
+  // spinning placeholder
+  [reelTop, reelBottom, reelAcc].forEach(reel => {
+    reel.innerHTML = `<img class="slot-img spinning" src="images/a_1_top.png" alt="">`;
+  });
+
+  const imgSrcs = {
+    top: ['images/a_1_top.png', 'images/a_1_bottom.png', 'images/a_1_item.png'],
+    bottom: ['images/a_1_bottom.png', 'images/a_1_top.png', 'images/a_1_item.png'],
+    acc: ['images/a_1_item.png', 'images/a_1_top.png', 'images/a_1_bottom.png']
+  };
+
+  let frames = {top: 0, bottom: 0, acc: 0};
+  const spinInterval = setInterval(() => {
+    frames.top = (frames.top + 1) % imgSrcs.top.length;
+    frames.bottom = (frames.bottom + 1) % imgSrcs.bottom.length;
+    frames.acc = (frames.acc + 1) % imgSrcs.acc.length;
+    reelTop.innerHTML = `<img class="slot-img spinning" src="${imgSrcs.top[frames.top]}" alt="">`;
+    reelBottom.innerHTML = `<img class="slot-img spinning" src="${imgSrcs.bottom[frames.bottom]}" alt="">`;
+    reelAcc.innerHTML = `<img class="slot-img spinning" src="${imgSrcs.acc[frames.acc]}" alt="">`;
+  }, 120);
+
+  setTimeout(() => {
+    clearInterval(spinInterval);
+    stopSlot(reelTop, chosen.top, 'top');
+  }, spinDuration + stopDelays[0]);
+
+  setTimeout(() => {
+    stopSlot(reelBottom, chosen.bottom, 'bottom');
+  }, spinDuration + stopDelays[1]);
+
+  setTimeout(() => {
+    stopSlot(reelAcc, chosen.acc, 'acc');
+
+    setTimeout(() => {
+      showResult(chosen);
+      isSpinning = false;
+      btn.disabled = false;
+      btn.textContent = 'spin ✦';
+    }, 600);
+
+  }, spinDuration + stopDelays[2]);
+}
+
+function stopSlot(reel, imgSrc, type) {
+  if (imgSrc) {
+    reel.innerHTML = `<img class="slot-img" src="${imgSrc}" alt="${type}">`;
+  } else {
+    reel.innerHTML = `<div class="slot-placeholder" style="color:rgba(200,212,192,0.6);font-size:20px">○</div>`;
+  }
+  reel.style.filter = 'brightness(1.4)';
+  setTimeout(() => reel.style.filter = '', 300);
+}
+
+function showResult(look) {
+  document.getElementById('fullLookImg').src = look.full;
+  document.getElementById('lookNumber').textContent = `#${String(look.id).padStart(2,'0')}`;
+
+  document.getElementById('topImg').src = look.top;
+  document.getElementById('topName').textContent = look.topName;
+
+  document.getElementById('bottomImg').src = look.bottom;
+  document.getElementById('bottomName').textContent = look.bottomName;
+
+  if (look.acc) {
+    document.getElementById('accCard').style.display = 'flex';
+    document.getElementById('accNoneCard').style.display = 'none';
+    document.getElementById('accImg').src = look.acc;
+    document.getElementById('accName').textContent = look.accName;
+  } else {
+    document.getElementById('accCard').style.display = 'none';
+    document.getElementById('accNoneCard').style.display = 'flex';
+  }
+
+  const btnTop    = document.getElementById('shopTop');
+  const btnBottom = document.getElementById('shopBottom');
+  const btnAcc    = document.getElementById('shopAcc');
+
+  btnTop.href = look.topUrl || 'https://ae-ae.kr/';
+  btnBottom.href = look.bottomUrl || 'https://ae-ae.kr/';
+  btnTop.style.display = look.topUrl ? 'inline-flex' : 'none';
+  btnBottom.style.display = look.bottomUrl ? 'inline-flex' : 'none';
+
+  if (look.acc && look.accUrl) {
+    btnAcc.href = look.accUrl;
+    btnAcc.style.display = 'inline-flex';
+  } else {
+    btnAcc.style.display = 'none';
+  }
+
+  document.getElementById('shopRow').style.display = 'flex';
+
+  const resultSection = document.getElementById('resultSection');
+  resultSection.classList.add('visible');
+
+  setTimeout(() => {
+    resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 200);
+
+  spawnSparkles();
+  callLookAI(look);
+}
+
+/* =========================
+   AI
+========================= */
+async function callLookAI(look) {
+  const sec     = document.getElementById('aiSection');
+  const loading = document.getElementById('aiLoading');
+  const content = document.getElementById('aiContent');
+
+  sec.style.display     = 'block';
+  loading.style.display = 'flex';
+  content.style.display = 'none';
+
+  const accLabel = look.acc ? look.accName : 'アクセなし';
+  const sys = `You are the warm, nostalgic voice of aeae, a Korean fashion brand.
+Speak like a close friend writing a handwritten note — soft, intimate, slightly dreamy.
+Write in Japanese (casual ため口). Keep each section to 2–3 short lines.
+Return JSON only (no code blocks):
+{
+  "style": "このコーデの雰囲気・おすすめシーンを2〜3文（日本語）",
+  "fortune": "今日のファッション運勢を2〜3文。ポジティブで夢のある内容（日本語）"
+}`;
+  const user = `Look #${String(look.id).padStart(2,'0')}
+Top: ${look.topName}
+Bottom: ${look.bottomName}
+Acc: ${accLabel}
+Write a style vibe and today's fashion fortune for this outfit.`;
+
+  try {
+    const r = await fetch('/.netlify/functions/aeae-lookbook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        lookId:     look.id,
+        topName:    look.topName,
+        bottomName: look.bottomName,
+        accName:    accLabel
+      })
+    });
+
+    if (!r.ok) throw new Error(`status ${r.status}`);
+    const res = await r.json();
+
+    document.getElementById('aiStyle').textContent   = (res.style   || '') + (res.styleKr   ? '\n\n' + res.styleKr   : '');
+    document.getElementById('aiFortune').textContent = (res.fortune || '') + (res.fortuneKr ? '\n\n' + res.fortuneKr : '');
+  } catch(e) {
+    document.getElementById('aiStyle').textContent   =
+      `ルック #${String(look.id).padStart(2,'0')} — aeaeらしい、やわらかな一日のはじまり。`;
+    document.getElementById('aiFortune').textContent =
+      '今日のきみには、小さな奇跡が似合う。✦';
+  }
+
+  loading.style.display = 'none';
+  content.style.display = 'block';
+}
+
+/* =========================
+   Sticker Rain (Sparkles)
+========================= */
+
+const STICKER_SRCS = [
+  'images/s_1.png','images/s_2.png','images/s_3.png','images/s_4.png',
+  'images/s_5.png','images/s_6.png','images/s_7.png','images/s_8.png',
+];
+
+function spawnSparkles() {
+  const total = 30;
+  const spreadMs = 2800;
+
+  for (let i = 0; i < total; i++) {
+    const delay = (i / total) * spreadMs + Math.random() * 180;
+    setTimeout(() => {
+      const el = document.createElement('img');
+      el.src = STICKER_SRCS[Math.floor(Math.random() * STICKER_SRCS.length)];
+
+      const size     = 38 + Math.random() * 34;
+      const startX   = Math.random() * window.innerWidth;
+      const sway     = (Math.random() - 0.5) * 130;
+      const fallMs   = 4500 + Math.random() * 2500;
+      const rotStart = (Math.random() - 0.5) * 30;
+      const rotEnd   = rotStart + (Math.random() - 0.5) * 40;
+
+      el.style.cssText = `
+        position: fixed;
+        left: ${startX}px;
+        top: -${size + 10}px;
+        width: ${size}px;
+        height: ${size}px;
+        object-fit: contain;
+        pointer-events: none;
+        z-index: 9999;
+        animation: stickerDrop ${fallMs}ms linear forwards;
+        --sway: ${sway}px;
+        --rot-s: ${rotStart}deg;
+        --rot-e: ${rotEnd}deg;
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), fallMs + 100);
+    }, delay);
+  }
+}
+
+(function(){
+  if (document.getElementById('sticker-style')) return;
+  const s = document.createElement('style');
+  s.id = 'sticker-style';
+  s.textContent = `
+    @keyframes stickerDrop {
+      0%   { transform: translateY(0)    translateX(0)                     rotate(var(--rot-s)); opacity: 0; }
+      6%   { opacity: 1; }
+      50%  { transform: translateY(52vh) translateX(calc(var(--sway)*0.5)) rotate(calc(var(--rot-s) + (var(--rot-e) - var(--rot-s))*0.5)); opacity: 1; }
+      92%  { opacity: 1; }
+      100% { transform: translateY(112vh) translateX(var(--sway))          rotate(var(--rot-e)); opacity: 0; }
+    }
+  `;
+  document.head.appendChild(s);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1133 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  overflow: hidden;
+  font-family: 'Press Start 2P', monospace;
+}
+
+/* ── 타이틀 화면 ── */
+#title-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 2000; /* 모든 모달보다 위에 위치 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: #000;
+  pointer-events: auto !important;
+}
+#title-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+#title-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 12%;
+}
+#title-tap {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(10px, 2.5vw, 18px);
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255,255,255,0.6);
+  animation: blink 1.2s ease-in-out infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+/* ── 게임 캔버스 (kaplay가 body에 직접 생성) ── */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  image-rendering: pixelated;
+  z-index: 0;
+}
+
+/* ── HUD ── */
+#hud {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+#hud-energy {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,0,0,0.7);
+  border: 2px solid #ff6b8a;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+#hud-energy-icon {
+  color: #ff4060;
+  font-size: 14px;
+}
+#hud-energy-bar {
+  width: 100px;
+  height: 10px;
+  background: #333;
+  border-radius: 2px;
+  overflow: hidden;
+}
+#hud-energy-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #ff4060, #ff8090);
+  transition: width 0.3s;
+}
+#hud-energy-text {
+  color: #fff;
+  font-size: 9px;
+  min-width: 24px;
+  text-align: right;
+}
+#hud-gold {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,0,0,0.7);
+  border: 2px solid #f0c040;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+#hud-gold-icon {
+  color: #f0c040;
+  font-size: 14px;
+}
+#hud-gold-text {
+  color: #fff;
+  font-size: 10px;
+}
+
+/* ── 인벤토리 버튼 ── */
+#inventory-btn {
+  position: fixed;
+  top: 12px;
+  right: 125px; /* CLOTH 버튼 공간 확보를 위해 이동 */
+  z-index: 50;
+  background: rgba(0,0,0,0.7);
+  border: 2px solid #8888ff;
+  border-radius: 4px;
+  padding: 6px 12px;
+  color: #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#inventory-btn:hover { background: rgba(80,80,200,0.7); }
+
+#cloth-btn {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 50;
+  background: rgba(0,0,0,0.7);
+  border: 2px solid #ffaa00; /* 옷 버튼은 주황색 계열 */
+  border-radius: 4px;
+  padding: 6px 12px;
+  color: #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#cloth-btn:hover { background: rgba(200,120,0,0.7); }
+
+/* ── 인벤토리 패널 공통 ── */
+#inventory-panel, #cloth-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 150;
+  width: min(360px, 90vw);
+  background: #d63384;
+  border: 4px solid #fff;
+  border-radius: 8px;
+  padding: 12px;
+  image-rendering: pixelated;
+}
+
+#inventory-header, #cloth-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+#inventory-close, #cloth-close {
+  background: none;
+  border: 2px solid #fff;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#inventory-grid, #cloth-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.inv-slot {
+  aspect-ratio: 1;
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+  transition: border-color 0.15s, background 0.15s;
+  font-size: 24px;
+}
+.inv-slot:hover { 
+  border-color: #fff; 
+  background: rgba(255,255,255,0.25);
+}
+.inv-slot.active { 
+  border-color: #ff0; 
+  background: rgba(255,255,0,0.15); 
+}
+
+
+#inventory-desc, #cloth-desc {
+  background: rgba(255,255,255,0.9);
+  border-radius: 4px;
+  padding: 8px;
+  min-height: 50px;
+  color: #333;
+  font-size: 8px;
+  line-height: 1.8;
+}
+
+/* ── 대화창 ── */
+#dialog-box {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  max-width: 620px;
+  background: rgba(10, 10, 20, 0.92);
+  border: 3px solid #f0c040;
+  border-radius: 8px;
+  padding: 0;
+  z-index: 100;
+  display: none;
+  pointer-events: none;
+  overflow: hidden;
+}
+#dialog-box.open { display: flex; }
+#dialog-portrait-wrap {
+  width: 80px;
+  min-height: 80px;
+  background: rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+#dialog-portrait {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+#dialog-content {
+  padding: 12px 16px;
+  flex: 1;
+}
+#dialog-name {
+  font-size: 13px;
+  font-weight: bold;
+  color: #f0c040;
+  margin-bottom: 6px;
+}
+#dialog-text {
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 2;
+  color: #fff;
+  min-height: 40px;
+  word-break: keep-all;
+  white-space: pre-wrap;
+}
+#dialog-hint {
+  font-size: 9px;
+  color: #888;
+  text-align: right;
+  margin-top: 6px;
+}
+
+/* ── 모바일 컨트롤 ── */
+#mobile-controls {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  gap: 12px;
+}
+.ctrl-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.5);
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  font-size: 18px;
+  font-family: 'Press Start 2P', monospace;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+.ctrl-btn:active { background: rgba(255,255,255,0.3); }
+
+/* ── NPC 말풍선 표시기 ── */
+.npc-indicator {
+  position: absolute;
+  color: #f0c040;
+  font-size: 10px;
+  animation: floatUp 1.5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes floatUp {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ── 가게 모달 ── */
+#shop-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#shop-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+}
+#shop-modal-content {
+  position: relative;
+  z-index: 301;
+  background: #1a1a2e;
+  border: 3px solid #f0c040;
+  border-radius: 10px;
+  padding: 20px;
+  width: min(420px, 90vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Press Start 2P', monospace;
+}
+
+/* ── 웹뷰 모달 (외부 페이지) ── */
+#webview-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 350;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#webview-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+}
+#webview-modal-content {
+  position: relative;
+  z-index: 351;
+  background: #1a1a2e;
+  border: 3px solid #f0c040;
+  border-radius: 10px;
+  padding: 12px;
+  width: min(800px, 95vw);
+  height: min(700px, 90vh);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: 'Press Start 2P', monospace;
+}
+#webview-modal-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#webview-modal-name {
+  color: #f0c040;
+  font-size: 14px;
+  font-weight: bold;
+}
+#webview-modal-close {
+  background: none;
+  border: 2px solid #fff;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#webview-container {
+  flex: 1;
+  width: 100%;
+  background: #fff;
+  border-radius: 4px;
+  overflow: hidden;
+}
+#webview-iframe {
+  width: 100%;
+  height: 100%;
+}
+
+#shop-modal-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#shop-modal-name {
+  color: #f0c040;
+  font-size: 16px;
+  font-weight: bold;
+}
+#shop-modal-close {
+  background: none;
+  border: 2px solid #fff;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#shop-modal-close:hover {
+  background: rgba(255,255,255,0.2);
+}
+#shop-modal-img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 2px solid #444;
+  image-rendering: pixelated;
+}
+
+#shop-modal-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+#shop-modal-link {
+  background: #f0c040;
+  color: #1a1a2e;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 24px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: bold;
+}
+#shop-modal-link:hover {
+  background: #ffd700;
+}
+
+/* ── 대화창 하단 IN 버튼 ── */
+#dialog-action-btns {
+  display: none;
+  gap: 8px;
+  margin-top: 8px;
+  position: relative;
+  z-index: 200;
+  pointer-events: auto;
+}
+#dialog-btn-in, #dialog-btn-out {
+  background: #f0c040;
+  color: #1a1a2e;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+#dialog-btn-out {
+  background: #555;
+  color: #fff;
+}
+#dialog-btn-in:hover { background: #ffd700; }
+#dialog-btn-out:hover { background: #777; }
+
+/* ── 커스텀 커서 ── */
+*, *::before, *::after,
+button, a, input, canvas,
+#hud, #inventory-btn, #dialog-box,
+#shop-modal, #dialog-btn-in, #dialog-btn-out,
+#dialog-action-btns, #inventory-panel, #inventory-grid,
+.inv-slot, .ctrl-btn {
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+}
+
+/* ── 게임 알림 애니메이션 ── */
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translate(-50%, -20px); }
+  15% { opacity: 1; transform: translate(-50%, 0); }
+  85% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -20px); }
+}
+.show-noti {
+  display: block !important;
+  animation: fadeInOut 2s forwards;
+}
+
+
+#exit-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+}
+#exit-modal-content {
+  position: relative;
+  z-index: 401;
+  background: #1a1a2e;
+  border: 3px solid #f0c040;
+  border-radius: 10px;
+  padding: 30px;
+  width: min(400px, 90vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  font-family: 'Press Start 2P', monospace;
+  text-align: center;
+}
+#exit-modal-title {
+  color: #f0c040;
+  font-size: 15px;
+  font-weight: bold;
+  line-height: 2;
+}
+#exit-modal-desc {
+  color: #ccc;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 2.2;
+  font-family: monospace;
+}
+#exit-modal-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 8px;
+}
+#exit-modal-confirm {
+  background: #f0c040;
+  color: #1a1a2e;
+  border: none;
+  border-radius: 4px;
+  padding: 10px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+}
+#exit-modal-confirm:hover {
+  background: #ffd700;
+}
+#exit-modal-cancel {
+  background: #555;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+}
+#exit-modal-cancel:hover {
+  background: #777;
+}
+
+/* ── 커버낫 전용 모달 ── */
+#covernat-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#covernat-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+#covernat-modal-content {
+  position: relative;
+  z-index: 401;
+  width: min(820px, 92vw);
+  height: min(540px, 80vh);
+  border: 3px solid #f0c040;
+  border-radius: 10px;
+  overflow: hidden;
+  background: url('/assets/covernat_back.png') center center / cover no-repeat;
+}
+
+#covernat-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 410;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: 2px solid #f0c040;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#covernat-modal-close:hover {
+  background: rgba(240, 192, 64, 0.8);
+  color: #1a1a2e;
+}
+
+#covernat-modal-grid {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 35%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  z-index: 405;
+  background: rgba(0,0,0,0.5);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.covernat-item {
+  aspect-ratio: 1;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 2px solid rgba(240, 192, 64, 0.5);
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+  transition: border-color 0.2s;
+}
+
+.covernat-item:hover {
+  border-color: #f0c040;
+  transform: scale(1.05);
+}
+
+.covernat-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#covernat-modal-toast {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(240, 192, 64, 0.95);
+  color: #1a1a2e;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  z-index: 410;
+  white-space: nowrap;
+}
+
+#covernat-modal-dialog {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 2px solid #f0c040;
+  border-radius: 8px;
+  padding: 12px 18px;
+  z-index: 410;
+  max-width: 55%;
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+}
+
+#covernat-modal-dialog-text {
+  color: #fff;
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.covernat-grid-disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+#covernat-item-preview {
+  position: absolute;
+  inset: 0;
+  z-index: 420;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 10px;
+}
+
+#covernat-preview-img {
+  width: 85%;
+  height: 75%;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 2px solid #f0c040;
+}
+
+#covernat-preview-text {
+  color: #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  font-weight: bold;
+  text-align: center;
+  margin: 0;
+}
+
+#covernat-preview-btns {
+  display: flex;
+  gap: 12px;
+}
+
+#covernat-preview-save {
+  background: #f0c040;
+  color: #1a1a2e;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  font-weight: bold;
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+}
+
+#covernat-preview-save:hover {
+  background: #ffd700;
+}
+
+#covernat-preview-cancel {
+  background: #555;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  font-weight: bold;
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+}
+
+#covernat-preview-cancel:hover {
+  background: #777;
+}
+
+#musinsa-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#musinsa-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+}
+#musinsa-modal-content {
+  position: relative;
+  z-index: 401;
+  width: min(820px, 92vw);
+  height: min(540px, 80vh);
+  border: 3px solid #f0c040;
+  border-radius: 10px;
+  overflow: hidden;
+  background: url('/assets/musinsa_back.png') center center / cover no-repeat;
+}
+#musinsa-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 410;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: 2px solid #f0c040;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+  display: flex; align-items: center; justify-content: center;
+}
+#musinsa-modal-close:hover {
+  background: rgba(240, 192, 64, 0.8);
+  color: #1a1a2e;
+}
+#musinsa-modal-grid {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 35%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  z-index: 405;
+  background: rgba(0,0,0,0.5);
+  border-radius: 8px;
+  padding: 10px;
+}
+.musinsa-item {
+  aspect-ratio: 1;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 2px solid rgba(240, 192, 64, 0.5);
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+  transition: border-color 0.2s;
+}
+.musinsa-item:hover {
+  border-color: #f0c040;
+  transform: scale(1.05);
+}
+.musinsa-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+#musinsa-modal-dialog {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 2px solid #f0c040;
+  border-radius: 8px;
+  padding: 12px 18px;
+  z-index: 410;
+  max-width: 55%;
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+}
+#musinsa-modal-dialog-text {
+  color: #fff;
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1.8;
+  margin: 0;
+}
+#musinsa-item-preview {
+  position: absolute;
+  inset: 0;
+  z-index: 420;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 10px;
+}
+#musinsa-preview-img {
+  width: 85%;
+  height: 75%;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 2px solid #f0c040;
+}
+#musinsa-preview-text {
+  color: #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  font-weight: bold;
+  text-align: center;
+  margin: 0;
+}
+#musinsa-preview-btns {
+  display: flex;
+  gap: 12px;
+}
+#musinsa-preview-save {
+  background: #f0c040;
+  color: #1a1a2e;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  font-weight: bold;
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+}
+#musinsa-preview-save:hover { background: #ffd700; }
+#musinsa-preview-cancel {
+  background: #555;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  font-weight: bold;
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+}
+#musinsa-preview-cancel:hover { background: #777; }
+#musinsa-modal-toast {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(240, 192, 64, 0.95);
+  color: #1a1a2e;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  z-index: 410;
+  white-space: nowrap;
+}
+.musinsa-grid-disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+#matinkim-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#matinkim-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+}
+#matinkim-modal-content {
+  position: relative;
+  z-index: 401;
+  width: min(820px, 92vw);
+  height: min(540px, 80vh);
+  border: 3px solid #f0c040;
+  border-radius: 10px;
+  overflow: hidden;
+  background: url('/assets/matinkim_back.png') center center / cover no-repeat;
+}
+#matinkim-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 410;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: 2px solid #f0c040;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#matinkim-modal-close:hover {
+  background: rgba(240, 192, 64, 0.8);
+  color: #1a1a2e;
+}
+#matinkim-modal-grid {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 35%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  z-index: 405;
+  background: rgba(0,0,0,0.5);
+  border-radius: 8px;
+  padding: 10px;
+}
+.matinkim-item {
+  aspect-ratio: 1;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 2px solid rgba(240, 192, 64, 0.5);
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+  transition: border-color 0.2s;
+}
+.matinkim-item:hover {
+  border-color: #f0c040;
+  transform: scale(1.05);
+}
+.matinkim-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+#matinkim-modal-dialog {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 2px solid #f0c040;
+  border-radius: 8px;
+  padding: 12px 18px;
+  z-index: 410;
+  max-width: 55%;
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+}
+#matinkim-modal-dialog-text {
+  color: #fff;
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1.8;
+  margin: 0;
+}
+#matinkim-item-preview {
+  position: absolute;
+  inset: 0;
+  z-index: 420;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 10px;
+}
+#matinkim-preview-img {
+  width: 85%;
+  height: 75%;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 2px solid #f0c040;
+}
+#matinkim-preview-text {
+  color: #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  font-weight: bold;
+  text-align: center;
+  margin: 0;
+}
+#matinkim-preview-btns {
+  display: flex;
+  gap: 12px;
+}
+#matinkim-preview-save {
+  background: #f0c040;
+  color: #1a1a2e;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  font-weight: bold;
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+}
+#matinkim-preview-save:hover { background: #ffd700; }
+#matinkim-preview-cancel {
+  background: #555;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  font-weight: bold;
+  cursor: url('/assets/cursor_heart.png') 16 16, auto !important;
+}
+#matinkim-preview-cancel:hover { background: #777; }
+#matinkim-modal-toast {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(240, 192, 64, 0.95);
+  color: #1a1a2e;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  z-index: 410;
+  white-space: nowrap;
+}
+.matinkim-grid-disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}

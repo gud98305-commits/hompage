@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+sqlalchemy[asyncio]
+aiosqlite
+pydantic>=2.0
+osmnx
+matplotlib
+requests
+python-dotenv

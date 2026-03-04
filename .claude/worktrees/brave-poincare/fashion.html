@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>OttO - AI 큐레이터</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500&family=DM+Mono:wght@400;500&family=VT323&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/theme.css"/>
+  <link rel="stylesheet" href="assets/css/fashion.css"/>
+  <!-- EmailJS — 아래 Public Key를 본인 것으로 교체하세요 -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body class="page-bg page-fashion">
+  <header class="seoulfit-header">
+    <!-- 왼쪽: 뒤로가기 + 로고 -->
+    <div class="hd-left">
+      <a class="hd-back-btn" href="index.html#scene" title="홈으로">←</a>
+      <a class="logo" href="index.html#scene">O<em>tt</em>O</a>
+    </div>
+    <!-- 가운데: 메인 네비게이션 -->
+    <nav class="sf-nav">
+      <a class="sf-nav-link active" href="fashion.html">패션추천</a>
+      <span class="sf-nav-link disabled">AI 포토부스</span>
+      <span class="sf-nav-link disabled">픽셀 서울</span>
+    </nav>
+    <!-- 오른쪽: 위시 + MY + 언어 -->
+    <div class="hd-right">
+      <button class="wish-header-btn" id="open-wish" type="button">
+        ♡ <span class="wish-count" id="wish-count">0</span>
+      </button>
+      <a class="my-header-btn" href="my.html">MY ↗</a>
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="ko">한국어</button>
+        <button class="lang-btn" data-lang="ja">日本語</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>AI <em data-i18n="hero.subtitle">큐레이터</em></h1>
+    </section>
+
+    <section class="stack">
+      <!-- ── 카테고리 선택 패널 (가로) ── -->
+      <div class="panel filter-panel">
+        <div class="filter-panel-top">
+          <h2 data-i18n="panel.filters">카테고리 선택</h2>
+        </div>
+        <form id="curator-form">
+          <div class="filter-rows">
+
+            <!-- 성별 -->
+            <div class="filter-section">
+              <div class="f-label" data-i18n="label.gender">성별</div>
+              <div class="tag-group" data-single="true" id="tg-gender">
+                <button class="tag on" type="button" data-value="all"    data-i18n="gender.all">전체</button>
+                <button class="tag"    type="button" data-value="women"  data-i18n="gender.women">여성</button>
+                <button class="tag"    type="button" data-value="men"    data-i18n="gender.men">남성</button>
+                <button class="tag"    type="button" data-value="unisex" data-i18n="gender.unisex">젠더리스</button>
+              </div>
+            </div>
+
+            <!-- 스타일 -->
+            <div class="filter-section">
+              <div class="f-label" data-i18n="label.style">스타일</div>
+              <div class="tag-group" data-single="true" id="tg-style">
+                <button class="tag on" type="button" data-value="" data-i18n="style.all">전체 스타일</button>
+                <button class="tag" type="button" data-value="minimal" data-i18n="style.minimal">미니멀</button>
+                <button class="tag" type="button" data-value="street" data-i18n="style.street">스트리트</button>
+                <button class="tag" type="button" data-value="vintage" data-i18n="style.vintage">빈티지</button>
+                <button class="tag" type="button" data-value="casual" data-i18n="style.casual">캐주얼</button>
+                <button class="tag" type="button" data-value="formal" data-i18n="style.formal">포멀</button>
+                <button class="tag" type="button" data-value="y2k" data-i18n="style.y2k">Y2K</button>
+                <button class="tag" type="button" data-value="romantic" data-i18n="style.romantic">로맨틱</button>
+                <button class="tag" type="button" data-value="preppy" data-i18n="style.preppy">프레피</button>
+              </div>
+            </div>
+
+            <!-- 가격대 -->
+            <div class="filter-section">
+              <div class="f-label" data-i18n="label.budget">가격대 (KRW)</div>
+              <div class="tag-group" data-single="true" id="tg-budget">
+                <button class="tag on" type="button" data-min="0" data-max="99999999" data-i18n="budget.all">전체 가격</button>
+                <button class="tag" type="button" data-min="0" data-max="50000" data-i18n="budget.1">~5만원</button>
+                <button class="tag" type="button" data-min="50000" data-max="150000" data-i18n="budget.2">5~15만원</button>
+                <button class="tag" type="button" data-min="150000" data-max="300000" data-i18n="budget.3">15~30만원</button>
+                <button class="tag" type="button" data-min="300000" data-max="99999999" data-i18n="budget.4">30만원+</button>
+              </div>
+            </div>
+
+            <!-- 한국 패션 키워드 -->
+            <div class="filter-section">
+              <div class="f-label" data-i18n="label.keyword">한국 패션 키워드 <span class="f-label-hint" data-i18n="label.keyword.hint">(복수 선택 가능)</span></div>
+              <div class="tag-group" id="tg-keyword">
+                <button class="tag" type="button" data-value="꾸안꾸" data-i18n="kw.gguankgu">꾸안꾸</button>
+                <button class="tag" type="button" data-value="꾸꾸꾸" data-i18n="kw.gguggu">꾸꾸꾸</button>
+                <button class="tag" type="button" data-value="여자의악마" data-i18n="kw.devilwoman">여자의악마</button>
+                <button class="tag" type="button" data-value="출근룩" data-i18n="kw.officecore">출근룩</button>
+                <button class="tag" type="button" data-value="응답하라2000s" data-i18n="kw.reply2000s">응답하라2000s</button>
+              </div>
+            </div>
+
+            <!-- 색상 (wide) -->
+            <div class="filter-section filter-section--wide">
+              <div class="f-label" data-i18n="label.color">색상</div>
+              <div class="tag-group" data-single="true" id="tg-color">
+                <button class="tag color-tag on" type="button" data-value="" data-i18n="color.all">전체 색상</button>
+                <button class="tag color-tag" type="button" data-value="black" data-i18n="color.black" style="--swatch:#1a1a1a">블랙</button>
+                <button class="tag color-tag" type="button" data-value="white" data-i18n="color.white" style="--swatch:#e8e8e8">화이트</button>
+                <button class="tag color-tag" type="button" data-value="ivory" data-i18n="color.ivory" style="--swatch:#f0ecd8">아이보리</button>
+                <button class="tag color-tag" type="button" data-value="gray" data-i18n="color.gray" style="--swatch:#9b9b9b">그레이</button>
+                <button class="tag color-tag" type="button" data-value="beige" data-i18n="color.beige" style="--swatch:#d4b896">베이지</button>
+                <button class="tag color-tag" type="button" data-value="brown" data-i18n="color.brown" style="--swatch:#7d5533">브라운</button>
+                <button class="tag color-tag" type="button" data-value="olive" data-i18n="color.olive" style="--swatch:#6b7a3e">올리브</button>
+                <button class="tag color-tag" type="button" data-value="red" data-i18n="color.red" style="--swatch:#c83030">레드</button>
+                <button class="tag color-tag" type="button" data-value="cobalt" data-i18n="color.cobalt" style="--swatch:#2244aa">코발트</button>
+                <button class="tag color-tag" type="button" data-value="skyblue" data-i18n="color.skyblue" style="--swatch:#6bb8d8">스카이블루</button>
+                <button class="tag color-tag" type="button" data-value="pink" data-i18n="color.pink" style="--swatch:#f0849a">핑크</button>
+              </div>
+            </div>
+
+            <!-- 의류 카테고리 (wide) -->
+            <div class="filter-section filter-section--wide">
+              <div class="f-label" data-i18n="label.category">의류 카테고리</div>
+              <div class="tag-group" data-single="true" id="tg-category">
+                <button class="tag on" type="button" data-value="all" data-i18n="cat.all">의류 전체</button>
+                <button class="tag" type="button" data-value="top" data-i18n="cat.top">상의 전체</button>
+                <button class="tag" type="button" data-value="tshirt" data-i18n="cat.tshirt">티셔츠</button>
+                <button class="tag" type="button" data-value="shirt" data-i18n="cat.shirt">셔츠/블라우스</button>
+                <button class="tag" type="button" data-value="knit" data-i18n="cat.knit">니트/스웨터</button>
+                <button class="tag" type="button" data-value="hoodie" data-i18n="cat.hoodie">후드/맨투맨</button>
+                <button class="tag" type="button" data-value="bottom" data-i18n="cat.bottom">하의 전체</button>
+                <button class="tag" type="button" data-value="pants" data-i18n="cat.pants">팬츠/슬랙스</button>
+                <button class="tag" type="button" data-value="skirt" data-i18n="cat.skirt">스커트</button>
+                <button class="tag" type="button" data-value="denim" data-i18n="cat.denim">청바지/데님</button>
+                <button class="tag" type="button" data-value="outer" data-i18n="cat.outer">아우터 전체</button>
+                <button class="tag" type="button" data-value="jacket" data-i18n="cat.jacket">자켓</button>
+                <button class="tag" type="button" data-value="coat" data-i18n="cat.coat">코트</button>
+                <button class="tag" type="button" data-value="dress" data-i18n="cat.dress">원피스</button>
+                <button class="tag" type="button" data-value="suit" data-i18n="cat.suit">수트/점프수트</button>
+              </div>
+            </div>
+
+          </div><!-- /.filter-rows -->
+
+          <!-- 버튼 -->
+          <div class="filter-bottom">
+            <div class="actions">
+              <button class="btn primary" type="submit" data-i18n="btn.submit">AI 추천 받기</button>
+              <button class="btn" id="btn-reset" type="button" data-i18n="btn.reset">초기화</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- ── 추천 결과 패널 ── -->
+      <div class="panel results-panel">
+        <div class="result-top">
+          <h2 data-i18n="panel.results">추천 결과</h2>
+          <div class="mono" id="result-count" style="font-size:.66rem;color:var(--accent-soft)">0 items</div>
+        </div>
+        <p class="status" id="status"></p>
+        <div class="result-list" id="result-list"></div>
+        <div id="pagination" class="pagination"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ── 결제 모달 ── -->
+  <div id="pay-modal" class="pay-modal" hidden>
+    <div class="pay-card panel">
+      <div class="result-top">
+        <h2 data-i18n="pay.heading">결제</h2>
+        <button class="btn" id="pay-close" type="button" data-i18n="btn.close">닫기</button>
+      </div>
+      <p class="status pay-line"><span data-i18n="pay.product">상품: </span><span id="pay-title"></span></p>
+      <p class="status pay-line"><span data-i18n="pay.amount">금액: </span><strong id="pay-amount"></strong></p>
+      <div class="field" style="margin:12px 0 4px">
+        <label for="pay-email" data-i18n="email.label">결제 완료 이메일 (선택)</label>
+        <input id="pay-email" name="pay-email" type="email" data-i18n-placeholder="email.placeholder" placeholder="you@example.com"/>
+      </div>
+      <div id="card-wrap">
+        <div id="payment-element" class="card-element"></div>
+      </div>
+      <div class="actions" style="margin-top:14px">
+        <button class="btn primary" id="pay-submit" type="button" data-i18n="btn.pay">결제</button>
+        <button class="btn" id="pay-cancel" type="button" data-i18n="btn.cancel">취소</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 상세 이미지 모달 ── -->
+  <div id="detail-modal" class="pay-modal" hidden>
+    <div class="pay-card panel detail-panel">
+      <div class="result-top">
+        <h2 id="detail-title" data-i18n="detail.heading">상세 보기</h2>
+        <div class="detail-controls">
+          <button class="btn detail-zoom-btn" id="detail-zoom-in"    type="button" title="확대">＋</button>
+          <button class="btn detail-zoom-btn" id="detail-zoom-reset" type="button" title="초기화">⟲</button>
+          <button class="btn detail-zoom-btn" id="detail-zoom-out"   type="button" title="축소">－</button>
+          <button class="btn" id="detail-close" type="button" data-i18n="btn.close">닫기</button>
+        </div>
+      </div>
+      <div class="detail-body">
+        <div class="detail-image-col">
+          <div class="detail-main-wrap" id="detail-main-wrap">
+            <img id="detail-main" alt="detail"/>
+          </div>
+          <div id="detail-strip" class="detail-strip"></div>
+        </div>
+        <div class="detail-info" id="detail-info"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 위시리스트 모달 ── -->
+  <div id="wish-modal" class="pay-modal" hidden>
+    <div class="panel" style="width:min(760px,100%);max-height:88vh;display:flex;flex-direction:column;border-radius:18px">
+      <div class="result-top" style="flex-shrink:0;padding-bottom:12px;border-bottom:1px solid var(--border)">
+        <h2>찜 목록 <span style="color:var(--purple)">♡</span></h2>
+        <button class="btn" id="wish-close" type="button">닫기</button>
+      </div>
+      <div id="wish-list" class="result-list" style="overflow-y:auto;flex:1;padding-top:14px"></div>
+      <p id="wish-empty" class="status" style="text-align:center;padding:48px 0;display:none">아직 찜한 상품이 없습니다.</p>
+    </div>
+  </div>
+
+  <!-- ── 토스트 컨테이너 ── -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="https://js.stripe.com/v3/"></script>
+  <script type="module" src="assets/js/fashion.js?v=2"></script>
+  <script src="/assets/js/chatbot.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(lsof -i :8000)",
+      "Bash(curl -s http://127.0.0.1:60534/ -o /dev/null -w \"%{http_code}\")",
+      "Bash(source .venv/bin/activate)",
+      "Bash(python -c \"from backend.app import app; print\\(''Import OK''\\)\")",
+      "Bash(curl -s http://127.0.0.1:8001/ -o /dev/null -w \"%{http_code}\")",
+      "Bash(.venv/bin/python -:*)",
+      "Bash(python3:*)",
+      "Bash(/tmp/node-v20.11.0-darwin-arm64/bin/npm install --prefix \"/Users/choisinbi/Desktop/0227 test/photobooth\" openai zustand react-dropzone clsx tailwind-merge)",
+      "Bash(/tmp/node-v20.11.0-darwin-arm64/bin/node --version)",
+      "Bash(NODE_BIN=\"/tmp/node-v20.11.0-darwin-arm64/bin\")",
+      "Bash(\"$NODE_BIN/node\" \"$NODE_BIN/npm\" install --prefix \"/Users/choisinbi/Desktop/0227 test/photobooth\" openai zustand react-dropzone clsx tailwind-merge)",
+      "Bash(/tmp/node-v20.11.0-darwin-arm64/bin/node /tmp/node-v20.11.0-darwin-arm64/bin/npm run build --prefix \"/Users/choisinbi/Desktop/0227 test/photobooth\")",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(pip install Pillow --quiet)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3001/api/presets)",
+      "Bash(/tmp/node-v20.11.0-darwin-arm64/bin/node -e \"const sharp = require\\(''./node_modules/sharp''\\); console.log\\(''sharp ok''\\);\")",
+      "Bash(curl -s http://localhost:3001/api/styles)",
+      "Bash(curl -s http://localhost:3001/references/fashion_scrapbook.jpg -o /dev/null -w \"%{http_code}\")",
+      "Bash(curl -s http://localhost:3001/references/intimate_portrait.jpg -o /dev/null -w \"%{http_code}\")",
+      "Bash(lsof -i :8001)",
+      "Bash(node -e \":*)",
+      "Bash(\"/Users/choisinbi/Desktop/0227 test/.venv/bin/python\":*)",
+      "Bash(python -c \"from backend.services.database import init_db; init_db\\(\\); print\\(''DB OK''\\)\")",
+      "Bash(python -c \"from backend.routes.auth import router; print\\(''auth routes:'', [r.path for r in router.routes]\\)\")",
+      "Bash(python -c \"from backend.app import app; print\\(''App routes:'', [r.path for r in app.routes if hasattr\\(r, ''path''\\)]\\)\")",
+      "Bash(python -c \":*)",
+      "Bash(python enrich_products.py)",
+      "Bash(zip -j crawler_share.zip scripts/crawl_clothing.py scripts/merge_crawl.py scripts/CRAWLING_GUIDE.md)",
+      "Bash(wc -l /c/Users/hyeon/Desktop/hompage/game/engine/seongsu_rpg_project/*.py /c/Users/hyeon/Desktop/hompage/game/engine/seongsu_rpg_project/*/*.py)",
+      "Bash(wc -l /c/Users/hyeon/Desktop/hompage/game/engine/seongsu_rpg_project/views/*.js /c/Users/hyeon/Desktop/hompage/game/engine/seongsu_rpg_project/views/*.html /c/Users/hyeon/Desktop/hompage/game/engine/seongsu_rpg_project/views/*.css)"
+    ]
+  }
+}
