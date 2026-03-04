@@ -110,6 +110,31 @@ def init_db() -> None:
             style_profile       TEXT DEFAULT '',
             saved_at            TEXT DEFAULT (datetime('now'))
         )""",
+        """CREATE TABLE IF NOT EXISTS products (
+            id            TEXT PRIMARY KEY,
+            mall          TEXT DEFAULT '',
+            brand         TEXT DEFAULT '',
+            name          TEXT NOT NULL,
+            price_krw     INTEGER DEFAULT 0,
+            price_jpy     INTEGER DEFAULT 0,
+            main_image    TEXT DEFAULT '',
+            detail_images TEXT DEFAULT '[]',
+            material      TEXT DEFAULT '',
+            care          TEXT DEFAULT '',
+            source_url    TEXT DEFAULT '',
+            category      TEXT DEFAULT '',
+            sub_category  TEXT DEFAULT '',
+            colors        TEXT DEFAULT '[]',
+            style         TEXT DEFAULT '',
+            keyword       TEXT DEFAULT '',
+            tags          TEXT DEFAULT '[]',
+            is_fashion    INTEGER DEFAULT 1,
+            is_clothing   INTEGER DEFAULT 1,
+            created_at    TEXT DEFAULT (datetime('now'))
+        )""",
+        "CREATE INDEX IF NOT EXISTS idx_products_category ON products(category)",
+        "CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand)",
+        "CREATE INDEX IF NOT EXISTS idx_products_price ON products(price_krw)",
     ]
     try:
         for stmt in statements:
