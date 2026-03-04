@@ -1,5 +1,5 @@
 """
-채찍피티 챗봇 서버 엔트리포인트.
+OttO봇 챗봇 서버 엔트리포인트.
 
 실행: uvicorn main:app --reload --port 8000
 """
@@ -23,14 +23,14 @@ async def lifespan(app: FastAPI):
     """서버 시작/종료 시 실행되는 라이프사이클."""
     # 시작: stub DB 테이블 생성
     await init_db()
-    print("[채찍피티] 서버 시작 완료")
+    print("[OttO봇] 서버 시작 완료")
     yield
     # 종료
-    print("[채찍피티] 서버 종료")
+    print("[OttO봇] 서버 종료")
 
 
 app = FastAPI(
-    title="채찍피티 AI 패션 챗봇",
+    title="OttO봇 AI 패션 챗봇",
     description="체형 분석 + 옷 추천 + 게임 아이템 연동 챗봇 API",
     version="0.1.0",
     lifespan=lifespan,
@@ -59,7 +59,7 @@ register_chat_exception_handlers(app)
 async def root():
     """프론트엔드 HTML 반환."""
     return {
-        "message": "채찍피티 API 서버",
+        "message": "OttO봇 API 서버",
         "docs": "/docs",
         "frontend": "/static/index.html",
     }

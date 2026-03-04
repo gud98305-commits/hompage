@@ -1,5 +1,5 @@
 """
-채찍피티 LLM 기반 의도 분류기 모듈.
+OttO봇 LLM 기반 의도 분류기 모듈.
 
 AsyncOpenAI(GPT-4o-mini)로 사용자 메시지와 대화 맥락을 분석하여
 의도를 분류합니다. GPT 실패 시 KeywordIntentClassifier 폴백.

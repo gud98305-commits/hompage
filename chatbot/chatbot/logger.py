@@ -1,5 +1,5 @@
 """
-채찍피티 구조화 로거 모듈.
+OttO봇 구조화 로거 모듈.
 
 Python 표준 logging 모듈로 JSON 형식 로그를 출력합니다.
 Sentry/CloudWatch 등 모니터링 시스템이 구조화 데이터로
@@ -47,7 +47,7 @@ class JsonFormatter(logging.Formatter):
 # ===========================================================================
 
 class ChatbotLogger:
-    """채찍피티 챗봇 전용 구조화 로거.
+    """OttO봇 챗봇 전용 구조화 로거.
 
     운영 블라인드 방지: 조용한 실패를 ERROR 레벨로 기록하여
     Sentry/CloudWatch 등 모니터링 시스템이 알람을 보낼 수 있게 함.

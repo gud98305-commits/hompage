@@ -1,5 +1,5 @@
 /**
- * 채찍피티 챗봇 프론트엔드.
+ * OttO봇 챗봇 프론트엔드.
  *
  * Vanilla JS + HTML5 (프레임워크 없이 독립 동작).
  * KAPLAY 게임 화면 위에 오버레이로 렌더링됩니다.
@@ -24,9 +24,9 @@ const CHATBOT_CONFIG = {
   USER_ID: "guest",
   MAX_HISTORY: 10,
   PLACEHOLDER: "패션에 대해 물어보세요...",
-  BOT_NAME: "채찍피티",
+  BOT_NAME: "OttO봇",
   WELCOME_MSG:
-    "안녕하세요! 저는 AI 패션 어드바이저 채찍피티입니다! " +
+    "안녕하세요! 저는 AI 패션 어드바이저 OttO봇입니다! " +
     "체형 분석, 코디 추천, 게임 아이템 연동까지 도와드릴게요 😊",
   IMG_FALLBACK: "https://via.placeholder.com/300x400?text=No+Image",
   // 서버 /static 경로 불존재 문제 방지 → 외부 URL 사용
@@ -408,10 +408,31 @@ function addMessage(role, content, recommendations) {
   // 상품 카드 렌더링
   if (recommendations && recommendations.length > 0) {
     renderProductCards(recommendations);
+    // 카드 렌더링 후 다시 스크롤 (카드 높이만큼 추가)
+    messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
   // 자동 스크롤
   messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function preloadProductImages(recommendations) {
+  const TIMEOUT = 3000; // 3초 이내 로드 안 되면 스킵
+  const urls = recommendations.map(
+    (item) => item.image_url || CHATBOT_CONFIG.IMG_FALLBACK
+  );
+  return Promise.all(
+    urls.map(
+      (url) =>
+        new Promise((resolve) => {
+          const img = new Image();
+          const timer = setTimeout(resolve, TIMEOUT);
+          img.onload = () => { clearTimeout(timer); resolve(); };
+          img.onerror = () => { clearTimeout(timer); resolve(); };
+          img.src = url;
+        })
+    )
+  );
 }
 
 function renderProductCards(recommendations) {
@@ -550,6 +571,7 @@ async function sendMessage(message) {
   document.getElementById("chatbot-input").value = "";
   addMessage("user", message, null);
   history.push({ role: "user", content: message });
+  showTypingIndicator();
 
   try {
     const res = await fetch(`${CHATBOT_CONFIG.API_BASE}`, {
@@ -576,9 +598,18 @@ async function sendMessage(message) {
       localStorage.setItem("chatbot_session_id", sessionId);
     }
 
+    // 상품 추천이 있으면 이미지를 먼저 프리로드한 후 메시지 표시
+    if (data.recommendations && data.recommendations.length > 0) {
+      try {
+        await preloadProductImages(data.recommendations);
+      } catch (_) { /* 프리로드 실패해도 계속 진행 */ }
+    }
+
+    removeTypingIndicator();
     addMessage("assistant", data.response, data.recommendations);
     history.push({ role: "assistant", content: data.response });
   } catch (err) {
+    removeTypingIndicator();
     addMessage(
       "assistant",
       "잠시 오류가 발생했어요. 다시 시도해주세요.",
@@ -631,6 +662,7 @@ async function requestBodyAnalysis(description) {
 
   document.getElementById("chatbot-input").value = "";
   addMessage("user", description, null);
+  showTypingIndicator();
 
   try {
     const res = await fetch(`${CHATBOT_CONFIG.API_BASE}/analyze`, {
@@ -658,9 +690,11 @@ async function requestBodyAnalysis(description) {
       localStorage.setItem("chatbot_session_id", sessionId);
     }
 
+    removeTypingIndicator();
     addMessage("assistant", data.response, null);
     history.push({ role: "assistant", content: data.response });
   } catch (err) {
+    removeTypingIndicator();
     addMessage("assistant", "체형 분석 중 오류가 발생했어요.", null);
   } finally {
     isRequesting = false;
@@ -668,7 +702,59 @@ async function requestBodyAnalysis(description) {
 }
 
 // =========================================================================
-// ⑧ 초기화
+// ⑧ 로딩 인디케이터
+// =========================================================================
+
+let typingEl = null;
+
+function showTypingIndicator() {
+  const messagesEl = document.getElementById("chatbot-messages");
+  if (!messagesEl || typingEl) return;
+
+  typingEl = document.createElement("div");
+  Object.assign(typingEl.style, {
+    display: "flex",
+    justifyContent: "flex-start",
+  });
+
+  const bubble = document.createElement("div");
+  Object.assign(bubble.style, {
+    padding: "8px 16px",
+    fontSize: "13px",
+    background: "#f3f4f6",
+    color: "#888",
+    borderRadius: "12px 12px 12px 2px",
+    animation: "chatbot-pulse 1.4s ease-in-out infinite",
+  });
+  bubble.textContent = "답변을 생성하고 있어요...";
+
+  typingEl.appendChild(bubble);
+  messagesEl.appendChild(typingEl);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function removeTypingIndicator() {
+  if (typingEl) {
+    typingEl.remove();
+    typingEl = null;
+  }
+}
+
+// pulse 애니메이션 주입
+(function injectChatbotStyle() {
+  if (document.getElementById("chatbot-anim-style")) return;
+  const style = document.createElement("style");
+  style.id = "chatbot-anim-style";
+  style.textContent = `
+    @keyframes chatbot-pulse {
+      0%, 100% { opacity: .5; }
+      50% { opacity: 1; }
+    }`;
+  document.head.appendChild(style);
+})();
+
+// =========================================================================
+// ⑨ 초기화
 // =========================================================================
 
 document.addEventListener("DOMContentLoaded", initChatbot);

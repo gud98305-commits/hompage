@@ -1,5 +1,5 @@
 """
-채찍피티 챗봇 서비스 계층.
+OttO봇 챗봇 서비스 계층.
 
 의도 분류(KeywordClassifier / LLMClassifier)와
 ChatService(핸들러 라우팅 + 응답 생성)를 정의합니다.
@@ -358,7 +358,7 @@ class ChatService:
 
         if not is_safe:
             # 인젝션 시도 감지 → 로그 기록 + 경고 응답 반환
-            # 채찍피티 페르소나 유지: 위협적 응답 금지
+            # OttO봇 페르소나 유지: 위협적 응답 금지
             from logger import get_logger
             get_logger().injection_detected(
                 module="ChatService.process_chat",
@@ -482,7 +482,7 @@ class ChatService:
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             return (
-                "안녕하세요! 채찍피티입니다. "
+                "안녕하세요! OttO봇입니다. "
                 "현재 AI 기능이 비활성화 상태예요. "
                 "체형 분석이나 상품 추천을 원하시면 말씀해주세요!",
                 None,
@@ -501,7 +501,7 @@ class ChatService:
             {
                 "role": "system",
                 "content": (
-                    "당신은 한국의 AI 패션 어드바이저 '채찍피티'입니다. "
+                    "당신은 한국의 AI 패션 어드바이저 'OttO봇'입니다. "
                     "사용자의 체형, 선호도, 상황에 맞는 패션 조언을 제공합니다. "
                     "친근하고 전문적인 톤으로 답변하세요. "
                     "답변은 3문장 이내로 간결하게 작성하세요."

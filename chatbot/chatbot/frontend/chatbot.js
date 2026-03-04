@@ -1,5 +1,5 @@
 /**
- * 채찍피티 챗봇 프론트엔드.
+ * OttO봇 챗봇 프론트엔드.
  *
  * Vanilla JS + HTML5 (프레임워크 없이 독립 동작).
  * KAPLAY 게임 화면 위에 오버레이로 렌더링됩니다.
@@ -24,9 +24,9 @@ const CHATBOT_CONFIG = {
   USER_ID: "guest",
   MAX_HISTORY: 10,
   PLACEHOLDER: "패션에 대해 물어보세요...",
-  BOT_NAME: "채찍피티",
+  BOT_NAME: "OttO봇",
   WELCOME_MSG:
-    "안녕하세요! 저는 AI 패션 어드바이저 채찍피티입니다! " +
+    "안녕하세요! 저는 AI 패션 어드바이저 OttO봇입니다! " +
     "체형 분석, 코디 추천, 게임 아이템 연동까지 도와드릴게요 😊",
   IMG_FALLBACK: "https://via.placeholder.com/300x400?text=No+Image",
   // 서버 /static 경로 불존재 문제 방지 → 외부 URL 사용

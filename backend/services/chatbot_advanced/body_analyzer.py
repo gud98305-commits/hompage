@@ -1,5 +1,5 @@
 """
-채찍피티 체형 분석 모듈.
+OttO봇 체형 분석 모듈.
 
 골격 진단 이론 기반으로 사용자 체형을 wave/straight/neutral로 분류합니다.
 AsyncOpenAI(GPT-4o-mini)를 1차로 사용하고, 실패 시 키워드 폴백으로 자동 강등합니다.

@@ -1,5 +1,5 @@
 """
-채찍피티 상품 어댑터 모듈.
+OttO봇 상품 어댑터 모듈.
 
 SEOULFIT ai_curator / data_store와 챗봇 서비스 계층을 연결합니다.
 DIP(Dependency Inversion Principle) 기반 ProductRepository Protocol을 정의하고,

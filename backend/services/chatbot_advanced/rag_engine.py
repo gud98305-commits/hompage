@@ -1,5 +1,5 @@
 """
-채찍피티 Corrective RAG 엔진 모듈.
+OttO봇 Corrective RAG 엔진 모듈.
 
 상품 추천 결과의 품질을 GPT-4o-mini로 평가하고,
 임계값 미달 시 query refinement → 재검색으로 결과를 개선합니다.

@@ -1,5 +1,5 @@
 """
-채찍피티 챗봇 API 라우터.
+OttO봇 챗봇 API 라우터.
 
 모든 엔드포인트는 서비스 계층(ChatService) 호출만 수행하며
 비즈니스 로직을 직접 구현하지 않습니다.
@@ -42,9 +42,9 @@ router = APIRouter(prefix="/api/chat", tags=["chatbot"])
 @router.post(
     "",
     response_model=ChatResponse,
-    summary="채찍피티 메인 대화",
+    summary="OttO봇 메인 대화",
     description=(
-        "채찍피티 AI 패션 챗봇과 대화합니다.\n\n"
+        "OttO봇 AI 패션 챗봇과 대화합니다.\n\n"
         "[session_id 프로토콜 - 필독]\n"
         "- 최초 요청: session_id를 None 또는 생략하여 전송\n"
         "- 서버가 session_id를 생성하여 ChatResponse.session_id로 반환\n"
@@ -58,7 +58,7 @@ async def chat(
     db: AsyncSession = Depends(get_db),
     service: ChatService = Depends(get_chat_service),
 ) -> ChatResponse:
-    """채찍피티 메인 대화 엔드포인트."""
+    """OttO봇 메인 대화 엔드포인트."""
     return await service.process_chat(request, session=db)
 
 
