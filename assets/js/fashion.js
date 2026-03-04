@@ -52,6 +52,7 @@ const I18N = {
     'status.failed': '결제가 실패했습니다.',
     'status.pay_reflect_error': '결제 반영 오류: ',
     'badge.krw': '원화: ',
+    'nav.fashion': '패션추천', 'nav.photo': 'AI 포토부스', 'nav.pixel': '픽셀 서울',
   },
   ja: {
     'hero.subtitle': 'キュレーター',
@@ -97,6 +98,7 @@ const I18N = {
     'status.failed': '決済に失敗しました。',
     'status.pay_reflect_error': '決済反映エラー: ',
     'badge.krw': '韓国ウォン: ',
+    'nav.fashion': 'ファッションおすすめ', 'nav.photo': 'AIフォトブース', 'nav.pixel': 'ピクセルソウル',
   }
 };
 
