@@ -19,7 +19,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/     ./backend/
 COPY shared/      ./shared/
 COPY assets/      ./assets/
-COPY data/        ./data/
 COPY images/      ./images/
 COPY aeae_popup/  ./aeae_popup/
 COPY *.html       ./
