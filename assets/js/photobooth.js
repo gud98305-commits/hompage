@@ -280,11 +280,18 @@ async function applyLang(lang) {
   updateSelectedPill();
 }
 
-// ── 언어 토글 설정 ───────────────────────────────────────────────────────
+// ── 언어 토글 설정 — otto_lang localStorage와 동기화 ────────────────────
 function setupLangToggle() {
   document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+    btn.addEventListener('click', () => {
+      const lang = btn.dataset.lang;
+      localStorage.setItem('otto_lang', lang);
+      applyLang(lang);
+    });
   });
+  // 글로벌 설정 초기 적용
+  const savedLang = localStorage.getItem('otto_lang') || 'ko';
+  applyLang(savedLang);
 }
 
 // ── Step 2 입력 탭 ────────────────────────────────────────────────────────
@@ -489,7 +496,7 @@ async function init() {
     S.styles = styles;
     renderStyles(styles);
   } catch {
-    $('theme-grid').innerHTML = '<p class="status">스타일을 불러오지 못했습니다. Next.js 서버가 실행 중인지 확인해 주세요.</p>';
+    $('theme-grid').innerHTML = '<p class="status">스타일을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>';
   }
 
   setupLangToggle();

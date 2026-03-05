@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500&family=DM+Mono:wght@400;500&family=VT323&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="assets/css/theme.css"/>
-  <link rel="stylesheet" href="assets/css/fashion.css"/>
+  <link rel="stylesheet" href="assets/css/fashion.css?v=5"/>
   <style>
     /* ── Auth UI ───────────────────────────────────────── */
     .auth-panel {
@@ -78,21 +78,22 @@
       margin-bottom: 28px;
       line-height: 1.7;
     }
-    .btn-google {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 12px 28px;
-      cursor: pointer;
-      font-family: var(--f-body);
-      font-size: .92rem;
-      color: var(--black);
-      border-radius: 10px;
-      box-shadow: 2px 2px 0 rgba(152,136,120,.18);
-      transition: border-color .2s, box-shadow .2s, background .2s;
+    /* ── Google login button ─────────────────────────────── */
+    .google-login-btn {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      width: 100%; padding: 13px 20px; margin-top: 4px;
+      border: 1px solid var(--border); border-radius: 10px;
+      background: #fff; color: #3c4043;
+      font-family: var(--f-body); font-size: .95rem; font-weight: 500;
+      cursor: pointer; transition: box-shadow .18s, transform .18s;
+      box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.08);
     }
-    .btn-google:hover { border-color: rgba(32,112,144,.42); box-shadow: 0 8px 20px rgba(10,12,20,.08); background: #fff; }
-    .btn-google svg { width: 20px; height: 20px; }
+    .google-login-btn:hover {
+      box-shadow: 0 3px 8px rgba(0,0,0,.16);
+      transform: translateY(-1px);
+    }
+    .google-login-btn svg { flex-shrink: 0; }
+    .auth-error-msg { margin-top: 12px; font-size: .82rem; color: var(--warm-pink); text-align: center; min-height: 1.2em; }
     /* ── My-empty / purchase (existing) ─────────────────── */
     .my-empty {
       text-align: center;
@@ -112,17 +113,15 @@
     <!-- 왼쪽: 뒤로가기 + 로고 -->
     <div class="hd-left">
       <a class="hd-back-btn" href="fashion.html" title="패션추천으로">←</a>
-      <a class="logo" href="index.html#scene">O<em>tt</em>O</a>
+      <a class="logo logo-link" href="index.html#scene"><img src="assets/img/otto-logo.png" alt="OttO" class="logo-img"/></a>
     </div>
-    <!-- 가운데: 메인 네비게이션 -->
-    <nav class="sf-nav">
-      <a class="sf-nav-link" href="fashion.html">패션추천</a>
-      <span class="sf-nav-link disabled">AI 포토부스</span>
-      <span class="sf-nav-link disabled">픽셀 서울</span>
-    </nav>
     <!-- 오른쪽 -->
     <div class="hd-right">
       <a class="my-header-btn active" href="my.html">MY ↗</a>
+      <div class="lang-toggle">
+        <button class="lang-btn" data-lang="ko">한국어</button>
+        <button class="lang-btn" data-lang="ja">日本語</button>
+      </div>
     </div>
   </header>
 
@@ -139,65 +138,106 @@
       <!-- 위시리스트 미리보기 -->
       <div class="panel">
         <div class="result-top">
-          <h2>찜 목록 <span style="color:var(--purple)">♡</span></h2>
+          <h2><span data-i18n="my.wish_heading">찜 목록</span> <span style="color:var(--purple)">♡</span></h2>
           <div class="mono" id="wish-count-label" style="font-size:.66rem;color:var(--accent-soft)"></div>
         </div>
         <div id="wish-preview" class="result-list"></div>
         <div id="wish-empty-my" class="my-empty" style="display:none;padding:32px 0">
-          <p style="color:var(--muted-ink);font-size:.84rem">아직 찜한 상품이 없습니다.</p>
+          <p style="color:var(--muted-ink);font-size:.84rem" data-i18n="my.wish_empty">아직 찜한 상품이 없습니다.</p>
         </div>
       </div>
 
       <!-- 구매 이력 -->
       <div class="panel">
         <div class="result-top">
-          <h2>구매 이력</h2>
+          <h2 data-i18n="my.purchase_history">구매 이력</h2>
           <div class="mono" id="purchase-count" style="font-size:.66rem;color:var(--accent-soft)"></div>
         </div>
         <div id="purchase-list" class="purchase-list"></div>
         <div id="purchase-empty" class="my-empty" style="display:none">
           <div class="my-empty-icon">🛍️</div>
-          <p class="my-empty-title">아직 구매 이력이 없습니다</p>
-          <p class="my-empty-hint">AI 큐레이터에서 마음에 드는 상품을 찾아보세요.</p>
-          <a href="fashion.html" class="btn primary" style="display:inline-block;margin-top:20px;text-decoration:none">AI 큐레이터 열기 →</a>
+          <p class="my-empty-title" data-i18n="my.purchase_empty">아직 구매 이력이 없습니다</p>
+          <p class="my-empty-hint" data-i18n="my.curator_hint">AI 큐레이터에서 마음에 드는 상품을 찾아보세요.</p>
+          <a href="fashion.html" class="btn primary" style="display:inline-block;margin-top:20px;text-decoration:none" data-i18n="my.curator_open">AI 큐레이터 열기 →</a>
         </div>
       </div>
 
     </section>
   </main>
 
+  <script src="assets/js/i18n.js"></script>
   <script src="assets/js/auth.js"></script>
   <script type="module" src="assets/js/my.js"></script>
   <script>
+    // ── i18n dict (my.html) ──────────────────────────────
+    const MY_I18N = {
+      ko: {
+        'my.login_title'    : '로그인하고 더 많은 기능을',
+        'my.login_sub'      : '찜 목록과 구매 이력이 모든 기기에서 자동으로 동기화됩니다.',
+        'my.google_btn'     : 'Google로 계속하기',
+        'my.logout'         : '로그아웃',
+        'my.wish_heading'   : '찜 목록',
+        'my.purchase_history': '구매 이력',
+        'my.wish_empty'     : '아직 찜한 상품이 없습니다.',
+        'my.purchase_empty' : '아직 구매 이력이 없습니다',
+        'my.curator_hint'   : 'AI 큐레이터에서 마음에 드는 상품을 찾아보세요.',
+        'my.curator_open'   : 'AI 큐레이터 열기 →',
+        'my.err_oauth_failed': 'Google 로그인에 실패했습니다. 다시 시도해 주세요.',
+        'my.err_no_email'   : 'Google 계정 이메일을 가져올 수 없습니다.',
+      },
+      ja: {
+        'my.login_title'    : 'ログインしてもっと多くの機能を',
+        'my.login_sub'      : 'お気に入りリストと購入履歴がすべてのデバイスで自動同期されます。',
+        'my.google_btn'     : 'Googleで続ける',
+        'my.logout'         : 'ログアウト',
+        'my.wish_heading'   : 'お気に入り',
+        'my.purchase_history': '購入履歴',
+        'my.wish_empty'     : 'まだお気に入りに追加した商品がありません。',
+        'my.purchase_empty' : 'まだ購入履歴がありません',
+        'my.curator_hint'   : 'AIキュレーターでお気に入りの商品を見つけてみましょう。',
+        'my.curator_open'   : 'AIキュレーターを開く →',
+        'my.err_oauth_failed': 'Googleログインに失敗しました。もう一度お試しください。',
+        'my.err_no_email'   : 'Googleアカウントのメールアドレスを取得できません。',
+      }
+    };
+
+    function myT(key) {
+      const lang = localStorage.getItem('otto_lang') || 'ko';
+      return (MY_I18N[lang] || MY_I18N.ko)[key] || MY_I18N.ko[key] || key;
+    }
+
     // ── Auth section rendering ───────────────────────────
     async function renderAuthSection() {
       const section = document.getElementById('auth-section');
       const auth    = window.SeoulFitAuth;
 
       if (!auth || !auth.isLoggedIn()) {
+        const urlError = new URLSearchParams(window.location.search).get('error');
+        const errorMsg = urlError === 'oauth_failed' ? myT('my.err_oauth_failed')
+                       : urlError === 'no_email'     ? myT('my.err_no_email')
+                       : '';
+
         section.innerHTML = `
           <div class="login-panel">
-            <div class="login-title">로그인하고 더 많은 기능을</div>
-            <p class="login-sub">
-              Google 계정으로 로그인하면 찜 목록과 구매 이력이<br/>
-              모든 기기에서 자동으로 동기화됩니다.
-            </p>
-            <button class="btn-google" onclick="window.SeoulFitAuth.googleLogin()">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            <div class="login-title">${myT('my.login_title')}</div>
+            <p class="login-sub">${myT('my.login_sub')}</p>
+            <button class="google-login-btn" onclick="window.SeoulFitAuth.googleLogin()">
+              <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                <path fill="none" d="M0 0h48v48H0z"/>
               </svg>
-              Google로 로그인
+              ${myT('my.google_btn')}
             </button>
+            <div class="auth-error-msg">${errorMsg}</div>
           </div>`;
         return;
       }
 
       const me = await auth.fetchMe();
       if (!me) {
-        // 토큰 만료 → 로그인 화면으로
         auth.logout();
         return;
       }
@@ -207,11 +247,38 @@
           ${me.picture ? `<img class="auth-avatar" src="${me.picture}" alt="${me.name}" referrerpolicy="no-referrer"/>` : ''}
           <div class="auth-name">${me.name || '사용자'}</div>
           <div class="auth-email">${me.email}</div>
-          <button class="auth-logout-btn" onclick="window.SeoulFitAuth.logout()">로그아웃</button>
+          <button class="auth-logout-btn" onclick="window.SeoulFitAuth.logout()">${myT('my.logout')}</button>
         </div>`;
     }
 
-    renderAuthSection();
+    // ── Apply language to static + dynamic elements ──────
+    function applyMyLang(lang) {
+      document.documentElement.lang = lang === 'ja' ? 'ja' : 'ko';
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const tr = (MY_I18N[lang] || MY_I18N.ko)[el.getAttribute('data-i18n')];
+        if (tr) el.textContent = tr;
+      });
+      renderAuthSection();
+    }
+
+    // ── Lang button click handlers ────────────────────────
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const newLang = btn.dataset.lang;
+        if (newLang === (localStorage.getItem('otto_lang') || 'ko')) return;
+        localStorage.setItem('otto_lang', newLang);
+        window.dispatchEvent(new CustomEvent('otto:lang', { detail: { lang: newLang } }));
+      });
+    });
+
+    // ── Listen for cross-page language changes ────────────
+    window.addEventListener('otto:lang', (e) => applyMyLang(e.detail.lang));
+
+    // ── Initialize ────────────────────────────────────────
+    applyMyLang(localStorage.getItem('otto_lang') || 'ko');
   </script>
   <script src="/assets/js/chatbot.js"></script>
 </body>

@@ -4,13 +4,10 @@ import json
 import os
 import random
 import re
-from typing import Any
+from typing import Any, cast
 
-import requests
-from shared.brand_utils import extract_brand, guess_brand_origin
-
-
-OPENAI_API_URL = "https://api.openai.com/v1/chat/completions"
+from openai import OpenAI  # type: ignore[import-untyped]
+from shared.brand_utils import extract_brand, guess_brand_origin  # type: ignore[import-untyped]
 
 # ── 색상 정규화 맵 (프론트에서 오는 값 → 정규화된 내부 키) ──────────────
 COLOR_NORMALIZE: dict[str, list[str]] = {
@@ -219,17 +216,43 @@ STYLE_TOKEN_MAP: dict[str, dict[str, list[str]]] = {
 }
 
 BODY_TYPE_TOKEN_MAP: dict[str, dict[str, list[str]]] = {
+    # STRAIGHT형 (슬림·근육질 I라인) — 타이트/저스트핏으로 체형 라인 강조
     "slim": {
-        "plus": ["slim", "skinny", "타이트", "슬림핏", "crop", "미니", "라인"],
-        "minus": ["oversize", "오버핏", "baggy", "루즈", "와이드"],
+        "plus": [
+            "slim", "skinny", "타이트", "슬림핏", "straight", "slim fit",
+            "crop", "미니", "라인", "v넥", "v-neck", "하이게이지",
+            "실크", "캐시미어", "레더", "leather",
+        ],
+        "minus": ["oversize", "오버핏", "baggy", "루즈", "와이드", "빅사이즈"],
     },
+    # STRAIGHT형 (스포티·근육형 I라인) — 깔끔한 저스트사이즈
     "athletic": {
-        "plus": ["straight", "와이드", "오버핏", "boxy", "relaxed", "cargo", "utility"],
-        "minus": ["skinny", "슬림핏"],
+        "plus": [
+            "straight", "와이드", "오버핏", "boxy", "relaxed", "cargo", "utility",
+            "터틀넥", "turtleneck", "v넥", "트렌치", "trench",
+            "울", "wool", "캐시미어", "cashmere",
+        ],
+        "minus": ["skinny", "슬림핏", "타이트", "보디콘"],
     },
+    # WAVE형 (글래머·X라인) — 하이웨이스트·부드러운 소재로 X라인 강조
     "curvy": {
-        "plus": ["high-waist", "하이웨이스트", "랩", "wrap", "a-line", "플레어", "브이넥", "셔링"],
-        "minus": ["low-rise", "로우라이즈", "skinny"],
+        "plus": [
+            "high-waist", "하이웨이스트", "랩", "wrap", "a-line", "플레어",
+            "브이넥", "v-neck", "셔링", "리브", "rib", "플리츠", "pleats",
+            "쉬폰", "chiffon", "모헤어", "벨벳", "velvet", "레이스", "lace",
+            "쇼트기장", "short", "퍼코트", "fur",
+        ],
+        "minus": ["low-rise", "로우라이즈", "skinny", "보이핏", "oversize"],
+    },
+    # NATURAL형 (프레임바디·A/Y라인) — 볼륨 소재·와이드·롱기장으로 자연스러운 멋
+    "standard": {
+        "plus": [
+            "와이드", "wide", "롱기장", "오버핏", "oversize", "터틀넥", "turtleneck",
+            "마", "linen", "데님", "denim", "코듀로이", "corduroy",
+            "와플", "waffle", "로게이지", "울", "wool", "a-line", "a라인",
+            "루즈핏", "loose", "릴렉스", "relax",
+        ],
+        "minus": ["슬림핏", "skinny", "타이트", "타이트핏", "slim fit"],
     },
 }
 
@@ -529,10 +552,9 @@ def _style_bonus(product: dict[str, Any], requested_style: str) -> float:
 
 def _body_type_bonus(product: dict[str, Any], body_type: str) -> float:
     body = _norm(body_type)
+    # 체형 미선택("") → 보너스/감점 없음
     if not body:
         return 0.0
-    if body == "standard":
-        return 0.8
 
     rule = BODY_TYPE_TOKEN_MAP.get(body)
     if not rule:
@@ -541,10 +563,27 @@ def _body_type_bonus(product: dict[str, Any], body_type: str) -> float:
     text = _product_text(product)
     score = 0.0
     if _contains_any(text, rule.get("plus", [])):
-        score += 2.5
+        score += 3.0    # 체형 매칭 가점 상향
     if _contains_any(text, rule.get("minus", [])):
-        score -= 1.2
+        score -= 1.5    # 체형 불일치 감점
     return score
+
+
+# 체형 코드 → 한국어 레이블 맵
+_BODY_TYPE_LABELS_MAP: dict[str, str] = {
+    "slim":     "슬림형(STRAIGHT I라인)",
+    "athletic": "스포티형(STRAIGHT 근육질)",
+    "curvy":    "글래머형(WAVE X라인)",
+    "standard": "내추럴형(NATURAL A/Y라인)",
+}
+
+
+def _best_body_type_label(product: dict[str, Any]) -> str:
+    """제품 속성(소재·태그·카테고리) 기반으로 가장 어울리는 체형 레이블을 반환.
+    모든 체형에 점수가 0이면 내추럴형을 기본값으로 반환."""
+    scores = {bt: _body_type_bonus(product, bt) for bt in BODY_TYPE_TOKEN_MAP}
+    best_key = max(scores, key=lambda k: scores[k])
+    return _BODY_TYPE_LABELS_MAP.get(best_key, "내추럴형(NATURAL A/Y라인)")
 
 
 def _keyword_bonus(product: dict[str, Any], keyword_csv: str) -> float:
@@ -593,7 +632,7 @@ def _brand_origin(product: dict[str, Any]) -> str:
 
 def _score_product(product: dict[str, Any], req: dict[str, Any]) -> float:
     """메타데이터 기반 점수 계산 (OpenAI 없이)"""
-    score = 0.0
+    score: float = 0.0
 
     # 가격 범위
     min_price = int(req.get("min_price_krw", 0) or 0)
@@ -637,11 +676,13 @@ def _score_product(product: dict[str, Any], req: dict[str, Any]) -> float:
     # H: 키워드별 sub_category 하드 블록 (예: 여자의악마 + hoodie → 즉시 강한 감점)
     prod_subcat = _norm(product.get("sub_category", ""))
     if prod_subcat and req_kw:
+        block_penalty: float = 0.0
         for kw_h in [k.strip() for k in req_kw.split(",") if k.strip()]:
             kw_p    = K_FASHION_KEYWORD_PROFILES.get(kw_h, {})
             blocked = [_norm(c) for c in kw_p.get("sub_category_block", [])]
             if prod_subcat in blocked:
-                score -= 15.0   # H: sub_category 직접 블록 → 강한 감점
+                block_penalty = block_penalty + 15.0  # H: sub_category 직접 블록
+        score = score - block_penalty
 
     # 쇼핑몰 보너스
     if _norm(product.get("mall", "")) in {"wconcept", "29cm"}:
@@ -657,6 +698,15 @@ def _score_product(product: dict[str, Any], req: dict[str, Any]) -> float:
     return score
 
 
+# ── OpenAI 클라이언트 (모듈 레벨 싱글턴) ────────────────────────────────
+def _get_openai_client() -> OpenAI | None:
+    """API 키가 있을 때만 OpenAI 클라이언트를 반환. 없으면 None."""
+    api_key = os.getenv("OPENAI_API_KEY", "").strip()
+    if not api_key:
+        return None
+    return OpenAI(api_key=api_key)
+
+
 # ── OpenAI 호출 (AI 추천 이유 생성용) ─────────────────────────────────
 def _openai_reason(
     items: list[dict[str, Any]],
@@ -667,11 +717,11 @@ def _openai_reason(
     OpenAI로 각 상품의 추천 이유(reason)와 relevance score만 받음.
     분류/필터링은 이미 메타데이터로 완료된 상태.
     """
-    api_key = os.getenv("OPENAI_API_KEY", "").strip()
-    if not api_key:
+    client = _get_openai_client()
+    if not client:
         return {}
 
-    subset = items[:max_items]
+    subset: list[dict[str, Any]] = cast("list[dict[str, Any]]", items[:max_items])
     compact = [
         {
             "id": p.get("id"),
@@ -741,9 +791,8 @@ def _openai_reason(
                     "id": "string",
                     "score": "0-100",
                     "reason": (
-                        "체형·스타일·키워드를 반영한 개인화 스타일링 조언 2문장 "
-                        "(첫 문장: 체형/스타일 적합 이유, 둘째 문장: 코디 팁). "
-                        "80~120자, 한국어"
+                        "체형·스타일·키워드를 반영한 개인화 스타일링 조언 "
+                        "(체형/스타일 적합 이유 포함). 30~50자, 1문장, 한국어"
                     ),
                     "keyword_score": "0-100 (한국 패션 키워드 일치도. 키워드 없으면 50)"
                 }
@@ -751,32 +800,26 @@ def _openai_reason(
         },
     }
 
-    payload = {
-        "model": os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
-        "temperature": 0.2,
-        "response_format": {"type": "json_object"},
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": json.dumps(user_payload, ensure_ascii=False)},
-        ],
-    }
-
     try:
-        resp = requests.post(
-            OPENAI_API_URL,
-            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-            json=payload,
+        response = client.chat.completions.create(
+            model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+            temperature=0.2,
+            response_format={"type": "json_object"},
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": json.dumps(user_payload, ensure_ascii=False)},
+            ],
             timeout=60,
         )
-        resp.raise_for_status()
-        data = resp.json()
-        content = data["choices"][0]["message"]["content"]
+        content = response.choices[0].message.content or "{}"
         parsed = json.loads(content)
-        result_map = {}
+        result_map: dict[str, dict] = {}
         for r in parsed.get("items", []):
-            result_map[str(r.get("id", ""))] = {
+            pid = str(r.get("id", ""))
+            result_map[pid] = {
                 "ai_score":  float(r.get("score", 50) or 50),
                 "ai_reason": str(r.get("reason", "")).strip(),
+                "keyword_score": float(r.get("keyword_score", 50) or 50),
             }
         return result_map
     except Exception:
@@ -792,9 +835,10 @@ def _openai_select_complement(
     현재 아이템과 가장 잘 어울리는 complement 아이템을 OpenAI로 선별.
     candidates 리스트(이미 셔플된 40개 이하)에서 n개를 골라 반환.
     """
-    api_key = os.getenv("OPENAI_API_KEY", "").strip()
-    if not api_key or not candidates:
-        return candidates[:n]
+    client = _get_openai_client()
+    if not client or not candidates:
+        return cast("list[dict[str, Any]]", candidates[:n])
+    assert client is not None
 
     compact_current = {
         "name": current_item.get("name", ""),
@@ -842,25 +886,19 @@ def _openai_select_complement(
         },
     }
 
-    payload = {
-        "model": os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
-        "temperature": 0.7,
-        "response_format": {"type": "json_object"},
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": json.dumps(user_payload, ensure_ascii=False)},
-        ],
-    }
-
     try:
-        resp = requests.post(
-            OPENAI_API_URL,
-            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-            json=payload,
+        response = client.chat.completions.create(
+            model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+            temperature=0.7,
+            response_format={"type": "json_object"},
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": json.dumps(user_payload, ensure_ascii=False)},
+            ],
             timeout=30,
         )
-        resp.raise_for_status()
-        parsed = json.loads(resp.json()["choices"][0]["message"]["content"])
+        content = response.choices[0].message.content or "{}"
+        parsed = json.loads(content)
         id_to_item   = {str(p.get("id")): p for p in candidates}
         id_to_reason = {str(s.get("id", "")): s.get("match_reason", "") for s in parsed.get("selected", [])}
         result = []
@@ -869,9 +907,9 @@ def _openai_select_complement(
                 item = dict(id_to_item[sid])
                 item["match_reason"] = id_to_reason.get(sid, "")
                 result.append(item)
-        return result if result else candidates[:n]
+        return result if result else cast("list[dict[str, Any]]", candidates[:n])
     except Exception:
-        return candidates[:n]
+        return cast("list[dict[str, Any]]", candidates[:n])
 
 
 # ── 메인 큐레이션 함수 ─────────────────────────────────────────────────
@@ -927,7 +965,10 @@ def curate_with_openai(
     # ── Step 3: 현재 페이지 슬라이스 (서버 사이드 페이지네이션) ──────
     start = page * page_size
     end   = start + page_size
-    page_items = [p for p, _ in scored[start:end]]
+    scored_page: list[tuple[dict[str, Any], float]] = cast(
+        "list[tuple[dict[str, Any], float]]", scored[start:end]
+    )
+    page_items = [p for p, _ in scored_page]
 
     # ── Step 4: OpenAI 추천 이유 (현재 페이지 아이템에만) ───────────
     reason_map = _openai_reason(page_items, req, max_items=page_size)
@@ -936,14 +977,14 @@ def curate_with_openai(
     for p in page_items:
         out = dict(p)
         pid = str(p.get("id", ""))
-        ai_info    = reason_map.get(pid, {})
-        meta_score = _score_product(p, req)
-        ai_score   = float(ai_info.get("ai_score", meta_score * 5) or meta_score * 5)
-        kw_raw = req.get("keyword", "") or ""
-        has_kw = bool(kw_raw.strip())
+        ai_info     = reason_map.get(pid, {})
+        meta_score  = _score_product(p, req)
+        ai_score    = float(ai_info.get("ai_score", meta_score * 5) or meta_score * 5)
+        kw_raw      = req.get("keyword", "") or ""
+        has_kw      = bool(kw_raw.strip())
         ai_kw_score = float(ai_info.get("keyword_score", 50) or 50)
         kw_ai_bonus = (ai_kw_score / 100.0) * 8.0 if has_kw else 0.0
-        out["ai_score"]    = (meta_score * 3 + ai_score * 0.5 + kw_ai_bonus)
+        out["ai_score"]    = meta_score * 3 + ai_score * 0.5 + kw_ai_bonus
         out["ai_reason"]   = ai_info.get("ai_reason", "")
         out["ai_category"] = p.get("category", "other_clothing")
         enriched.append(out)

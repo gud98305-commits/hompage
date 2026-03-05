@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>OttO - AI 큐레이터</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500&family=DM+Mono:wght@400;500&family=VT323&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500&family=DM+Mono:wght@400;500&family=VT323&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="assets/css/theme.css"/>
   <link rel="stylesheet" href="assets/css/fashion.css"/>
   <!-- EmailJS — 아래 Public Key를 본인 것으로 교체하세요 -->
@@ -16,13 +16,11 @@
     <!-- 왼쪽: 뒤로가기 + 로고 -->
     <div class="hd-left">
       <a class="hd-back-btn" href="index.html#scene" title="홈으로">←</a>
-      <a class="logo" href="index.html#scene">O<em>tt</em>O</a>
+      <a class="logo logo-link" href="index.html#scene"><img src="assets/img/otto-logo.png" alt="OttO" class="logo-img"/></a>
     </div>
-    <!-- 가운데: 메인 네비게이션 -->
+    <!-- 가운데: 배송 안내 -->
     <nav class="sf-nav">
-      <a class="sf-nav-link active" href="fashion.html" data-i18n="nav.fashion">패션추천</a>
-      <span class="sf-nav-link disabled" data-i18n="nav.photo">AI 포토부스</span>
-      <span class="sf-nav-link disabled" data-i18n="nav.pixel">픽셀 서울</span>
+      <span class="sf-nav-shipping">送料 550円～<br/><span class="sf-nav-shipping-sub">(関税・消費税は受取時に発生する場合があります)</span></span>
     </nav>
     <!-- 오른쪽: 위시 + MY + 언어 -->
     <div class="hd-right">
@@ -39,7 +37,11 @@
 
   <main class="container">
     <section class="hero">
-      <h1>AI <em data-i18n="hero.subtitle">큐레이터</em></h1>
+      <!-- 플로팅 장식 아이콘 -->
+      <i class="hero-float-icon hero-float-icon--a" aria-hidden="true">✦</i>
+      <i class="hero-float-icon hero-float-icon--b" aria-hidden="true">♡</i>
+      <i class="hero-float-icon hero-float-icon--c" aria-hidden="true">✦</i>
+      <i class="hero-float-icon hero-float-icon--d" aria-hidden="true">★</i>
     </section>
 
     <section class="stack">
@@ -47,6 +49,15 @@
       <div class="panel filter-panel">
         <div class="filter-panel-top">
           <h2 data-i18n="panel.filters">카테고리 선택</h2>
+        </div>
+        <div class="panel-deco-dots" aria-hidden="true">
+          <span class="panel-deco-dot"></span>
+          <span class="panel-deco-dot"></span>
+          <span class="panel-deco-dot"></span>
+          <span class="panel-deco-dot"></span>
+          <span class="panel-deco-dot"></span>
+          <span class="panel-deco-dot"></span>
+          <span class="panel-deco-dot"></span>
         </div>
         <form id="curator-form">
           <div class="filter-rows">
@@ -59,6 +70,18 @@
                 <button class="tag"    type="button" data-value="women"  data-i18n="gender.women">여성</button>
                 <button class="tag"    type="button" data-value="men"    data-i18n="gender.men">남성</button>
                 <button class="tag"    type="button" data-value="unisex" data-i18n="gender.unisex">젠더리스</button>
+              </div>
+            </div>
+
+            <!-- 체형 -->
+            <div class="filter-section">
+              <div class="f-label" data-i18n="label.bodytype">체형 (골격 진단)</div>
+              <div class="tag-group" data-single="true" id="tg-bodytype">
+                <button class="tag on" type="button" data-value="" data-i18n="bodytype.all">전체</button>
+                <button class="tag" type="button" data-value="slim" data-i18n="bodytype.slim">슬림형</button>
+                <button class="tag" type="button" data-value="athletic" data-i18n="bodytype.athletic">스포티형</button>
+                <button class="tag" type="button" data-value="curvy" data-i18n="bodytype.curvy">글래머형</button>
+                <button class="tag" type="button" data-value="standard" data-i18n="bodytype.standard">내추럴형</button>
               </div>
             </div>
 
@@ -156,11 +179,22 @@
         </form>
       </div>
 
+      <div class="aeae-divider" aria-hidden="true">✦ · ✦</div>
+
       <!-- ── 추천 결과 패널 ── -->
       <div class="panel results-panel">
         <div class="result-top">
           <h2 data-i18n="panel.results">추천 결과</h2>
           <div class="mono" id="result-count" style="font-size:.66rem;color:var(--accent-soft)">0 items</div>
+        </div>
+        <div class="panel-deco-dots" aria-hidden="true">
+          <span class="panel-deco-dot"></span>
+          <span class="panel-deco-dot"></span>
+          <span class="panel-deco-dot"></span>
+          <span class="panel-deco-dot"></span>
+          <span class="panel-deco-dot"></span>
+          <span class="panel-deco-dot"></span>
+          <span class="panel-deco-dot"></span>
         </div>
         <p class="status" id="status"></p>
         <div class="result-list" id="result-list"></div>
@@ -232,7 +266,88 @@
   <div id="toast-container" class="toast-container"></div>
 
   <script src="https://js.stripe.com/v3/"></script>
-  <script type="module" src="assets/js/fashion.js?v=2"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script type="module" src="assets/js/fashion.js?v=3"></script>
+
+  <!-- ── UI Enhancement Scripts ─────────────────────────────────────── -->
+  <script>
+  (function(){
+
+    /* ── ④ 스크롤 페이드인 (Intersection Observer) ──────────────────── */
+    const fadeIO = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('sf-visible');
+          fadeIO.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
+
+    function observeProducts(container) {
+      Array.from(container.querySelectorAll('.product:not([data-sf-observed])'))
+        .forEach((el, i) => {
+          el.dataset.sfObserved = '1';
+          el.classList.add('sf-fade');
+          el.style.transitionDelay = Math.min(i * 0.07, 0.32) + 's';
+          fadeIO.observe(el);
+        });
+    }
+
+    // 동적으로 추가되는 상품 카드 감시
+    const resultList = document.getElementById('result-list');
+    if (resultList) {
+      new MutationObserver(() => observeProducts(resultList))
+        .observe(resultList, { childList: true });
+    }
+
+    /* ── ⑨ AI 타이핑 효과 ───────────────────────────────────────────── */
+    function typeText(el) {
+      if (!el || el.dataset.typed || !el.textContent.trim()) return;
+      el.dataset.typed = '1';
+      const full = el.textContent;
+      el.textContent = '';
+
+      // 커서 요소
+      const cursor = document.createElement('span');
+      cursor.className = 'ai-typing-cursor';
+      el.after(cursor);
+
+      let i = 0;
+      const SPEED = 26; // ms per char
+      function step() {
+        if (i < full.length) {
+          el.textContent += full[i++];
+          setTimeout(step, SPEED + (Math.random() * 12 | 0));
+        } else {
+          setTimeout(() => {
+            cursor.style.transition = 'opacity .3s';
+            cursor.style.opacity = '0';
+            setTimeout(() => cursor.remove(), 320);
+          }, 900);
+        }
+      }
+      // 짧은 지연 후 타이핑 시작 (카드가 fade-in 된 후)
+      setTimeout(step, 320);
+    }
+
+    // 새로 추가된 ai-reason 블록 감시
+    new MutationObserver(mutations => {
+      mutations.forEach(mut => {
+        mut.addedNodes.forEach(node => {
+          if (node.nodeType !== 1) return;
+          const targets = node.querySelectorAll
+            ? node.querySelectorAll('.ai-reason-line1')
+            : [];
+          targets.forEach(typeText);
+          if (node.classList && node.classList.contains('ai-reason-line1')) {
+            typeText(node);
+          }
+        });
+      });
+    }).observe(document.body, { childList: true, subtree: true });
+
+  })();
+  </script>
   <script src="/assets/js/chatbot.js"></script>
 </body>
 </html>

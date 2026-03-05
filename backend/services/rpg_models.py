@@ -97,7 +97,7 @@ EventId = Annotated[str, StringConstraints(
     min_length=1,
     max_length=100
 )]
-Coordinate = Annotated[int, Field(ge=0, le=5000)]
+Coordinate = Annotated[int, Field(ge=0, le=10000)]
 Gold = Annotated[int, Field(ge=0, le=9999999)]
 
 

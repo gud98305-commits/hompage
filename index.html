@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>OttO</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500&family=DM+Mono:wght@400;500&family=VT323&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500&family=DM+Mono:wght@400;500&family=VT323&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -67,8 +67,9 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--black);font-fa
 .ir2::after{content:'';position:absolute;top:-3px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--purple-mid)}
 @keyframes rot{to{transform:rotate(360deg)}}
 .i-logo{text-align:center;position:relative;z-index:1}
-.i-logo-main{font-family:var(--f-disp);font-size:3.6rem;letter-spacing:.22em;color:var(--black);font-weight:300}
+.i-logo-main{font-family:var(--f-disp);font-size:3.6rem;letter-spacing:.22em;color:var(--black);font-weight:300;display:flex;align-items:center;justify-content:center}
 .i-logo-main em{color:var(--purple);font-style:italic}
+.i-logo-img{height:108px;width:auto;mix-blend-mode:multiply;display:block}
 .i-logo-sub{font-family:var(--f-mono);font-size:.6rem;letter-spacing:.35em;color:rgba(80,68,175,.4);margin-top:6px;text-transform:uppercase}
 .i-desc{font-size:1rem;line-height:2.1;color:rgba(10,10,10,.45);text-align:center;max-width:280px;margin-bottom:44px;letter-spacing:.03em}
 .i-btn{font-family:var(--f-disp);font-size:1.3rem;letter-spacing:.3em;font-weight:400;color:var(--black);background:transparent;border:1.5px solid var(--border);padding:14px 52px;cursor:none;position:relative;overflow:hidden}
@@ -106,9 +107,10 @@ header{
 }
 .hd-logo{
   font-family:var(--f-disp);font-size:2rem;letter-spacing:.22em;
-  color:var(--black);text-decoration:none;font-weight:300
+  color:var(--black);text-decoration:none;font-weight:300;display:flex;align-items:center
 }
 .hd-logo em{color:var(--purple);font-style:italic}
+.hd-logo-img{height:46px;width:auto;mix-blend-mode:multiply;display:block}
 
 /* NAV — bigger, always visible, with active underline */
 .hd-nav{display:flex;gap:44px;list-style:none}
@@ -230,24 +232,24 @@ header{
 /* noise */
 .noise{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:256px}
 
-/* OTTO BRIGHT THEME */
+/* OTTO PURPLE THEME */
 :root{
-  --bg:#fdf6f0;
-  --black:#2a1f1a;
-  --purple:#d4847a;
-  --purple-mid:#c9a96e;
-  --purple-light:#f5d9d0;
-  --purple-pale:#f9ece5;
-  --purple-ghost:rgba(255,255,255,.72);
-  --purple-glow:rgba(212,132,122,.12);
-  --border:rgba(212,132,122,.42);
+  --bg:#f6f4ff;
+  --black:#1a1530;
+  --purple:#5044af;
+  --purple-mid:#807eda;
+  --purple-light:#a1a9f3;
+  --purple-pale:#efe5fb;
+  --purple-ghost:rgba(161,169,243,.12);
+  --purple-glow:rgba(80,68,175,.1);
+  --border:rgba(80,68,175,.28);
 }
 
 html,body{
   background:
-    radial-gradient(circle at 18% 18%, rgba(245,217,208,.55), transparent 24%),
-    radial-gradient(circle at 82% 76%, rgba(232,180,168,.32), transparent 20%),
-    linear-gradient(180deg,#fffaf6 0%,#fdf6f0 46%,#f7efe8 100%);
+    radial-gradient(circle at 18% 18%, rgba(161,169,243,.32), transparent 24%),
+    radial-gradient(circle at 82% 76%, rgba(128,126,218,.2), transparent 20%),
+    linear-gradient(180deg,#faf8ff 0%,#f6f4ff 46%,#f0edff 100%);
   color:var(--black);
   cursor:auto;
 }
@@ -263,20 +265,21 @@ body::before{
 #cur,#cur2{display:none}
 a,button,.dot,.card,.arr,.card-cta,.i-btn,.hd-nav a{cursor:pointer !important}
 
-#trans{background:linear-gradient(180deg,#e9b4a8 0%,#d4847a 100%)}
+#trans{background:linear-gradient(180deg,#807eda 0%,#5044af 100%)}
 #trans-lbl{
-  color:#fffdf9;
+  color:#f0eeff;
   letter-spacing:.12em;
   font-family:var(--f-disp);
   font-size:2.4rem;
-  font-style:italic;
+  font-style:normal;
+  display:none;
 }
 
 #intro{background:transparent}
 .i-rings{margin-bottom:34px}
-.ir1{border-color:rgba(212,132,122,.42)}
-.ir2{border-color:rgba(212,132,122,.16)}
-.ir3{border-color:rgba(201,169,110,.16)}
+.ir1{border-color:rgba(128,126,218,.42)}
+.ir2{border-color:rgba(128,126,218,.18)}
+.ir3{border-color:rgba(161,169,243,.18)}
 .ir1::after{background:var(--purple)}
 .ir2::after{background:var(--purple-mid)}
 .i-logo-main{
@@ -285,14 +288,14 @@ a,button,.dot,.card,.arr,.card-cta,.i-btn,.hd-nav a{cursor:pointer !important}
 }
 .i-logo-main em{
   color:var(--purple);
-  font-style:italic;
+  font-style:normal;
 }
 .i-logo-sub{
-  color:rgba(107,79,68,.6);
+  color:rgba(80,68,175,.55);
   letter-spacing:.18em;
 }
 .i-desc{
-  color:rgba(107,79,68,.88);
+  color:rgba(40,30,80,.75);
   max-width:430px;
 }
 .i-btn{
@@ -300,13 +303,13 @@ a,button,.dot,.card,.arr,.card-cta,.i-btn,.hd-nav a{cursor:pointer !important}
   border-color:var(--border);
   background:rgba(255,255,255,.68);
   border-radius:999px;
-  box-shadow:2px 2px 0 rgba(180,100,90,.16);
+  box-shadow:2px 2px 0 rgba(80,68,175,.14);
   letter-spacing:.14em;
 }
-.i-btn::before{background:linear-gradient(180deg,#e7b3a6 0%,#d4847a 100%)}
+.i-btn::before{background:linear-gradient(180deg,#9ecbf8 0%,#807eda 100%)}
 .i-btn:hover{
   color:#fff;
-  border-color:rgba(181,99,90,.65);
+  border-color:rgba(80,68,175,.55);
 }
 
 .entry-pop{
@@ -323,11 +326,11 @@ a,button,.dot,.card,.arr,.card-cta,.i-btn,.hd-nav a{cursor:pointer !important}
 .entry-pop.on{display:flex}
 .entry-pop-panel{
   width:min(540px,100%);
-  border:1px solid rgba(212,132,122,.28);
+  border:1px solid rgba(80,68,175,.22);
   border-radius:18px;
   overflow:hidden;
-  background:linear-gradient(180deg,rgba(255,255,255,.95) 0%,rgba(250,241,235,.98) 100%);
-  box-shadow:0 22px 48px rgba(120,86,70,.14), 4px 4px 0 rgba(180,100,90,.12);
+  background:linear-gradient(180deg,rgba(255,255,255,.96) 0%,rgba(240,238,255,.98) 100%);
+  box-shadow:0 22px 48px rgba(80,68,175,.16), 4px 4px 0 rgba(80,68,175,.1);
 }
 .entry-pop-bar{
   display:flex;
@@ -341,11 +344,11 @@ a,button,.dot,.card,.arr,.card-cta,.i-btn,.hd-nav a{cursor:pointer !important}
   height:10px;
   border-radius:50%;
   background:var(--purple-mid);
-  border:1px solid rgba(201,169,110,.5);
+  border:1px solid rgba(128,126,218,.5);
 }
 .entry-pop-dot:first-child{
   background:var(--purple);
-  border-color:rgba(212,132,122,.5);
+  border-color:rgba(80,68,175,.5);
 }
 .entry-pop-label{
   margin-left:auto;
@@ -360,7 +363,7 @@ a,button,.dot,.card,.arr,.card-cta,.i-btn,.hd-nav a{cursor:pointer !important}
 }
 .entry-pop-kicker{
   font-size:.65rem;
-  color:rgba(139,107,90,.72);
+  color:rgba(80,68,175,.58);
   margin-bottom:10px;
 }
 .entry-pop-title{
@@ -372,13 +375,13 @@ a,button,.dot,.card,.arr,.card-cta,.i-btn,.hd-nav a{cursor:pointer !important}
 }
 .entry-pop-title em{
   color:var(--purple);
-  font-style:italic;
+  font-style:normal;
 }
 .entry-pop-desc{
   margin-top:14px;
   font-size:.92rem;
   line-height:1.8;
-  color:rgba(107,79,68,.82);
+  color:rgba(40,30,80,.7);
 }
 .entry-pop-actions{
   margin-top:22px;
@@ -388,7 +391,7 @@ a,button,.dot,.card,.arr,.card-cta,.i-btn,.hd-nav a{cursor:pointer !important}
 }
 .entry-pop-btn{
   width:100%;
-  border:1px solid rgba(212,132,122,.24);
+  border:1px solid rgba(80,68,175,.22);
   border-radius:999px;
   padding:13px 18px;
   background:rgba(255,255,255,.82);
@@ -396,62 +399,110 @@ a,button,.dot,.card,.arr,.card-cta,.i-btn,.hd-nav a{cursor:pointer !important}
   font-family:var(--f-body);
   font-size:.95rem;
   cursor:pointer;
-  box-shadow:2px 2px 0 rgba(180,100,90,.1);
+  box-shadow:2px 2px 0 rgba(80,68,175,.1);
   transition:border-color .18s, background .18s, color .18s, transform .18s;
 }
 .entry-pop-btn:hover{
   transform:translateY(-1px);
-  border-color:rgba(181,99,90,.42);
+  border-color:rgba(80,68,175,.45);
   background:#fff;
 }
 .entry-pop-btn--member{
-  background:linear-gradient(180deg,#eab9ac 0%,#d99286 100%);
+  background:linear-gradient(180deg,#9ecbf8 0%,#807eda 100%);
   color:#fff;
-  border-color:rgba(181,99,90,.52);
+  border-color:rgba(80,68,175,.52);
 }
 .entry-pop-btn--member:hover{
-  background:linear-gradient(180deg,#d99286 0%,#b5635a 100%);
+  background:linear-gradient(180deg,#807eda 0%,#5044af 100%);
   color:#fff;
 }
 .entry-pop-link{
   margin-top:14px;
   border:none;
   background:none;
-  color:rgba(107,79,68,.72);
+  color:rgba(80,68,175,.55);
   font-family:var(--f-mono);
   font-size:.72rem;
   letter-spacing:.08em;
   cursor:pointer;
 }
 .entry-pop-link:hover{color:var(--purple)}
+/* ── Entry Auth Form ──────────────────────────────────── */
+.ep-auth-wrap{width:100%}
+.ep-tabs{display:flex;gap:0;border:1px solid rgba(80,68,175,.24);border-radius:8px;overflow:hidden;margin-bottom:14px}
+.ep-tab{
+  flex:1;padding:8px 10px;background:transparent;border:none;cursor:pointer;
+  font-family:var(--f-mono);font-size:.7rem;letter-spacing:.07em;
+  color:rgba(80,68,175,.55);transition:background .16s,color .16s;
+}
+.ep-tab.active{background:rgba(240,238,255,.9);color:var(--black)}
+.ep-tab:first-child{border-right:1px solid rgba(80,68,175,.24)}
+.ep-field{
+  width:100%;padding:10px 13px;margin-bottom:9px;
+  border:1px solid rgba(212,132,122,.3);border-radius:8px;
+  background:rgba(255,255,255,.8);color:var(--black);
+  font-family:var(--f-body);font-size:.9rem;outline:none;
+  transition:border-color .16s,box-shadow .16s;
+}
+.ep-field:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(80,68,175,.1)}
+.ep-submit{
+  width:100%;padding:12px;border:none;border-radius:8px;
+  background:linear-gradient(180deg,#9ecbf8 0%,#807eda 100%);
+  color:#fff;font-family:var(--f-body);font-size:.9rem;
+  cursor:pointer;transition:opacity .16s,transform .16s;
+  box-shadow:2px 2px 0 rgba(80,68,175,.14);
+}
+.ep-submit:hover{opacity:.9;transform:translateY(-1px)}
+.ep-submit:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.ep-msg{margin-top:8px;font-size:.78rem;min-height:1.1em;text-align:center}
+.ep-msg.err{color:var(--purple)}
+.ep-msg.ok{color:#5a9e5a}
+.ep-back{
+  margin-top:12px;display:block;background:none;border:none;
+  color:rgba(80,68,175,.55);font-family:var(--f-mono);font-size:.68rem;
+  letter-spacing:.07em;cursor:pointer;
+}
+.ep-back:hover{color:var(--purple)}
+.entry-pop-btn--google{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  background:#fff;color:#3c4043;
+  border-color:rgba(80,68,175,.22);
+  box-shadow:0 1px 3px rgba(0,0,0,.10),2px 2px 0 rgba(80,68,175,.08);
+}
+.entry-pop-btn--google:hover{
+  background:#fff;
+  border-color:rgba(80,68,175,.4);
+  box-shadow:0 3px 8px rgba(0,0,0,.14),2px 2px 0 rgba(80,68,175,.1);
+}
 
 #scene{background:transparent}
 .bg-0{
   background:
-    radial-gradient(circle at 20% 18%, rgba(245,217,208,.44), transparent 20%),
-    radial-gradient(circle at 84% 80%, rgba(232,180,168,.2), transparent 20%),
-    linear-gradient(180deg,#fffaf6 0%,#fdf6f0 54%,#f6ece3 100%);
+    radial-gradient(circle at 20% 18%, rgba(161,169,243,.28), transparent 20%),
+    radial-gradient(circle at 84% 80%, rgba(128,126,218,.16), transparent 20%),
+    linear-gradient(180deg,#faf8ff 0%,#f6f4ff 54%,#f0edff 100%);
 }
 .bg-1{
   background:
-    radial-gradient(circle at 15% 22%, rgba(232,238,232,.9), transparent 18%),
-    radial-gradient(circle at 82% 78%, rgba(245,217,208,.34), transparent 20%),
-    linear-gradient(180deg,#fffaf6 0%,#fcf4ee 54%,#f4ece6 100%);
+    radial-gradient(circle at 15% 22%, rgba(158,203,248,.44), transparent 18%),
+    radial-gradient(circle at 82% 78%, rgba(161,169,243,.28), transparent 20%),
+    linear-gradient(180deg,#faf8ff 0%,#f3f0ff 54%,#edeaff 100%);
 }
 .bg-2{
   background:
-    radial-gradient(circle at 16% 20%, rgba(245,217,208,.36), transparent 18%),
-    radial-gradient(circle at 82% 76%, rgba(232,238,232,.88), transparent 18%),
-    linear-gradient(180deg,#fffaf6 0%,#f8f1eb 54%,#efe8e1 100%);
+    radial-gradient(circle at 16% 20%, rgba(161,169,243,.24), transparent 18%),
+    radial-gradient(circle at 82% 76%, rgba(158,203,248,.36), transparent 18%),
+    linear-gradient(180deg,#faf8ff 0%,#f0eeff 54%,#e8e4ff 100%);
 }
 #bg-overlay{display:none}
 
 header{
   height:78px;
-  border-bottom:1px solid rgba(212,132,122,.16);
-  background:rgba(253,246,240,.78);
+  border-bottom:1px solid rgba(80,68,175,.14);
+  background:rgba(240,238,248,.82);
   backdrop-filter:blur(14px);
-  box-shadow:0 10px 32px rgba(180,100,90,.06);
+  box-shadow:0 10px 32px rgba(80,68,175,.06);
+  position:relative; /* for absolute nav centering */
 }
 .hd-logo{
   font-family:var(--f-disp);
@@ -461,11 +512,14 @@ header{
 }
 .hd-logo em{
   color:var(--purple);
-  font-style:italic;
+  font-style:normal;
 }
-.hd-nav{gap:18px}
+/* 헤더 3-column 정중앙 정렬 */
+.hd-logo-img-wrap{flex:1}
+.hd-nav{gap:18px;position:absolute;left:50%;transform:translateX(-50%)}
+.hd-r{flex:1;text-align:right;display:flex;align-items:center;justify-content:flex-end}
 .hd-nav a{
-  color:rgba(107,79,68,.72);
+  color:rgba(80,68,175,.6);
   padding:8px 12px 7px;
   border-radius:999px;
   border:1px solid transparent;
@@ -475,50 +529,46 @@ header{
 .hd-nav a:hover,
 .hd-nav a.active{
   color:var(--black);
-  border-color:rgba(212,132,122,.28);
+  border-color:rgba(80,68,175,.22);
   background:rgba(255,255,255,.7);
-}
-.hd-r{
-  color:rgba(107,79,68,.5);
-  letter-spacing:.16em;
 }
 #stage{top:78px}
 
 .card{
   border-radius:26px;
-  border:1.5px solid rgba(201,169,110,.28);
-  background:linear-gradient(180deg,#fffefb 0%,#f7eee8 100%);
+  border:1.5px solid rgba(80,68,175,.2);
+  background:linear-gradient(180deg,#faf8ff 0%,#f0edff 100%);
   box-shadow:
-    0 16px 40px rgba(180,100,90,.08),
+    0 16px 40px rgba(80,68,175,.1),
     inset 0 1px 0 rgba(255,255,255,.92);
 }
 .card[data-pos="center"]{
   box-shadow:
-    0 28px 64px rgba(180,100,90,.14),
-    0 0 0 1px rgba(212,132,122,.08),
+    0 28px 64px rgba(80,68,175,.18),
+    0 0 0 1px rgba(80,68,175,.08),
     inset 0 1px 0 rgba(255,255,255,.92);
 }
 .card[data-pos="right"],
 .card[data-pos="left"]{
   box-shadow:
-    0 10px 24px rgba(180,100,90,.08),
+    0 10px 24px rgba(80,68,175,.08),
     inset 0 1px 0 rgba(255,255,255,.88);
 }
-.ci-0{background:linear-gradient(160deg,#efe7e0 0%,#f6d8d0 55%,#eed6cb 100%)}
-.ci-1{background:linear-gradient(160deg,#f2ebe5 0%,#f4ddd4 52%,#eadcc8 100%)}
-.ci-2{background:linear-gradient(160deg,#f3ece7 0%,#e8eee8 50%,#f4ddd4 100%)}
-.card-deco svg{opacity:.24}
-.card-deco svg *{stroke:#d8a298 !important}
+.ci-0{background:linear-gradient(160deg,#d4d0f0 0%,#b8b4e8 55%,#a0a0e0 100%)}
+.ci-1{background:linear-gradient(160deg,#c8c4f0 0%,#b0b0e8 52%,#9ecbf8 100%)}
+.ci-2{background:linear-gradient(160deg,#d0d4f8 0%,#b8c0f0 50%,#a0aee8 100%)}
+.card-deco svg{opacity:.18}
+.card-deco svg *{stroke:#807eda !important}
 .card-fade{
-  background:linear-gradient(to top,rgba(255,252,249,1) 0%,rgba(255,252,249,.86) 44%,rgba(255,252,249,0) 100%);
+  background:linear-gradient(to top,rgba(248,246,255,1) 0%,rgba(248,246,255,.86) 44%,rgba(248,246,255,0) 100%);
 }
 .card-tag{
-  color:rgba(139,107,90,.9);
+  color:rgba(80,68,175,.8);
   letter-spacing:.16em;
 }
 .card-tag::before{
   height:2px;
-  background:rgba(212,132,122,.65);
+  background:rgba(128,126,218,.6);
 }
 .card-title{
   color:var(--black);
@@ -527,69 +577,69 @@ header{
 }
 .card-title em{
   color:var(--purple);
-  font-style:italic;
+  font-style:normal;
 }
 .card-desc{
-  color:rgba(107,79,68,.86);
+  color:rgba(40,30,80,.62);
 }
 .card-cta{
   color:#fff;
-  border-color:rgba(212,132,122,.34);
-  background:linear-gradient(180deg,#eab9ac 0%,#d99286 100%);
+  border-color:rgba(80,68,175,.3);
+  background:linear-gradient(180deg,#9ecbf8 0%,#807eda 100%);
   border-radius:999px;
-  box-shadow:2px 2px 0 rgba(180,100,90,.14);
+  box-shadow:2px 2px 0 rgba(80,68,175,.14);
   letter-spacing:.12em;
 }
 .card-cta::before{
-  background:linear-gradient(180deg,#d99286 0%,#b5635a 100%);
+  background:linear-gradient(180deg,#807eda 0%,#5044af 100%);
 }
 .card-cta:hover{
   color:#fff;
-  border-color:rgba(181,99,90,.6);
+  border-color:rgba(80,68,175,.55);
 }
 
 .arr{
   width:56px;
   height:42px;
   border-radius:999px;
-  border-color:rgba(212,132,122,.3);
+  border-color:rgba(80,68,175,.22);
   background:rgba(255,255,255,.76);
-  color:rgba(107,79,68,.9);
-  box-shadow:2px 2px 0 rgba(180,100,90,.12);
+  color:rgba(80,68,175,.8);
+  box-shadow:2px 2px 0 rgba(80,68,175,.1);
 }
 .arr:hover{
   background:#fff;
-  border-color:rgba(181,99,90,.5);
+  border-color:rgba(80,68,175,.45);
   color:var(--purple);
 }
 
 #bottom{
   height:82px;
-  border-top:1px solid rgba(212,132,122,.14);
-  background:rgba(253,246,240,.78);
+  border-top:1px solid rgba(80,68,175,.12);
+  background:rgba(240,238,248,.82);
   backdrop-filter:blur(14px);
-  box-shadow:0 -10px 24px rgba(180,100,90,.05);
+  box-shadow:0 -10px 24px rgba(80,68,175,.05);
 }
 #dots{gap:8px}
 .dot{
   width:14px;
   height:7px;
   border-radius:999px;
-  background:rgba(212,132,122,.22);
+  background:rgba(80,68,175,.18);
 }
 .dot.on{
   width:34px;
   border-radius:999px;
-  background:linear-gradient(90deg,#e0bf82 0%,#d4847a 100%);
+  background:linear-gradient(90deg,#9ecbf8 0%,#807eda 100%);
 }
 #ctr{
-  color:rgba(107,79,68,.58);
+  color:rgba(80,68,175,.5);
 }
 #ctr-n{
   color:var(--purple);
 }
 #bottom-label{
-  color:rgba(107,79,68,.52);
+  color:rgba(80,68,175,.45);
   letter-spacing:.14em;
 }
 .noise{
@@ -597,10 +647,37 @@ header{
   mix-blend-mode:multiply;
 }
 
+/* lang toggle (인덱스 헤더) */
+.hd-r .lang-toggle{
+  display:inline-flex;
+  border:1.5px solid rgba(80,68,175,.28);
+  border-radius:999px;
+  background:rgba(255,255,255,.78);
+  overflow:hidden;
+}
+.hd-r .lang-btn{
+  padding:5px 13px;
+  border:none;
+  background:transparent;
+  font-family:var(--f-mono);
+  font-size:.68rem;
+  letter-spacing:.06em;
+  color:rgba(80,68,175,.65);
+  cursor:pointer;
+  transition:background .15s, color .15s;
+}
+.hd-r .lang-btn.active{
+  background:linear-gradient(180deg,#9ecbf8 0%,#807eda 100%);
+  color:#fff;
+}
+
 @media (max-width:980px){
   header,#bottom{padding:0 24px}
   .hd-nav{gap:8px}
-  .hd-r,#bottom-label{display:none}
+  #bottom-label{display:none}
+}
+@media (max-width:580px){
+  .hd-r{display:none}
 }
 @media (max-width:720px){
   :root{--card-w:min(84vw,360px);--card-h:min(68vh,520px)}
@@ -608,8 +685,10 @@ header{
   #arr-r{right:16px}
   .hd-nav{display:none}
   header{justify-content:space-between}
-  .card-title{font-size:3.1rem}
+  .card-title{font-size:clamp(2.4rem,7vw,3.1rem)}
+  .card-tag{display:none} /* 좁은 화면에서 태그 숨김 */
 }
+
 </style>
 </head>
 <body>
@@ -617,17 +696,16 @@ header{
 <div id="cur"></div>
 <div id="cur2"></div>
 <div id="trans"><div id="trans-lbl">OttO</div></div>
-
 <!-- INTRO -->
 <div id="intro">
   <div class="i-rings">
     <div class="ir ir1"></div><div class="ir ir2"></div><div class="ir ir3"></div>
     <div class="i-logo">
-      <div class="i-logo-main">O<em>tt</em>O</div>
+      <div class="i-logo-main"><img src="assets/img/otto-logo.png" alt="OttO" class="i-logo-img"/></div>
       <div class="i-logo-sub">find your fit</div>
     </div>
   </div>
-  <p class="i-desc">어라? 나에게 딱 맞는 옷(OttO)을 찾다.<br/>AI가 큐레이션하는 한국 패션을 만나보세요.</p>
+  <p class="i-desc">OttO, 나에게 딱 맞는 옷을 찾다.<br/>AI가 큐레이션하는 한국 패션을 만나보세요.</p>
   <button class="i-btn" id="btn-enter">입장하기</button>
 </div>
 
@@ -639,14 +717,24 @@ header{
       <span class="entry-pop-label">OttO entry</span>
     </div>
     <div class="entry-pop-body">
-      <div class="entry-pop-kicker mono">member access</div>
-      <h2 class="entry-pop-title" id="entry-pop-title">로그인하고<br/><em>시작할까요?</em></h2>
-      <p class="entry-pop-desc">회원 로그인 시 찜 목록과 구매 이력이 연결됩니다.<br/>비회원으로도 바로 서비스를 이용할 수 있습니다.</p>
-      <div class="entry-pop-actions">
-        <button class="entry-pop-btn entry-pop-btn--member" id="entry-member" type="button">회원 로그인 (Google)</button>
-        <button class="entry-pop-btn" id="entry-guest" type="button">비회원 이용</button>
+      <div id="ep-choose">
+        <div class="entry-pop-kicker mono">member access</div>
+        <h2 class="entry-pop-title" id="entry-pop-title">로그인하고 시작할까요?</h2>
+        <p class="entry-pop-desc">회원 로그인 시 찜 목록과 구매 이력이 연결됩니다.<br/>비회원으로도 바로 서비스를 이용할 수 있습니다.</p>
+        <div class="entry-pop-actions">
+          <button class="entry-pop-btn entry-pop-btn--google" id="entry-member" type="button">
+            <svg width="18" height="18" viewBox="0 0 48 48" style="flex-shrink:0" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Google로 로그인
+          </button>
+          <button class="entry-pop-btn" id="entry-guest" type="button">비회원 이용</button>
+        </div>
+        <button class="entry-pop-link" id="entry-close" type="button">나중에 선택하기</button>
       </div>
-      <button class="entry-pop-link" id="entry-close" type="button">나중에 선택하기</button>
     </div>
   </div>
 </div>
@@ -657,13 +745,18 @@ header{
   <div id="bg-overlay"></div>
 
   <header>
-    <a class="hd-logo" href="#">O<em>tt</em>O</a>
+    <a class="hd-logo hd-logo-img-wrap" href="#"><img src="assets/img/otto-logo.png" alt="OttO" class="hd-logo-img"/></a>
     <ul class="hd-nav">
-      <li><a href="#" data-goto="0" class="active">패션추천</a></li>
-      <li><a href="#" data-goto="1">AI 포토부스</a></li>
-      <li><a href="#" data-goto="2">픽셀 서울</a></li>
+      <li><a href="#" data-goto="0" class="active" data-i18n="nav.curator">큐레이터</a></li>
+      <li><a href="#" data-goto="1" data-i18n="nav.photobooth">포토부스</a></li>
+      <li><a href="#" data-goto="2" data-i18n="nav.pixel">픽셀성수</a></li>
     </ul>
-    <div class="hd-r">FIND YOUR FIT</div>
+    <div class="hd-r">
+      <div class="lang-toggle" id="global-lang-toggle">
+        <button class="lang-btn active" data-lang="ko">한국어</button>
+        <button class="lang-btn" data-lang="ja">日本語</button>
+      </div>
+    </div>
   </header>
 
   <div id="stage">
@@ -673,7 +766,7 @@ header{
       <!-- CARD 0 : AI 패션 추천 -->
       <div class="card" data-i="0">
         <div class="card-img ci-0">
-          <img src="assets/cards/card-fashion.svg" alt="AI 패션 추천"/>
+          <img src="assets/img/card-fashion.jpg" alt="AI 패션 추천" style="object-position:center top"/>
         </div>
         <div class="card-deco">
           <svg width="300" height="300" viewBox="0 0 300 300" fill="none">
@@ -684,11 +777,11 @@ header{
         </div>
         <div class="card-fade"></div>
         <div class="card-body">
-          <div class="card-tag">Card 01 — AI 패션 추천</div>
-          <div class="card-title">AI<br/>큐레<em>이터</em></div>
-          <div class="card-desc">키, 체형, 스타일 입력 →<br/>한국 브랜드 AI 추천 + Stripe 결제</div>
+          <div class="card-tag">card 01</div>
+          <div class="card-title" data-i18n-html="card0.title">AI<br/>큐레<em>이터</em></div>
+          <div class="card-desc" data-i18n="card0.desc">K-패션 카탈로그에서 AI가 나만의 스타일을 큐레이션</div>
           <button class="card-cta" data-href="fashion.html" data-label="패션추천">
-            추천 받기 <span class="cta-arr">→</span>
+            <span data-i18n="card0.cta">추천 받기</span> <span class="cta-arr">→</span>
           </button>
         </div>
       </div>
@@ -696,7 +789,7 @@ header{
       <!-- CARD 1 : AI 포토부스 -->
       <div class="card" data-i="1">
         <div class="card-img ci-1">
-          <img src="assets/cards/card-photo.svg" alt="AI 포토부스"/>
+          <img src="assets/img/card-photo.jpg" alt="AI 포토부스" style="object-position:center center"/>
         </div>
         <div class="card-deco">
           <svg width="300" height="300" viewBox="0 0 300 300" fill="none">
@@ -709,19 +802,19 @@ header{
         </div>
         <div class="card-fade"></div>
         <div class="card-body">
-          <div class="card-tag">Card 02 — AI 인생네컷</div>
-          <div class="card-title">인생<br/><em>네컷</em></div>
-          <div class="card-desc">얼굴 사진 + 스타일 입력 →<br/>AI 패션 화보 생성 + 다운로드</div>
+          <div class="card-tag">card 02</div>
+          <div class="card-title" data-i18n-html="card1.title">AI<br/><em>포토부스</em></div>
+          <div class="card-desc" data-i18n="card1.desc">셀카 한 장으로 K-패션 화보를 즉시 생성 · 다운로드</div>
           <button class="card-cta" data-href="photobooth.html" data-label="AI 포토부스">
-            체험하기 <span class="cta-arr">→</span>
+            <span data-i18n="card1.cta">체험하기</span> <span class="cta-arr">→</span>
           </button>
         </div>
       </div>
 
-      <!-- CARD 2 : 픽셀 서울 -->
+      <!-- CARD 2 : 픽셀 성수 -->
       <div class="card" data-i="2">
         <div class="card-img ci-2">
-          <img src="assets/cards/card-rpg.svg" alt="픽셀 서울"/>
+          <img src="assets/img/card-pixel.jpg" alt="픽셀 성수" style="object-position:center center"/>
         </div>
         <div class="card-deco">
           <svg width="300" height="300" viewBox="0 0 300 300" fill="none">
@@ -732,11 +825,11 @@ header{
         </div>
         <div class="card-fade"></div>
         <div class="card-body">
-          <div class="card-tag">Card 03 — 픽셀 서울</div>
-          <div class="card-title">픽셀<br/><em>서울</em></div>
-          <div class="card-desc">성수동 플래그샵 픽셀 RPG →<br/>Stripe 결제 + 현실 배송</div>
-          <button class="card-cta" data-href="rpg.html" data-label="픽셀 서울">
-            게임 시작 <span class="cta-arr">→</span>
+          <div class="card-tag">card 03</div>
+          <div class="card-title" data-i18n-html="card2.title">픽셀<br/><em>성수</em></div>
+          <div class="card-desc" data-i18n="card2.desc">성수동 플래그샵을 픽셀 RPG로 탐험</div>
+          <button class="card-cta" data-href="rpg.html" data-label="픽셀 성수">
+            <span data-i18n="card2.cta">게임 시작</span> <span class="cta-arr">→</span>
           </button>
         </div>
       </div>
@@ -779,44 +872,42 @@ function enterScene(instant){
     scene.classList.add('show');
   } else {
     intro.classList.add('out');
-    setTimeout(()=>scene.classList.add('show'),500);
+    scene.classList.add('show');
   }
 }
 // #scene 해시로 돌아온 경우 인트로 건너뛰기
 if(window.location.hash==='#scene'){ enterScene(true); }
 const entryPop=document.getElementById('entry-pop');
-const entryMember=document.getElementById('entry-member');
 const entryGuest=document.getElementById('entry-guest');
 const entryClose=document.getElementById('entry-close');
 function openEntryPop(){
   entryPop.classList.add('on');
   entryPop.setAttribute('aria-hidden','false');
+  // reset to choose screen
+  const epChoose = document.getElementById('ep-choose');
+  const epAuth = document.getElementById('ep-auth');
+  const epMsg = document.getElementById('ep-msg');
+  if(epChoose) epChoose.style.display='';
+  if(epAuth) epAuth.style.display='none';
+  if(epMsg) epMsg.textContent='';
 }
 function closeEntryPop(){
   entryPop.classList.remove('on');
   entryPop.setAttribute('aria-hidden','true');
 }
-document.getElementById('btn-enter').addEventListener('click',openEntryPop);
-entryGuest.addEventListener('click',()=>{
-  closeEntryPop();
-  enterScene(false);
+document.getElementById('btn-enter').addEventListener('click',()=>{
+  if(window.SeoulFitAuth?.isLoggedIn()){enterScene(false);return;}
+  openEntryPop();
 });
+entryGuest.addEventListener('click',()=>{ closeEntryPop(); enterScene(false); });
 entryClose.addEventListener('click',closeEntryPop);
-entryPop.addEventListener('click',e=>{
-  if(e.target===entryPop) closeEntryPop();
-});
-entryMember.addEventListener('click',()=>{
-  if(window.SeoulFitAuth?.isLoggedIn?.()){
-    closeEntryPop();
-    enterScene(false);
-    return;
-  }
-  if(window.SeoulFitAuth?.googleLogin){
-    window.SeoulFitAuth.googleLogin('index.html#scene');
-  }
-});
-window.addEventListener('keydown',e=>{
-  if(e.key==='Escape'&&entryPop.classList.contains('on')) closeEntryPop();
+entryPop.addEventListener('click',e=>{ if(e.target===entryPop) closeEntryPop(); });
+window.addEventListener('keydown',e=>{ if(e.key==='Escape'&&entryPop.classList.contains('on')) closeEntryPop(); });
+
+// "Google로 로그인" 클릭 → Google OAuth 시작
+document.getElementById('entry-member').addEventListener('click',()=>{
+  if(window.SeoulFitAuth?.isLoggedIn()){ closeEntryPop(); enterScene(false); return; }
+  window.SeoulFitAuth?.googleLogin();
 });
 
 /* CAROUSEL */
@@ -829,7 +920,10 @@ const N=3;
 let active=0,busy=false;
 
 const BG_GRADIENT=['bg-0','bg-1','bg-2'];
-const LABELS=['패션추천','AI 포토부스','픽셀 서울'];
+const LABELS={
+  ko:['큐레이터','포토부스','픽셀성수'],
+  ja:['キュレーター','フォトブース','ピクセル聖水'],
+};
 
 function applyBackground(idx){
   if(CONFIG.background){
@@ -859,7 +953,8 @@ function render(){
   applyBackground(active);
   DOTS.forEach((d,i)=>d.classList.toggle('on',i===active));
   document.getElementById('ctr-n').textContent=String(active+1).padStart(2,'0');
-  document.getElementById('bottom-label').textContent=LABELS[active];
+  const _lang=localStorage.getItem('otto_lang')||'ko';
+  document.getElementById('bottom-label').textContent=(LABELS[_lang]||LABELS.ko)[active];
   updateNav(active);
 }
 
@@ -892,6 +987,71 @@ function navigate(href,label){
   setTimeout(()=>window.location.href=href,560);
 }
 document.querySelectorAll('[data-href]').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();navigate(btn.dataset.href,btn.dataset.label)}));
+
+/* INDEX i18n 딕셔너리 */
+const INDEX_I18N = {
+  ko: {
+    'nav.curator':  '큐레이터',
+    'nav.photobooth':'포토부스',
+    'nav.pixel':    '픽셀성수',
+    'card0.title':  'AI<br/>큐레<em>이터</em>',
+    'card0.desc':   'K-패션 카탈로그에서 AI가 나만의 스타일을 큐레이션',
+    'card0.cta':    '추천 받기',
+    'card1.title':  'AI<br/><em>포토부스</em>',
+    'card1.desc':   '셀카 한 장으로 K-패션 화보를 즉시 생성 · 다운로드',
+    'card1.cta':    '체험하기',
+    'card2.title':  '픽셀<br/><em>성수</em>',
+    'card2.desc':   '성수동 플래그샵을 픽셀 RPG로 탐험하며 실제 상품을 주문',
+    'card2.cta':    '게임 시작',
+  },
+  ja: {
+    'nav.curator':  'キュレーター',
+    'nav.photobooth':'フォトブース',
+    'nav.pixel':    'ピクセル聖水',
+    'card0.title':  'AI<br/>キュレー<em>ター</em>',
+    'card0.desc':   'K-ファッションカタログから AIがあなただけのスタイルをキュレーション',
+    'card0.cta':    'おすすめを見る',
+    'card1.title':  'AI<br/><em>フォトブース</em>',
+    'card1.desc':   'セルカ1枚でK-ファッション画報をすぐ生成・ダウンロード',
+    'card1.cta':    '体験する',
+    'card2.title':  'ピクセル<br/><em>聖水</em>',
+    'card2.desc':   '聖水のフラッグシップをピクセルRPGで探索し実際の商品をオーダー',
+    'card2.cta':    'ゲーム開始',
+  }
+};
+function applyIndexLang(lang){
+  const dict = INDEX_I18N[lang] || INDEX_I18N.ko;
+  // 텍스트 요소
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const v = dict[el.dataset.i18n];
+    if(v !== undefined) el.textContent = v;
+  });
+  // innerHTML 요소 (card title — em 태그 포함)
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>{
+    const v = dict[el.dataset.i18nHtml];
+    if(v !== undefined) el.innerHTML = v;
+  });
+  // bottom-label (LABELS 배열)
+  document.getElementById('bottom-label').textContent=(LABELS[lang]||LABELS.ko)[active];
+  // html lang 속성
+  document.documentElement.lang = lang==='ja'?'ja':'ko';
+}
+
+/* LANG TOGGLE (글로벌) */
+(function(){
+  const storedLang = localStorage.getItem('otto_lang') || 'ko';
+  document.querySelectorAll('#global-lang-toggle .lang-btn').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.lang === storedLang);
+    btn.addEventListener('click', ()=>{
+      const lang = btn.dataset.lang;
+      localStorage.setItem('otto_lang', lang);
+      document.querySelectorAll('#global-lang-toggle .lang-btn').forEach(b=>b.classList.toggle('active', b.dataset.lang===lang));
+      applyIndexLang(lang);
+    });
+  });
+  // 페이지 로드 시 저장된 언어 적용
+  if(storedLang !== 'ko') applyIndexLang(storedLang);
+})();
 </script>
 <script src="/assets/js/chatbot.js"></script>
 </body>

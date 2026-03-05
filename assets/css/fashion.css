@@ -47,6 +47,7 @@
 /* ─── Hero ───────────────────────────────────────────────────────────────── */
 .hero{
   padding:36px 0 16px;
+  position:relative;
 }
 
 .hero h1{
@@ -55,7 +56,7 @@
   line-height:1;
   font-weight:300;
 }
-.hero h1 em{color:var(--purple);font-style:italic}
+.hero h1 em{color:var(--purple);font-style:normal}
 
 /* ─── Stack layout (single column) ──────────────────────────────────────── */
 .stack{
@@ -828,11 +829,23 @@
   display: flex;
   align-items: center;
   gap: 14px;
+  flex: 1;
 }
 .hd-right {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex: 1;
+  justify-content: flex-end;
+}
+/* sf-nav 정중앙 배치 */
+.seoulfit-header {
+  position: relative;
+}
+.sf-nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* ── Back button ────────────────────────────────────────────────────────── */
@@ -853,11 +866,12 @@
 }
 .hd-back-btn:hover { color: var(--purple); }
 
-/* ── Site-wide nav (center of header) ───────────────────────────────────── */
+/* ── Site-wide nav (center of header, absolute centered) ────────────────── */
 .sf-nav {
   display: flex;
   gap: 36px;
   align-items: center;
+  white-space: nowrap;
 }
 .sf-nav-link {
   font-family: var(--f-mono);
@@ -914,30 +928,30 @@
 .page-fashion .hero h1 em,
 .page-my .hero h1 em{
   color:var(--warm-pink);
-  font-style:italic;
+  font-style:normal;
 }
 
 .page-fashion .seoulfit-header,
 .page-my .seoulfit-header{
-  background:rgba(253,246,240,.82);
-  border-bottom:1px solid rgba(212,132,122,.14);
-  box-shadow:0 10px 30px rgba(180,100,90,.05);
+  background:rgba(240,238,248,.82);
+  border-bottom:1px solid rgba(128,126,218,.14);
+  box-shadow:0 10px 30px rgba(80,68,175,.05);
 }
 
 .page-fashion .hd-back-btn,
 .page-my .hd-back-btn{
   padding:7px 14px;
-  border:1px solid rgba(212,132,122,.28);
+  border:1px solid rgba(128,126,218,.28);
   border-radius:999px;
   background:rgba(255,255,255,.7);
-  color:rgba(107,79,68,.8);
-  box-shadow:2px 2px 0 rgba(180,100,90,.12);
+  color:rgba(60,48,128,.8);
+  box-shadow:2px 2px 0 rgba(80,68,175,.12);
 }
 
 .page-fashion .hd-back-btn:hover,
 .page-my .hd-back-btn:hover{
   color:var(--warm-pink);
-  border-color:rgba(181,99,90,.45);
+  border-color:rgba(80,68,175,.45);
 }
 
 .page-fashion .sf-nav,
@@ -947,7 +961,7 @@
 
 .page-fashion .sf-nav-link,
 .page-my .sf-nav-link{
-  color:rgba(107,79,68,.72);
+  color:rgba(60,48,128,.72);
   padding:8px 12px;
   border-radius:999px;
   border:1px solid transparent;
@@ -962,38 +976,38 @@
 .page-fashion .sf-nav-link:hover,
 .page-my .sf-nav-link:hover{
   color:var(--black);
-  border-color:rgba(212,132,122,.24);
+  border-color:rgba(128,126,218,.24);
   background:rgba(255,255,255,.72);
 }
 
 .page-fashion .sf-nav-link.active,
 .page-my .sf-nav-link.active{
   color:var(--black);
-  border-color:rgba(212,132,122,.28);
+  border-color:rgba(128,126,218,.28);
   background:rgba(255,255,255,.8);
-  box-shadow:2px 2px 0 rgba(180,100,90,.1);
+  box-shadow:2px 2px 0 rgba(80,68,175,.1);
 }
 
 .page-fashion .sf-nav-link.disabled,
 .page-my .sf-nav-link.disabled{
-  color:rgba(107,79,68,.3);
+  color:rgba(60,48,128,.3);
 }
 
 .page-fashion .lang-toggle{
   background:rgba(255,255,255,.78);
-  border-color:rgba(212,132,122,.2);
-  box-shadow:2px 2px 0 rgba(180,100,90,.1);
+  border-color:rgba(128,126,218,.2);
+  box-shadow:2px 2px 0 rgba(80,68,175,.1);
 }
 
 .page-fashion .panel,
 .page-my .panel{
   color:var(--text);
   background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(250,241,235,.96));
-  border:1px solid rgba(212,132,122,.18);
+  border:1px solid rgba(128,126,218,.18);
   border-radius:28px;
   backdrop-filter:blur(10px);
   box-shadow:
-    0 14px 36px rgba(180,100,90,.06),
+    0 14px 36px rgba(80,68,175,.06),
     inset 0 1px 0 rgba(255,255,255,.9);
 }
 
@@ -1019,7 +1033,7 @@
 .page-my .status,
 .page-my .page-info,
 .page-my .empty-hint{
-  color:rgba(107,79,68,.7);
+  color:rgba(60,48,128,.7);
 }
 
 .page-fashion .f-label,
@@ -1033,7 +1047,7 @@
 .page-fashion .wish-count,
 .page-my .product .mall,
 .page-my .wish-count{
-  color:rgba(181,99,90,.9);
+  color:rgba(80,68,175,.9);
 }
 
 .page-fashion .f-label-hint,
@@ -1059,8 +1073,8 @@
 .page-my .my-header-btn{
   border-radius:999px;
   background:rgba(255,255,255,.8);
-  border-color:rgba(212,132,122,.22);
-  box-shadow:2px 2px 0 rgba(180,100,90,.1);
+  border-color:rgba(128,126,218,.22);
+  box-shadow:2px 2px 0 rgba(80,68,175,.1);
 }
 
 .page-fashion .page-btn:hover:not(:disabled),
@@ -1072,7 +1086,7 @@
 .page-my .btn:hover,
 .page-my .wish-header-btn:hover,
 .page-my .my-header-btn:hover{
-  border-color:rgba(212,132,122,.38);
+  border-color:rgba(128,126,218,.38);
   background:#fff;
 }
 
@@ -1080,16 +1094,16 @@
 .page-fashion .btn.primary,
 .page-fashion .lang-btn.active,
 .page-my .btn.primary{
-  background:linear-gradient(180deg,#eab9ac 0%, #d99286 100%);
-  border-color:rgba(181,99,90,.52);
+  background:linear-gradient(180deg,#9ecbf8 0%, #807eda 100%);
+  border-color:rgba(80,68,175,.52);
   color:#fff;
-  box-shadow:2px 2px 0 rgba(180,100,90,.14);
+  box-shadow:2px 2px 0 rgba(80,68,175,.14);
 }
 
 .page-fashion .btn.primary:hover,
 .page-my .btn.primary:hover{
-  background:linear-gradient(180deg,#d99286 0%, #b5635a 100%);
-  border-color:rgba(181,99,90,.64);
+  background:linear-gradient(180deg,#807eda 0%, #5044af 100%);
+  border-color:rgba(80,68,175,.64);
 }
 
 .page-fashion .btn,
@@ -1110,29 +1124,16 @@
 
 .page-fashion .result-list{
   gap:18px;
-  grid-template-columns:repeat(12,minmax(0,1fr));
+  grid-template-columns:repeat(3,minmax(0,1fr));
   align-items:start;
 }
 
 .page-fashion .result-list > .product{
-  grid-column:span 4;
+  grid-column:span 1;
 }
 
 .page-fashion .result-list > .skeleton-card{
-  grid-column:span 4;
-}
-
-.page-fashion .result-list > .product:first-child{
-  grid-column:span 8;
-  display:grid;
-  grid-template-columns:minmax(240px,1.05fr) minmax(220px,.95fr);
-  align-items:stretch;
-  border-radius:32px;
-  overflow:hidden;
-}
-
-.page-fashion .result-list > .skeleton-card:first-child{
-  grid-column:span 8;
+  grid-column:span 1;
 }
 
 .page-fashion .product,
@@ -1140,17 +1141,17 @@
 .page-fashion .purchase-card,
 .page-my .product,
 .page-my .purchase-card{
-  background:linear-gradient(180deg, #fffefc 0%, #f8efe8 100%);
-  border-color:rgba(212,132,122,.18);
+  background:linear-gradient(180deg, #faf8ff 0%, #f0edff 100%);
+  border-color:rgba(128,126,218,.18);
   box-shadow:
-    0 12px 28px rgba(180,100,90,.05),
+    0 12px 28px rgba(80,68,175,.05),
     inset 0 1px 0 rgba(255,255,255,.9);
 }
 
 .page-fashion .product:hover,
 .page-my .product:hover{
   box-shadow:
-    0 18px 36px rgba(180,100,90,.09),
+    0 18px 36px rgba(80,68,175,.09),
     inset 0 1px 0 rgba(255,255,255,.92);
 }
 
@@ -1172,44 +1173,9 @@
   background:linear-gradient(180deg,#fff 0%,#f7ede6 100%);
 }
 
-.page-fashion .result-list > .product:first-child .thumb{
-  height:100%;
-  min-height:420px;
-}
-
-.page-fashion .result-list > .product:first-child .body{
-  padding:22px 22px 20px;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-}
-
-.page-fashion .result-list > .product:first-child .mall{
-  font-size:.76rem;
-  letter-spacing:.18em;
-}
-
-.page-fashion .result-list > .product:first-child .title{
-  min-height:auto;
-  margin-top:10px;
-  font-family:var(--f-disp);
-  font-size:clamp(1.8rem,3vw,2.8rem);
-  font-weight:400;
-  line-height:1.05;
-}
-
-.page-fashion .result-list > .product:first-child .price strong{
-  font-size:1.15rem;
-}
-
-.page-fashion .result-list > .product:first-child .meta{
-  max-height:none;
-  font-size:.8rem;
-}
-
 .page-fashion .ai-reason{
-  background:rgba(245,217,208,.36);
-  border-left-color:rgba(212,132,122,.7);
+  background:rgba(161,169,243,.36);
+  border-left-color:rgba(128,126,218,.7);
 }
 
 .page-fashion .pay-modal{
@@ -1224,8 +1190,8 @@
 .page-fashion .detail-strip img:hover,
 .page-fashion .detail-strip img.active,
 .page-fashion .match-card:hover{
-  border-color:rgba(212,132,122,.34);
-  box-shadow:0 6px 18px rgba(180,100,90,.08);
+  border-color:rgba(128,126,218,.34);
+  box-shadow:0 6px 18px rgba(80,68,175,.08);
 }
 
 .page-fashion .di-label{
@@ -1233,12 +1199,12 @@
 }
 
 .page-fashion .di-link{
-  border-color:rgba(212,132,122,.3);
+  border-color:rgba(128,126,218,.3);
 }
 
 .page-fashion .di-link:hover{
-  background:rgba(212,132,122,.9);
-  border-color:rgba(212,132,122,.9);
+  background:rgba(128,126,218,.9);
+  border-color:rgba(128,126,218,.9);
 }
 
 .page-fashion .skeleton-thumb,
@@ -1251,13 +1217,13 @@
 .page-my .wish-btn{
   border:1px solid rgba(255,255,255,.85);
   background:rgba(255,255,255,.94);
-  box-shadow:2px 2px 0 rgba(180,100,90,.1);
+  box-shadow:2px 2px 0 rgba(80,68,175,.1);
 }
 
 .page-fashion .wish-btn.on,
 .page-my .wish-btn.on{
-  background:linear-gradient(180deg, #d99286 0%, #b5635a 100%);
-  border-color:rgba(181,99,90,.64);
+  background:linear-gradient(180deg, #807eda 0%, #5044af 100%);
+  border-color:rgba(80,68,175,.64);
 }
 
 .page-my .purchase-badge{
@@ -1283,32 +1249,24 @@
 .page-fashion .toast,
 .page-my .toast{
   background:rgba(255,255,255,.96);
-  box-shadow:0 16px 30px rgba(180,100,90,.1);
+  box-shadow:0 16px 30px rgba(80,68,175,.1);
 }
 
 @media (max-width:1080px){
   .page-fashion .result-list{
     grid-template-columns:repeat(2,minmax(0,1fr));
   }
-
-  .page-fashion .result-list > .product,
-  .page-fashion .result-list > .skeleton-card,
-  .page-fashion .result-list > .product:first-child{
-    grid-column:span 1;
-  }
-
-  .page-fashion .result-list > .product:first-child{
-    display:block;
-  }
-
-  .page-fashion .result-list > .product:first-child .thumb{
-    min-height:320px;
-  }
 }
 
 @media (max-width:980px){
+  .seoulfit-header{
+    flex-wrap:wrap;
+  }
   .page-fashion .sf-nav,
-  .page-my .sf-nav{
+  .page-my .sf-nav,
+  .page-photobooth .sf-nav{
+    position:static;
+    transform:none;
     order:3;
     width:100%;
     justify-content:center;
@@ -1340,4 +1298,395 @@
   .page-fashion .product .thumb{
     height:220px;
   }
+}
+
+/* ── aeae UI: Decorative Dots Row ──────────────────────────────────── */
+.panel-deco-dots{
+  display:flex;
+  gap:7px;
+  justify-content:center;
+  margin-bottom:14px;
+}
+.panel-deco-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+}
+.panel-deco-dot:nth-child(1){background:var(--gold);}
+.panel-deco-dot:nth-child(2){background:var(--dusty-rose);}
+.panel-deco-dot:nth-child(3){background:var(--aeae-sage);}
+.panel-deco-dot:nth-child(4){background:var(--gold);opacity:.6;}
+.panel-deco-dot:nth-child(5){background:var(--dusty-rose);opacity:.6;}
+.panel-deco-dot:nth-child(6){background:var(--aeae-heather);opacity:.5;}
+.panel-deco-dot:nth-child(7){background:var(--gold);opacity:.4;}
+
+/* ── aeae UI: Section Divider ──────────────────────────────────────── */
+.aeae-divider{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:rgba(152,136,120,.5);
+  font-size:.72rem;
+  letter-spacing:.18em;
+  font-family:var(--f-mono);
+  margin:2px 0;
+}
+.aeae-divider::before,
+.aeae-divider::after{
+  content:'';
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(80,68,175,.18),transparent);
+}
+
+/* ── aeae UI: Enhanced AI Reason 2-line ────────────────────────────── */
+.page-fashion .ai-reason{
+  background:rgba(255,255,255,.65);
+  border:1px solid rgba(128,126,218,.34);
+  border-left:3px solid rgba(128,126,218,.7);
+  border-radius:10px;
+  backdrop-filter:blur(4px);
+}
+.ai-reason-line1{
+  display:block;
+  font-size:.82rem;
+  color:var(--text);
+  line-height:1.55;
+  margin-bottom:4px;
+}
+.ai-reason-line2{
+  display:block;
+  font-size:.76rem;
+  color:rgba(24,24,32,.58);
+  line-height:1.5;
+  font-style:italic;
+}
+
+/* ── aeae UI: Floating ✦ background symbols ────────────────────────── */
+.page-fashion .stack{position:relative;}
+.page-fashion .stack::before{
+  content:'✦';
+  position:fixed;
+  top:22%;
+  right:4%;
+  font-size:1.4rem;
+  color:rgba(201,169,110,.12);
+  pointer-events:none;
+  user-select:none;
+  z-index:0;
+}
+.page-fashion .stack::after{
+  content:'✦';
+  position:fixed;
+  bottom:20%;
+  left:3%;
+  font-size:1rem;
+  color:rgba(80,68,175,.1);
+  pointer-events:none;
+  user-select:none;
+  z-index:0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ✦  UI ENHANCEMENT SUITE — 2026 ✦
+   ① Caveat 폰트  ② 패널 상단 라인  ③ hover 틸트  ④ 스크롤 페이드인
+   ⑤ heartbeat   ⑦ 토스트 receipt  ⑧ 패널 지그재그  ⑨ typing effect
+   ⑪ 태그 체크    ⑫ 히어로 플로팅   ⑬ inset glow
+═══════════════════════════════════════════════════════════════════════ */
+
+/* ── ① 헤딩 폰트 — Cormorant Garamond (카드 캐러셀과 통일) ────────── */
+.page-fashion .hero h1,
+.page-my .hero h1 {
+  font-family: var(--f-disp);
+  letter-spacing: .05em;
+  font-size: clamp(2rem, 4vw, 3.6rem);
+  font-weight: 300;
+}
+
+.page-fashion .f-label {
+  font-family: var(--f-mono);
+  font-size: .78rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.page-fashion .panel h2,
+.page-my .panel h2 {
+  font-family: var(--f-disp);
+  font-size: 1.9rem;
+  font-weight: 400;
+  letter-spacing: .02em;
+}
+
+.page-fashion .ai-reason-label {
+  font-family: var(--f-mono);
+  font-size: .78rem;
+  letter-spacing: .14em;
+}
+
+/* ── ② 패널 상단 rose/gold 그라디언트 컬러 라인 ──────────────────── */
+.page-fashion .panel,
+.page-my .panel {
+  position: relative;
+}
+
+.page-fashion .panel::before,
+.page-my .panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--warm-pink)  0%,
+    var(--gold)       35%,
+    var(--dusty-rose) 65%,
+    var(--warm-pink)  100%
+  );
+  border-radius: 28px 28px 0 0;
+  opacity: .72;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ── ⑬ 패널 inset glow (입체감 강화) ───────────────────────────────── */
+.page-fashion .panel,
+.page-my .panel {
+  box-shadow:
+    0 14px 36px rgba(80,68,175,.06),
+    inset 0 1px 0 rgba(255,255,255,.94),
+    inset 0 0 24px rgba(161,169,243,.1),
+    2px 2px 0 rgba(80,68,175,.06);
+}
+
+/* ── ③ 상품 카드 hover — polaroid 틸트 ─────────────────────────────── */
+.page-fashion .result-list > .product {
+  transform-origin: center bottom;
+  transition: transform .32s cubic-bezier(.22,1,.36,1), box-shadow .32s ease;
+}
+
+.page-fashion .result-list > .product:hover {
+  transform: scale(1.03) rotate(.75deg);
+  box-shadow:
+    0 24px 48px rgba(80,68,175,.16),
+    inset 0 1px 0 rgba(255,255,255,.95);
+  z-index: 2;
+  position: relative;
+}
+
+
+/* ── ④ 스크롤 페이드인 — sf-fade 클래스 ────────────────────────────── */
+.sf-fade {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity .58s ease,
+    transform .62s cubic-bezier(.22,1,.36,1);
+}
+.sf-fade.sf-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── ⑤ ♡ 찜 버튼 heartbeat 애니메이션 ──────────────────────────────── */
+@keyframes sfHeartBeat {
+  0%,100% { transform: scale(1); }
+  18%     { transform: scale(1.22); }
+  36%     { transform: scale(1.08); }
+  54%     { transform: scale(1.18); }
+  72%     { transform: scale(1.04); }
+}
+
+.page-fashion .wish-btn.on,
+.page-my .wish-btn.on {
+  animation: sfHeartBeat 1.4s ease-in-out infinite;
+}
+.page-fashion .wish-btn.on:hover,
+.page-my .wish-btn.on:hover {
+  animation: none;
+  transform: scale(1.14);
+}
+
+/* ── ⑦ 토스트 알림 — receipt 스타일 + slide 애니메이션 ──────────────── */
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(24px) scale(.94); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+.page-fashion .toast,
+.page-my .toast {
+  border-left: 4px solid var(--dusty-rose) !important;
+  border-top: 1px solid rgba(128,126,218,.16) !important;
+  border-right: 1px solid rgba(128,126,218,.16) !important;
+  border-bottom: 1px solid rgba(128,126,218,.16) !important;
+  border-radius: 0 14px 14px 0 !important;
+  background: linear-gradient(
+    165deg,
+    rgba(255,255,255,.99) 0%,
+    rgba(252,244,237,.99) 100%
+  ) !important;
+  box-shadow:
+    0 18px 36px rgba(80,68,175,.12),
+    2px 2px 0 rgba(128,126,218,.1) !important;
+  padding-left: 16px !important;
+  animation: toast-in .38s cubic-bezier(.22,1,.36,1) !important;
+}
+
+.page-fashion .toast.success,
+.page-my .toast.success {
+  border-left-color: var(--gold) !important;
+}
+.page-fashion .toast.error,
+.page-my .toast.error {
+  border-left-color: var(--deep-rose) !important;
+}
+
+/* 토스트 아이콘 앞에 작은 라벨 */
+.page-fashion .toast::before,
+.page-my .toast::before {
+  content: '✦';
+  display: block;
+  font-size: .55rem;
+  color: var(--dusty-rose);
+  margin-bottom: 3px;
+  letter-spacing: .1em;
+}
+
+/* ── ⑧ 결과 패널 — receipt perforated 하단 지그재그 ─────────────────── */
+.page-fashion .results-panel {
+  overflow: visible;
+}
+
+.page-fashion .results-panel::after {
+  content: '';
+  position: absolute;
+  bottom: -11px;
+  left: 28px; right: 28px;
+  height: 13px;
+  background: rgba(250,241,235,.96);
+  clip-path: polygon(
+    0%  0%, 1.6% 100%, 3.2% 0%, 4.8% 100%, 6.4%  0%,  8%  100%,
+    9.6% 0%, 11.2% 100%, 12.8% 0%, 14.4% 100%, 16% 0%, 17.6% 100%,
+    19.2% 0%, 20.8% 100%, 22.4% 0%, 24% 100%, 25.6% 0%, 27.2% 100%,
+    28.8% 0%, 30.4% 100%, 32% 0%, 33.6% 100%, 35.2% 0%, 36.8% 100%,
+    38.4% 0%, 40% 100%, 41.6% 0%, 43.2% 100%, 44.8% 0%, 46.4% 100%,
+    48% 0%, 49.6% 100%, 51.2% 0%, 52.8% 100%, 54.4% 0%, 56% 100%,
+    57.6% 0%, 59.2% 100%, 60.8% 0%, 62.4% 100%, 64% 0%, 65.6% 100%,
+    67.2% 0%, 68.8% 100%, 70.4% 0%, 72% 100%, 73.6% 0%, 75.2% 100%,
+    76.8% 0%, 78.4% 100%, 80% 0%, 81.6% 100%, 83.2% 0%, 84.8% 100%,
+    86.4% 0%, 88% 100%, 89.6% 0%, 91.2% 100%, 92.8% 0%, 94.4% 100%,
+    96% 0%, 97.6% 100%, 100% 0%
+  );
+  z-index: 1;
+  pointer-events: none;
+  border-radius: 0 0 4px 4px;
+}
+
+/* ── ⑨ AI 스타일링 — typing cursor 애니메이션 ──────────────────────── */
+@keyframes sfBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.ai-typing-cursor {
+  display: inline-block;
+  width: 1.5px;
+  height: .82em;
+  background: rgba(128,126,218,.75);
+  vertical-align: middle;
+  margin-left: 2px;
+  border-radius: 1px;
+  animation: sfBlink .65s step-end infinite;
+}
+
+/* AI 리즌 블록 강조 */
+.page-fashion .ai-reason {
+  position: relative;
+  overflow: hidden;
+}
+
+.page-fashion .ai-reason::after {
+  content: '✦';
+  position: absolute;
+  bottom: 6px; right: 8px;
+  font-size: .52rem;
+  color: rgba(201,169,110,.28);
+  pointer-events: none;
+}
+
+/* ── ⑪ 필터 태그 active — ✦ 체크 뱃지 ──────────────────────────────── */
+.page-fashion .tag.on {
+  padding-right: 12px;
+}
+
+.page-fashion .tag.on::after {
+  content: '✦';
+  font-size: .5rem;
+  line-height: 1;
+  color: rgba(201,169,110,.9);
+  margin-left: 3px;
+  vertical-align: middle;
+  display: inline-block;
+  animation: sfIconPop .25s cubic-bezier(.22,1,.36,1);
+}
+
+@keyframes sfIconPop {
+  from { transform: scale(0) rotate(-30deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg);   opacity: 1; }
+}
+
+/* ── ⑫ 히어로 섹션 — 플로팅 장식 아이콘 ──────────────────────────────── */
+.page-fashion .hero,
+.page-my .hero {
+  position: relative;
+  overflow: visible;
+}
+
+@keyframes sfFloatA {
+  0%, 100% { transform: translateY(0)    rotate(0deg);  opacity: .22; }
+  35%       { transform: translateY(-11px) rotate(8deg);  opacity: .32; }
+  68%       { transform: translateY(-6px)  rotate(-4deg); opacity: .26; }
+}
+@keyframes sfFloatB {
+  0%, 100% { transform: translateY(0)    rotate(0deg);  opacity: .16; }
+  40%       { transform: translateY(-13px) rotate(-7deg); opacity: .24; }
+  70%       { transform: translateY(-5px)  rotate(5deg);  opacity: .18; }
+}
+@keyframes sfFloatC {
+  0%, 100% { transform: translateY(0)    rotate(0deg);  opacity: .14; }
+  50%       { transform: translateY(-9px)  rotate(12deg); opacity: .2;  }
+}
+
+.hero-float-icon {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  font-style: normal;
+  line-height: 1;
+  z-index: 0;
+}
+.hero-float-icon--a {
+  top: 4px; left: -22px;
+  font-size: 1.15rem;
+  color: var(--gold);
+  animation: sfFloatA 4.6s ease-in-out infinite;
+}
+.hero-float-icon--b {
+  top: 28px; right: -18px;
+  font-size: 1rem;
+  color: var(--dusty-rose);
+  animation: sfFloatB 5.3s ease-in-out infinite .7s;
+}
+.hero-float-icon--c {
+  bottom: -4px; left: 48%;
+  font-size: .75rem;
+  color: var(--warm-pink);
+  animation: sfFloatC 3.9s ease-in-out infinite 1.3s;
+}
+.hero-float-icon--d {
+  top: -6px; left: 30%;
+  font-size: .65rem;
+  color: var(--gold);
+  opacity: .2;
+  animation: sfFloatB 6.1s ease-in-out infinite .4s;
 }

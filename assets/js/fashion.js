@@ -134,7 +134,7 @@ function showSkeletons(count = 8) {
 }
 
 // ─── Wishlist (localStorage) ──────────────────────────────────────────────────
-let _wishIds   = new Set(JSON.parse(localStorage.getItem('seoulfit_wishlist') || '[]'));
+let _wishIds = new Set(JSON.parse(localStorage.getItem('seoulfit_wishlist') || '[]'));
 let _wishItems = JSON.parse(localStorage.getItem('seoulfit_wishlist_data') || '{}');
 
 function _saveWish() {
@@ -168,10 +168,10 @@ function toggleWish(id, itemSnapshot) {
 }
 
 function openWishModal() {
-  const modal   = document.getElementById('wish-modal');
+  const modal = document.getElementById('wish-modal');
   const wishList = document.getElementById('wish-list');
   const emptyEl = document.getElementById('wish-empty');
-  const items   = Object.values(_wishItems);
+  const items = Object.values(_wishItems);
   if (items.length === 0) {
     wishList.innerHTML = '';
     emptyEl.style.display = 'block';
@@ -188,12 +188,12 @@ function savePurchase(data) {
   const arr = JSON.parse(localStorage.getItem('seoulfit_purchases') || '[]');
   arr.push({
     payment_intent_id: data.payment_intent_id || '',
-    product_id:   data.product_id   || '',
+    product_id: data.product_id || '',
     product_name: data.product_name || '',
-    amount_jpy:   data.amount_jpy   || 0,
-    mall:         data.mall         || '',
-    email:        data.email        || '',
-    image:        data.image        || '',
+    amount_jpy: data.amount_jpy || 0,
+    mall: data.mall || '',
+    email: data.email || '',
+    image: data.image || '',
     date: new Date().toISOString(),
   });
   localStorage.setItem('seoulfit_purchases', JSON.stringify(arr));
@@ -201,8 +201,8 @@ function savePurchase(data) {
 
 // ─── EmailJS ──────────────────────────────────────────────────────────────────
 // ▼ EmailJS 대시보드에서 가져온 값으로 교체하세요
-const EMAILJS_PUBLIC_KEY  = '1pr-z3o56OU_dQeZe';
-const EMAILJS_SERVICE_ID  = 'miniproject_2';
+const EMAILJS_PUBLIC_KEY = '1pr-z3o56OU_dQeZe';
+const EMAILJS_SERVICE_ID = 'miniproject_2';
 const EMAILJS_TEMPLATE_ID = 'template_l51tu24';
 
 async function sendConfirmationEmail(email, productName, amountJpy) {
@@ -211,32 +211,32 @@ async function sendConfirmationEmail(email, productName, amountJpy) {
   // ── 언어별 UI 텍스트 ──
   const isJa = currentLang === 'ja';
   const ui = isJa ? {
-    heading      : 'ご購入が完了しました',
-    sub          : 'OttOをご利用いただきありがとうございます。以下でご注文内容をご確認ください。',
+    heading: 'ご購入が完了しました',
+    sub: 'OttOをご利用いただきありがとうございます。以下でご注文内容をご確認ください。',
     product_label: 'PRODUCT',
-    amount_label : '決済金額',
-    date_label   : '決済日時',
-    status_text  : '● 決済完了 — PAYMENT CONFIRMED',
-    cta_text     : 'マイページで確認する →',
-    footer_text  : 'このメールは自動送信されます。返信しないでください。<br/>お問い合わせ: support@seoulfit.kr',
+    amount_label: '決済金額',
+    date_label: '決済日時',
+    status_text: '● 決済完了 — PAYMENT CONFIRMED',
+    cta_text: 'マイページで確認する →',
+    footer_text: 'このメールは自動送信されます。返信しないでください。<br/>お問い合わせ: support@seoulfit.kr',
   } : {
-    heading      : '구매가 완료되었습니다',
-    sub          : 'OttO를 이용해 주셔서 감사합니다. 아래에서 주문 내역을 확인하세요.',
+    heading: '구매가 완료되었습니다',
+    sub: 'OttO를 이용해 주셔서 감사합니다. 아래에서 주문 내역을 확인하세요.',
     product_label: 'PRODUCT',
-    amount_label : '결제 금액',
-    date_label   : '결제 일시',
-    status_text  : '● 결제 완료 — PAYMENT CONFIRMED',
-    cta_text     : '마이페이지에서 확인하기 →',
-    footer_text  : '본 이메일은 자동 발송됩니다. 회신하지 마세요.<br/>문의: support@seoulfit.kr',
+    amount_label: '결제 금액',
+    date_label: '결제 일시',
+    status_text: '● 결제 완료 — PAYMENT CONFIRMED',
+    cta_text: '마이페이지에서 확인하기 →',
+    footer_text: '본 이메일은 자동 발송됩니다. 회신하지 마세요.<br/>문의: support@seoulfit.kr',
   };
 
   try {
     emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      to_email     : email,
-      product_name : productName,
-      amount       : new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(amountJpy),
-      date         : new Date().toLocaleString(isJa ? 'ja-JP' : 'ko-KR'),
+      to_email: email,
+      product_name: productName,
+      amount: new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(amountJpy),
+      date: new Date().toLocaleString(isJa ? 'ja-JP' : 'ko-KR'),
       ...ui,
     });
     showToast('📧 구매 확인 이메일을 발송했습니다.', 'success');
@@ -254,12 +254,12 @@ function applyLanguage(lang) {
   });
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    const tr  = t(key);
+    const tr = t(key);
     if (tr) el.textContent = tr;
   });
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     const key = el.getAttribute('data-i18n-placeholder');
-    const tr  = t(key);
+    const tr = t(key);
     if (tr) el.placeholder = tr;
   });
   const cachedItems = pageCache[currentPage];
@@ -273,29 +273,29 @@ function applyLanguage(lang) {
 }
 
 // ─── DOM refs ─────────────────────────────────────────────────────────────────
-const form          = document.getElementById('curator-form');
-const list          = document.getElementById('result-list');
-const statusNode    = document.getElementById('status');
-const countNode     = document.getElementById('result-count');
-const payModal      = document.getElementById('pay-modal');
-const payTitle      = document.getElementById('pay-title');
-const payAmount     = document.getElementById('pay-amount');
-const payClose      = document.getElementById('pay-close');
-const paySubmit     = document.getElementById('pay-submit');
-const payCancel     = document.getElementById('pay-cancel');
-const detailModal   = document.getElementById('detail-modal');
-const detailTitle   = document.getElementById('detail-title');
-const detailMain    = document.getElementById('detail-main');
-const detailStrip   = document.getElementById('detail-strip');
-const detailClose   = document.getElementById('detail-close');
+const form = document.getElementById('curator-form');
+const list = document.getElementById('result-list');
+const statusNode = document.getElementById('status');
+const countNode = document.getElementById('result-count');
+const payModal = document.getElementById('pay-modal');
+const payTitle = document.getElementById('pay-title');
+const payAmount = document.getElementById('pay-amount');
+const payClose = document.getElementById('pay-close');
+const paySubmit = document.getElementById('pay-submit');
+const payCancel = document.getElementById('pay-cancel');
+const detailModal = document.getElementById('detail-modal');
+const detailTitle = document.getElementById('detail-title');
+const detailMain = document.getElementById('detail-main');
+const detailStrip = document.getElementById('detail-strip');
+const detailClose = document.getElementById('detail-close');
 const detailMainWrap = document.getElementById('detail-main-wrap');
 
 let stripe = null, elements = null, paymentElement = null, activePayment = null;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function escapeHtml(v) {
-  return String(v ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
-    .replaceAll('"','&quot;').replaceAll("'",'&#39;');
+  return String(v ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;').replaceAll("'", '&#39;');
 }
 function formatJPY(v) {
   return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(v || 0);
@@ -335,7 +335,7 @@ function selectedBudget() {
 }
 
 // ─── Modals ───────────────────────────────────────────────────────────────────
-function openModal()  { payModal.hidden = false; }
+function openModal() { payModal.hidden = false; }
 function closeModal() { payModal.hidden = true; }
 
 function normalizeImage(src) {
@@ -392,8 +392,8 @@ detailMainWrap.addEventListener('touchmove', e => {
 }, { passive: false });
 detailMainWrap.addEventListener('touchend', () => { _lastTouchDist = null; _isDragging = false; });
 detailMainWrap.addEventListener('dblclick', _resetZoom);
-document.getElementById('detail-zoom-in').addEventListener('click',    () => { _zoomScale = Math.min(ZOOM_MAX, _zoomScale * ZOOM_STEP); _applyTransform(); });
-document.getElementById('detail-zoom-out').addEventListener('click',   () => { _zoomScale = Math.max(ZOOM_MIN, _zoomScale / ZOOM_STEP); _applyTransform(); });
+document.getElementById('detail-zoom-in').addEventListener('click', () => { _zoomScale = Math.min(ZOOM_MAX, _zoomScale * ZOOM_STEP); _applyTransform(); });
+document.getElementById('detail-zoom-out').addEventListener('click', () => { _zoomScale = Math.max(ZOOM_MIN, _zoomScale / ZOOM_STEP); _applyTransform(); });
 document.getElementById('detail-zoom-reset').addEventListener('click', _resetZoom);
 
 // ─── 매치 아이템 추천 헬퍼 ──────────────────────────────────────────────────
@@ -402,9 +402,9 @@ function _inferGender(item) {
   const text = ((item.name || '') + ' ' + (item.brand || '')).toLowerCase();
   const wToks = ['우먼', 'women', 'womens', '여성', 'ladies', 'womenswear'];
   const mToks = ['맨즈', 'mens', '남성', 'menswear'];
-  const wbRe  = tok => new RegExp('\\b' + tok.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b');
-  const hasW  = wToks.some(tok => wbRe(tok).test(text));
-  const hasM  = mToks.some(tok => wbRe(tok).test(text));
+  const wbRe = tok => new RegExp('\\b' + tok.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b');
+  const hasW = wToks.some(tok => wbRe(tok).test(text));
+  const hasM = mToks.some(tok => wbRe(tok).test(text));
   if (hasW && !hasM) return 'women';
   if (hasM && !hasW) return 'men';
   return 'unisex';
@@ -440,7 +440,7 @@ function _pickByGender(candidates, gender, showBoth) {
     const hit = candidates.find(i => {
       const g = _inferGender(i);
       if (gender === 'women') return g === 'women' || g === 'unisex';
-      if (gender === 'men')   return g === 'men'   || g === 'unisex';
+      if (gender === 'men') return g === 'men' || g === 'unisex';
       return true;
     });
     if (hit) results.push(hit);
@@ -454,13 +454,13 @@ function _findComplementItems(currentId, category, selectedGender) {
 
   const base = (category || '').toLowerCase();
   let lookFor = [];
-  if      (base === 'top')    lookFor = ['bottom'];
+  if (base === 'top') lookFor = ['bottom'];
   else if (base === 'bottom') lookFor = ['top'];
-  else if (base === 'outer')  lookFor = ['top', 'bottom'];
-  else if (base === 'dress')  lookFor = ['outer', 'top'];
-  else                        lookFor = ['top', 'bottom'];
+  else if (base === 'outer') lookFor = ['top', 'bottom'];
+  else if (base === 'dress') lookFor = ['outer', 'top'];
+  else lookFor = ['top', 'bottom'];
 
-  const gender   = (selectedGender || '').toLowerCase();
+  const gender = (selectedGender || '').toLowerCase();
   const showBoth = (gender === 'all' || gender === '');
 
   const results = [];
@@ -476,11 +476,11 @@ function _attachMatchCardEvents(infoPanel) {
   infoPanel.querySelectorAll('.match-card').forEach(mc => {
     mc.addEventListener('click', e => {
       if (e.target.closest('.wish-btn')) return;
-      const mid       = mc.dataset.matchId;
+      const mid = mc.dataset.matchId;
       const matchItem = _buildItemPool(null).find(it => String(it.id) === mid)
-                     || JSON.parse(mc.dataset.matchSnapshot || 'null');
+        || JSON.parse(mc.dataset.matchSnapshot || 'null');
       if (!matchItem) return;
-      const mMain    = normalizeImage(matchItem.main_image);
+      const mMain = normalizeImage(matchItem.main_image);
       const mDetails = (matchItem.detail_images || []).slice(0, 10).map(normalizeImage);
       openDetailModal(matchItem.name, [mMain, ...mDetails.filter(u => u !== mMain)], {
         itemId: String(matchItem.id),
@@ -496,8 +496,8 @@ function _attachMatchCardEvents(infoPanel) {
   infoPanel.querySelectorAll('.match-wish').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
-      const sid   = btn.dataset.wishId;
-      const snap  = JSON.parse(btn.closest('.match-card')?.dataset.matchSnapshot || '{}');
+      const sid = btn.dataset.wishId;
+      const snap = JSON.parse(btn.closest('.match-card')?.dataset.matchSnapshot || '{}');
       toggleWish(sid, snap);
       btn.classList.toggle('on', _wishIds.has(sid));
       btn.textContent = _wishIds.has(sid) ? '♥' : '♡';
@@ -507,7 +507,7 @@ function _attachMatchCardEvents(infoPanel) {
 
 // pageCache에 complement 없을 때 → 백그라운드 API 호출 후 패널 업데이트
 async function _fetchAndRenderComplement(currentItemData, selectedGender, infoPanel, token) {
-  const gender   = (selectedGender || '').toLowerCase();
+  const gender = (selectedGender || '').toLowerCase();
   const showBoth = (gender === 'all' || gender === '');
 
   let items = [];
@@ -525,7 +525,7 @@ async function _fetchAndRenderComplement(currentItemData, selectedGender, infoPa
       const data = await resp.json();
       items = data.items || [];
     }
-  } catch (_) {}
+  } catch (_) { }
 
   // 모달이 닫혔거나 더 최신 요청이 발행됐으면 버림 (경쟁 조건 방지)
   if (token !== _matchReqToken || detailModal.hidden) return;
@@ -540,7 +540,7 @@ async function _fetchAndRenderComplement(currentItemData, selectedGender, infoPa
   const picked = showBoth ? items : _pickByGender(items, gender, false);
   if (!picked.length) { loadingEl.remove(); return; }
 
-  const isJa       = currentLang === 'ja';
+  const isJa = currentLang === 'ja';
   const matchLabel = isJa ? 'このアイテムと合わせて' : '이 아이템과 매치해보세요';
   loadingEl.outerHTML = `
     <div class="match-section">
@@ -551,11 +551,11 @@ async function _fetchAndRenderComplement(currentItemData, selectedGender, infoPa
 }
 
 function _matchMiniCard(item) {
-  const sid      = String(item.id || '');
+  const sid = String(item.id || '');
   const isWished = _wishIds.has(sid);
-  const img      = normalizeImage(item.main_image);
-  const name     = escapeHtml(item.name || '');
-  const jpy      = formatJPY(Number(item.price_jpy || 0));
+  const img = normalizeImage(item.main_image);
+  const name = escapeHtml(item.name || '');
+  const jpy = formatJPY(Number(item.price_jpy || 0));
   const snapshot = {
     id: sid, name: item.name, mall: item.mall,
     price_jpy: Number(item.price_jpy || 0), price_krw: Number(item.price_krw || 0),
@@ -565,10 +565,10 @@ function _matchMiniCard(item) {
     category: item.category, colors: item.colors,
   };
   const catLabelMap = { top: '상의', bottom: '하의', outer: '아우터', dress: '원피스' };
-  const catLabel    = catLabelMap[(item.category || '').toLowerCase()] || '';
-  const genderMap   = { women: '여성', men: '남성' };
-  const gLabel      = genderMap[_inferGender(item)] || '';
-  const catTagText  = [catLabel, gLabel].filter(Boolean).join(' · ');
+  const catLabel = catLabelMap[(item.category || '').toLowerCase()] || '';
+  const genderMap = { women: '여성', men: '남성' };
+  const gLabel = genderMap[_inferGender(item)] || '';
+  const catTagText = [catLabel, gLabel].filter(Boolean).join(' · ');
   return `
     <div class="match-card" data-match-id="${escapeHtml(sid)}"
          data-match-snapshot="${escapeHtml(JSON.stringify(snapshot))}">
@@ -586,33 +586,33 @@ function _matchMiniCard(item) {
 }
 
 // ─── Detail modal ─────────────────────────────────────────────────────────────
-const SUBCAT_LABEL    = { tshirt:'티셔츠', shirt:'셔츠/블라우스', knit:'니트/스웨터', hoodie:'후드/맨투맨', pants:'팬츠/슬랙스', skirt:'스커트', denim:'청바지/데님', jacket:'자켓', coat:'코트', dress:'원피스', suit:'수트/점프수트', top:'상의', bottom:'하의', outer:'아우터' };
-const SUBCAT_LABEL_JA = { tshirt:'Tシャツ', shirt:'シャツ/ブラウス', knit:'ニット/セーター', hoodie:'パーカー/スウェット', pants:'パンツ/スラックス', skirt:'スカート', denim:'デニム', jacket:'ジャケット', coat:'コート', dress:'ワンピース', suit:'スーツ', top:'トップス', bottom:'ボトムス', outer:'アウター' };
+const SUBCAT_LABEL = { tshirt: '티셔츠', shirt: '셔츠/블라우스', knit: '니트/스웨터', hoodie: '후드/맨투맨', pants: '팬츠/슬랙스', skirt: '스커트', denim: '청바지/데님', jacket: '자켓', coat: '코트', dress: '원피스', suit: '수트/점프수트', top: '상의', bottom: '하의', outer: '아우터' };
+const SUBCAT_LABEL_JA = { tshirt: 'Tシャツ', shirt: 'シャツ/ブラウス', knit: 'ニット/セーター', hoodie: 'パーカー/スウェット', pants: 'パンツ/スラックス', skirt: 'スカート', denim: 'デニム', jacket: 'ジャケット', coat: 'コート', dress: 'ワンピース', suit: 'スーツ', top: 'トップス', bottom: 'ボトムス', outer: 'アウター' };
 
 function _buildDetailInfo(info) {
   const isJa = currentLang === 'ja';
-  const catMap  = isJa ? SUBCAT_LABEL_JA : SUBCAT_LABEL;
-  const catKey  = info.subCategory || info.category;
+  const catMap = isJa ? SUBCAT_LABEL_JA : SUBCAT_LABEL;
+  const catKey = info.subCategory || info.category;
   const catLabel = catMap[catKey] || catKey;
   const colorRaw = (info.colors || '').split(',').filter(Boolean);
   const rows = [];
   if (catLabel) rows.push({ label: isJa ? 'カテゴリー' : '카테고리', val: catLabel });
   if (colorRaw.length) rows.push({ label: isJa ? 'カラー' : '색상', val: colorRaw.join(' · ') });
   if (info.material) rows.push({ label: isJa ? '素材' : '소재', val: info.material });
-  if (info.care)     rows.push({ label: isJa ? 'ケア' : '세탁', val: info.care });
+  if (info.care) rows.push({ label: isJa ? 'ケア' : '세탁', val: info.care });
   const rowsHtml = rows.map(r => `<div class="di-row"><span class="di-label">${escapeHtml(r.label)}</span><span class="di-val">${escapeHtml(r.val)}</span></div>`).join('');
   const linkLabel = isJa ? '元ページを見る →' : '원본 쇼핑몰 보기 →';
-  const linkHtml  = info.sourceUrl ? `<a class="btn di-link" href="${escapeHtml(info.sourceUrl)}" target="_blank" rel="noopener noreferrer">${linkLabel}</a>` : '';
+  const linkHtml = info.sourceUrl ? `<a class="btn di-link" href="${escapeHtml(info.sourceUrl)}" target="_blank" rel="noopener noreferrer">${linkLabel}</a>` : '';
   return `
-    <div class="di-mall">${escapeHtml(info.mall||'')}</div>
-    <div class="di-name">${escapeHtml(info.name||'')}</div>
+    <div class="di-mall">${escapeHtml(info.mall || '')}</div>
+    <div class="di-name">${escapeHtml(info.name || '')}</div>
     <div class="di-price">${info.jpy ? formatJPY(info.jpy) : ''}</div>
     <div class="di-krw">${info.krw ? `₩${Number(info.krw).toLocaleString('ko-KR')}` : ''}</div>
     ${rowsHtml}${linkHtml}`;
 }
 
 function openDetailModal(name, images, info) {
-  const normalized    = (images || []).map(normalizeImage);
+  const normalized = (images || []).map(normalizeImage);
   const displayImages = normalized.length ? normalized : [normalizeImage('')];
   detailTitle.textContent = name || t('detail.heading');
   if (!detailMainWrap.querySelector('.detail-zoom-hint')) {
@@ -641,11 +641,11 @@ function openDetailModal(name, images, info) {
     let html = info ? _buildDetailInfo(info) : '';
 
     // ── 매치 추천 섹션 (항상 OpenAI로 선별) ─────────────────────────────
-    const currentId      = info ? String(info.itemId || '') : '';
-    const currentCat     = info ? (info.category || '') : '';
+    const currentId = info ? String(info.itemId || '') : '';
+    const currentCat = info ? (info.category || '') : '';
     const selectedGender = selectedTagValue('tg-gender', 'all');
-    const isJa           = currentLang === 'ja';
-    const matchLabel     = isJa ? 'このアイテムと合わせて' : '이 아이템과 매치해보세요';
+    const isJa = currentLang === 'ja';
+    const matchLabel = isJa ? 'このアイテムと合わせて' : '이 아이템과 매치해보세요';
 
     if (currentId) {
       // 로딩 플레이스홀더 항상 표시
@@ -689,17 +689,17 @@ function closeDetailModal() {
 
 // ─── Product card (위시리스트 하트 포함) ────────────────────────────────────
 function productCard(item) {
-  const sid        = String(item.id || '');
-  const isWished   = _wishIds.has(sid);
-  const mainImage  = normalizeImage(item.main_image);
+  const sid = String(item.id || '');
+  const isWished = _wishIds.has(sid);
+  const mainImage = normalizeImage(item.main_image);
   const rawDetails = (item.detail_images || []).slice(0, 10).map(normalizeImage);
-  const allImages  = [mainImage, ...rawDetails.filter(u => u !== mainImage)];
+  const allImages = [mainImage, ...rawDetails.filter(u => u !== mainImage)];
   const detailAttr = encodeURIComponent(JSON.stringify(allImages));
-  const safeName   = escapeHtml(item.name);
-  const safeMall   = escapeHtml(item.mall);
+  const safeName = escapeHtml(item.name);
+  const safeMall = escapeHtml(item.mall);
   const safeReason = escapeHtml(item.ai_reason || '');
-  const krwVal     = Number(item.price_krw || 0);
-  const jpyVal     = Number(item.price_jpy || 0);
+  const krwVal = Number(item.price_krw || 0);
+  const jpyVal = Number(item.price_jpy || 0);
 
   // 위시리스트 저장용 스냅샷 (data-* 속성에 JSON으로)
   const snapshot = {
@@ -717,12 +717,12 @@ function productCard(item) {
       data-detail-images="${detailAttr}"
       data-name="${safeName}"
       data-mall="${safeMall}"
-      data-category="${escapeHtml(item.category||'')}"
-      data-sub-category="${escapeHtml(item.sub_category||'')}"
-      data-colors="${escapeHtml((item.colors||[]).join(','))}"
-      data-material="${escapeHtml(item.material||'')}"
-      data-care="${escapeHtml(item.care||'')}"
-      data-source-url="${escapeHtml(item.source_url||'')}"
+      data-category="${escapeHtml(item.category || '')}"
+      data-sub-category="${escapeHtml(item.sub_category || '')}"
+      data-colors="${escapeHtml((item.colors || []).join(','))}"
+      data-material="${escapeHtml(item.material || '')}"
+      data-care="${escapeHtml(item.care || '')}"
+      data-source-url="${escapeHtml(item.source_url || '')}"
       data-krw="${krwVal}"
       data-jpy="${jpyVal}"
       data-snapshot="${escapeHtml(JSON.stringify(snapshot))}">
@@ -737,7 +737,7 @@ function productCard(item) {
         <div class="meta">
           <span class="krw-badge" data-krw="${krwVal}">${t('badge.krw')}₩${krwVal.toLocaleString('ko-KR')}</span>
         </div>
-        ${safeReason ? `<div class="ai-reason"><span class="ai-reason-label">✦ AI 스타일링</span>${safeReason}</div>` : ''}
+        ${safeReason ? `<div class="ai-reason"><span class="ai-reason-label">✦ AI 스타일링</span><span class="ai-reason-line1">${safeReason}</span></div>` : ''}
         <button class="btn primary pay" data-id="${escapeHtml(sid)}">${t('btn.pay')}</button>
       </div>
     </article>`;
@@ -761,9 +761,9 @@ async function goToPage(page) {
   setStatus(t('status.loading'));
   showSkeletons(8);
   try {
-    const result  = await getRecommendations({ ...lastPayload, page, page_size: PAGE_SIZE });
-    currentPage   = page; totalItems = result.total; pageCache[page] = result.items;
-    const items   = currentLang === 'ja' ? await applyTranslations(result.items) : result.items;
+    const result = await getRecommendations({ ...lastPayload, page, page_size: PAGE_SIZE });
+    currentPage = page; totalItems = result.total; pageCache[page] = result.items;
+    const items = currentLang === 'ja' ? await applyTranslations(result.items) : result.items;
     renderItems(items); renderPagination();
     list.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (err) { setStatus(`${t('status.error')}${err.message}`); }
@@ -777,8 +777,8 @@ function renderPagination() {
   const totalPages = Math.ceil(totalItems / PAGE_SIZE);
   if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
   const start = currentPage * PAGE_SIZE + 1;
-  const end   = Math.min((currentPage + 1) * PAGE_SIZE, totalItems);
-  const half  = 2;
+  const end = Math.min((currentPage + 1) * PAGE_SIZE, totalItems);
+  const half = 2;
   let from = Math.max(0, currentPage - half), to = Math.min(totalPages - 1, currentPage + half);
   if (to - from < 4) { if (from === 0) to = Math.min(totalPages - 1, 4); else from = Math.max(0, to - 4); }
   const pageButtons = [];
@@ -820,34 +820,35 @@ async function applyTranslations(items) {
   }
   return items.map(item => ({
     ...item,
-    name:      _translationCache[item.name]      || item.name,
-    material:  _translationCache[item.material]  || item.material,
-    care:      _translationCache[item.care]       || item.care,
+    name: _translationCache[item.name] || item.name,
+    material: _translationCache[item.material] || item.material,
+    care: _translationCache[item.care] || item.care,
     ai_reason: _translationCache[item.ai_reason] || item.ai_reason,
   }));
 }
 
 // ─── Recommendations ──────────────────────────────────────────────────────────
 async function fetchRecommendations() {
-  const budget   = selectedBudget();
+  const budget = selectedBudget();
   const keywords = selectedTagValues('tg-keyword');
   lastPayload = {
-    gender:       selectedTagValue('tg-gender', 'all'),
-    color:        selectedTagValue('tg-color', ''),
-    style:        selectedTagValue('tg-style', ''),
-    keyword:      keywords,
-    category:     selectedTagValue('tg-category', 'all'),
+    gender: selectedTagValue('tg-gender', 'all'),
+    color: selectedTagValue('tg-color', ''),
+    style: selectedTagValue('tg-style', ''),
+    keyword: keywords,
+    category: selectedTagValue('tg-category', 'all'),
+    body_type: selectedTagValue('tg-bodytype', ''),
     min_price_krw: budget.min,
     max_price_krw: budget.max,
-    email:        null,
+    email: null,
   };
   pageCache = {}; currentPage = 0; totalItems = 0;
   setStatus(t('status.loading'));
   showSkeletons(8);
   try {
     const result = await getRecommendations({ ...lastPayload, page: 0, page_size: PAGE_SIZE });
-    totalItems     = result.total;
-    pageCache[0]   = result.items;
+    totalItems = result.total;
+    pageCache[0] = result.items;
     if (totalItems === 0) {
       countNode.textContent = `0 ${t('result.items')}`;
       list.innerHTML = `<div class="empty-state"><p class="empty-msg">${t('result.empty')}</p><p class="empty-hint">${t('result.empty.hint')}</p></div>`;
@@ -875,10 +876,10 @@ async function prepareStripe(publishableKey, clientSecret) {
 }
 
 async function startPayment(productId, cardName = null) {
-  const email  = document.getElementById('pay-email').value.trim() || null;
+  const email = document.getElementById('pay-email').value.trim() || null;
   const intent = await createPaymentIntent({ product_id: productId, email });
   activePayment = intent;
-  payTitle.textContent  = cardName || intent.product_name;
+  payTitle.textContent = cardName || intent.product_name;
   payAmount.textContent = formatJPY(intent.amount_jpy);
   if (intent.demo_mode) {
     document.getElementById('card-wrap').hidden = true;
@@ -890,10 +891,10 @@ async function startPayment(productId, cardName = null) {
 }
 
 async function _handlePaymentSuccess(paymentIntentId) {
-  const email       = document.getElementById('pay-email').value.trim() || null;
+  const email = document.getElementById('pay-email').value.trim() || null;
   const productName = activePayment?.product_name || payTitle.textContent;
-  const amountJpy   = activePayment?.amount_jpy   || 0;
-  const mall        = activePayment?.mall          || '';
+  const amountJpy = activePayment?.amount_jpy || 0;
+  const mall = activePayment?.mall || '';
 
   try {
     const res = await completePayment({
@@ -903,12 +904,12 @@ async function _handlePaymentSuccess(paymentIntentId) {
     });
     savePurchase({
       payment_intent_id: paymentIntentId,
-      product_id:   activePayment?.product_id || '',
+      product_id: activePayment?.product_id || '',
       product_name: res.product_name || productName,
-      amount_jpy:   res.amount_jpy   || amountJpy,
-      mall:         res.mall         || mall,
-      email:        email || '',
-      image:        '',
+      amount_jpy: res.amount_jpy || amountJpy,
+      mall: res.mall || mall,
+      email: email || '',
+      image: '',
     });
     if (email) await sendConfirmationEmail(email, res.product_name || productName, res.amount_jpy || amountJpy);
     showToast('🎉 결제가 완료되었습니다!', 'success', 4000);
@@ -943,16 +944,17 @@ async function submitPayment() {
 }
 
 async function handleRedirectReturn() {
-  const params         = new URLSearchParams(window.location.search);
-  const intentId       = params.get('payment_intent');
+  const params = new URLSearchParams(window.location.search);
+  const intentId = params.get('payment_intent');
   const redirectStatus = params.get('redirect_status');
-  const productId      = params.get('product_id');
+  const productId = params.get('product_id');
   if (!intentId && !redirectStatus) return;
   try {
     if (redirectStatus === 'succeeded' && productId) {
       await _handlePaymentSuccess(intentId || 'redirect_intent');
-    } else if (redirectStatus === 'processing') { setStatus(t('status.processing'));
-    } else if (redirectStatus === 'failed')     { setStatus(t('status.failed')); }
+    } else if (redirectStatus === 'processing') {
+      setStatus(t('status.processing'));
+    } else if (redirectStatus === 'failed') { setStatus(t('status.failed')); }
   } catch (error) { setStatus(`${t('status.pay_reflect_error')}${error.message}`); }
   finally { history.replaceState({}, '', '/fashion.html'); }
 }
@@ -983,7 +985,7 @@ list.addEventListener('click', async e => {
   const wishBtn = e.target.closest('.wish-btn');
   if (wishBtn) {
     e.stopPropagation();
-    const card     = wishBtn.closest('.product');
+    const card = wishBtn.closest('.product');
     const snapshot = JSON.parse(decodeURIComponent(card?.dataset.snapshot || '{}'));
     toggleWish(wishBtn.dataset.wishId, snapshot);
     return;
@@ -991,7 +993,7 @@ list.addEventListener('click', async e => {
   // 결제 버튼
   const payBtn = e.target.closest('button[data-id]');
   if (payBtn && payBtn.classList.contains('pay')) {
-    const card     = payBtn.closest('.product');
+    const card = payBtn.closest('.product');
     const cardName = card?.dataset.name || null;
     try { await startPayment(payBtn.dataset.id, cardName); }
     catch (err) { setStatus(`${t('status.pay_error')}${err.message}`); }
@@ -1018,13 +1020,13 @@ document.getElementById('wish-list').addEventListener('click', async e => {
   const wishBtn = e.target.closest('.wish-btn');
   if (wishBtn) {
     e.stopPropagation();
-    const card     = wishBtn.closest('.product');
+    const card = wishBtn.closest('.product');
     const snapshot = JSON.parse(decodeURIComponent(card?.dataset.snapshot || '{}'));
     toggleWish(wishBtn.dataset.wishId, snapshot);
     // 위시 모달 재렌더
     const items = Object.values(_wishItems);
-    const wl    = document.getElementById('wish-list');
-    const we    = document.getElementById('wish-empty');
+    const wl = document.getElementById('wish-list');
+    const we = document.getElementById('wish-empty');
     if (items.length === 0) { wl.innerHTML = ''; we.style.display = 'block'; }
     else { we.style.display = 'none'; wl.innerHTML = items.map(productCard).join(''); }
     return;
@@ -1032,7 +1034,7 @@ document.getElementById('wish-list').addEventListener('click', async e => {
   const payBtn = e.target.closest('button[data-id]');
   if (payBtn && payBtn.classList.contains('pay')) {
     closeWishModal();
-    const card     = payBtn.closest('.product');
+    const card = payBtn.closest('.product');
     const cardName = card?.dataset.name || null;
     try { await startPayment(payBtn.dataset.id, cardName); }
     catch (err) { setStatus(`${t('status.pay_error')}${err.message}`); }
@@ -1040,7 +1042,7 @@ document.getElementById('wish-list').addEventListener('click', async e => {
 });
 
 paySubmit.addEventListener('click', submitPayment);
-payClose.addEventListener('click',  closeModal);
+payClose.addEventListener('click', closeModal);
 payCancel.addEventListener('click', closeModal);
 detailClose.addEventListener('click', closeDetailModal);
 

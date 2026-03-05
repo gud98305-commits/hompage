@@ -30,7 +30,9 @@
       "Bash(python -c \"from backend.app import app; print\\(''App routes:'', [r.path for r in app.routes if hasattr\\(r, ''path''\\)]\\)\")",
       "Bash(python -c \":*)",
       "Bash(python enrich_products.py)",
-      "Bash(zip -j crawler_share.zip scripts/crawl_clothing.py scripts/merge_crawl.py scripts/CRAWLING_GUIDE.md)"
+      "Bash(zip -j crawler_share.zip scripts/crawl_clothing.py scripts/merge_crawl.py scripts/CRAWLING_GUIDE.md)",
+      "Bash(ls /Users/choisinbi/Documents/GitHub/hompage/*.env)",
+      "Bash(ls /Users/choisinbi/Documents/GitHub/hompage/.env*)"
     ]
   }
 }

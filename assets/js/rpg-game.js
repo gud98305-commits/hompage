@@ -413,7 +413,7 @@ scene("main", () => {
   }
 
   exitModalConfirm.addEventListener("click", () => {
-    window.location.href = "/"
+    window.location.href = "/#scene"
   })
 
   exitModalCancel.addEventListener("click", () => {

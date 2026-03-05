@@ -7,7 +7,7 @@
   <title>OttO - AI 포토부스</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500&family=DM+Mono:wght@400;500&family=VT323&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500&family=DM+Mono:wght@400;500&family=VT323&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/theme.css" />
   <link rel="stylesheet" href="assets/css/fashion.css" />
@@ -20,16 +20,15 @@
   <header class="seoulfit-header">
     <div class="hd-left">
       <a class="hd-back-btn" href="index.html#scene" title="홈으로">←</a>
-      <a class="logo" href="index.html#scene">O<em>tt</em>O</a>
+      <a class="logo logo-link" href="index.html#scene"><img src="assets/img/otto-logo.png" alt="OttO"
+          class="logo-img" /></a>
     </div>
-    <nav class="sf-nav">
-      <a class="sf-nav-link" href="fashion.html" data-i18n="nav.fashion">패션추천</a>
-      <a class="sf-nav-link active" href="photobooth.html" data-i18n="nav.photo">AI 포토부스</a>
-      <span class="sf-nav-link disabled" data-i18n="nav.pixel">픽셀 서울</span>
-    </nav>
     <div class="hd-right">
-      <button class="lang-btn active" data-lang="ko">한국어</button>
-      <button class="lang-btn" data-lang="ja">日本語</button>
+      <a class="my-header-btn" href="my.html">MY ↗</a>
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="ko">한국어</button>
+        <button class="lang-btn" data-lang="ja">日本語</button>
+      </div>
     </div>
   </header>
 
@@ -38,8 +37,6 @@
 
     <!-- Hero -->
     <section class="hero">
-      <h1>AI <em data-i18n="hero.title">포토부스</em></h1>
-      <p class="pb-subtitle" data-i18n="hero.desc">사진 한 장으로 완성하는 나만의 감성 컷</p>
     </section>
 
     <div class="pb-machine-shell">
@@ -183,7 +180,44 @@
                   <!-- 생성 중 -->
                   <div id="pb-generating">
                     <div class="pb-spinner-wrap">
-                      <div class="pb-spinner"></div>
+                      <!-- ⑩ 슬롯머신 스타일 스피너 -->
+                      <div class="pb-slot-machine" aria-hidden="true">
+                        <div class="pb-slot-reel">
+                          <div class="pb-reel-highlight"></div>
+                          <div class="pb-reel-track" style="--dur:1.08s;--delay:0s">
+                            <div class="pb-reel-item">◎</div>
+                            <div class="pb-reel-item">✦</div>
+                            <div class="pb-reel-item">◉</div>
+                            <div class="pb-reel-item">✿</div>
+                            <div class="pb-reel-item">◈</div>
+                            <div class="pb-reel-item">◎</div><!-- 루프용 복제 -->
+                          </div>
+                        </div>
+                        <div class="pb-slot-divider"></div>
+                        <div class="pb-slot-reel">
+                          <div class="pb-reel-highlight"></div>
+                          <div class="pb-reel-track" style="--dur:1.38s;--delay:0.12s">
+                            <div class="pb-reel-item">✿</div>
+                            <div class="pb-reel-item">◉</div>
+                            <div class="pb-reel-item">✦</div>
+                            <div class="pb-reel-item">◈</div>
+                            <div class="pb-reel-item">◎</div>
+                            <div class="pb-reel-item">✿</div>
+                          </div>
+                        </div>
+                        <div class="pb-slot-divider"></div>
+                        <div class="pb-slot-reel">
+                          <div class="pb-reel-highlight"></div>
+                          <div class="pb-reel-track" style="--dur:0.92s;--delay:0.26s">
+                            <div class="pb-reel-item">◈</div>
+                            <div class="pb-reel-item">◎</div>
+                            <div class="pb-reel-item">✿</div>
+                            <div class="pb-reel-item">✦</div>
+                            <div class="pb-reel-item">◉</div>
+                            <div class="pb-reel-item">◈</div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <p id="pb-gen-text" style="text-align:center;margin-bottom:6px"></p>
                     <p id="pb-gen-sub" class="mono" style="text-align:center;font-size:.68rem;color:var(--purple-mid)"
@@ -243,7 +277,7 @@
           <span class="pb-machine-speaker"></span>
         </div>
         <span class="pb-machine-logo-btn">
-          <span class="pb-machine-logo-text">O<em>tt</em>O</span>
+          <img src="assets/img/otto-logo.png" alt="OttO" class="pb-machine-logo-img" />
         </span>
         <div class="pb-machine-right">
           <span class="pb-machine-led"></span>
@@ -266,7 +300,8 @@
     <p class="pb-lightbox-name" id="pb-lightbox-name"></p>
   </div>
 
-  <script src="assets/js/photobooth.js?v=5"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/photobooth.js?v=6"></script>
   <script src="/assets/js/chatbot.js"></script>
 </body>
 

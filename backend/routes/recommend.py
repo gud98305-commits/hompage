@@ -22,6 +22,7 @@ class RecommendRequest(BaseModel):
     style: str = ''
     keyword: str = ''
     category: str = 'all'
+    body_type: str = ''
     min_price_krw: int = 0
     max_price_krw: int = 99999999
     email: str | None = None

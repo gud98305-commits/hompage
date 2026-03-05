@@ -10,45 +10,46 @@
   --aeae-mid-gray:#909090;
   --aeae-knit-gray:#606068;
   --aeae-border:#585058;
-  --aeae-burgundy:#601020;
-  --aeae-cherry:#980808;
-  --aeae-dusty-blue:#a0a8b0;
+  --aeae-burgundy:#5044af;   /* ← was #601020 — deep indigo */
+  --aeae-cherry:#3a31a0;     /* ← was #980808 — darker indigo */
+  --aeae-dusty-blue:#a1a9f3; /* ← was #a0a8b0 — light periwinkle */
   --aeae-sage:#606860;
-  --aeae-sky-deep:#207090;
+  --aeae-sky-deep:#807eda;   /* ← was #207090 — medium purple */
   --aeae-butter:#e0d860;
 
-  --bg:#f7f1ec;
-  --bg-warm:#f3ebe4;
-  --bg-soft:#f9f6f2;
+  --bg:#f5f3ff;
+  --bg-warm:#eeebff;
+  --bg-soft:#faf8ff;
   --black:var(--aeae-ink);
   --text:var(--aeae-ink);
   --fg:var(--aeae-ink);
   --purple:var(--aeae-burgundy);
   --purple-mid:var(--aeae-sky-deep);
   --purple-light:var(--aeae-dusty-blue);
-  --purple-pale:#dce7ee;
-  --purple-ghost:rgba(232,232,224,.82);
-  --purple-glow:rgba(96,16,32,.08);
-  --border:rgba(88,80,88,.34);
-  --line-soft:rgba(88,80,88,.18);
-  --surface:#f4f1e8;
-  --surface-2:#ddd8c9;
+  --purple-pale:#efe5fb;
+  --purple-ghost:rgba(161,169,243,.15);
+  --purple-glow:rgba(80,68,175,.08);
+  --border:rgba(80,68,175,.22);
+  --line-soft:rgba(80,68,175,.14);
+  --surface:#f0eeff;
+  --surface-2:#dcd8f8;
   --panel-fill:rgba(255,255,255,.88);
   --panel-fill-soft:rgba(255,255,255,.72);
-  --panel-shadow:0 18px 40px rgba(80,48,32,.08);
-  --panel-lift:2px 2px 0 rgba(232,180,168,.24);
-  --accent-soft:rgba(32,112,144,.72);
+  --panel-shadow:0 18px 40px rgba(80,68,175,.1);
+  --panel-lift:2px 2px 0 rgba(128,126,218,.18);
+  --accent-soft:rgba(128,126,218,.72);
   --muted-ink:rgba(24,24,32,.58);
   --muted-paper:rgba(232,232,224,.72);
-  --paper-line:rgba(152,136,120,.18);
-  --dusty-rose:#e8b4a8;
-  --soft-blush:#f5d9d0;
-  --warm-pink:#d4847a;
-  --deep-rose:#b5635a;
-  --gold:#c9a96e;
+  --paper-line:rgba(128,126,218,.18);
+  --dusty-rose:#a1a9f3;
+  --soft-blush:#efe5fb;
+  --warm-pink:#807eda;
+  --deep-rose:#5044af;
+  --gold:#9ecbf8;
   --f-disp:'Cormorant Garamond',serif;
   --f-body:'Noto Sans KR',sans-serif;
   --f-mono:'VT323','DM Mono',monospace;
+  --f-hand:'Caveat',cursive;
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -97,10 +98,21 @@ a{color:inherit}
   justify-content:space-between;
   gap:16px;
   padding:0 28px;
-  border-bottom:1px solid rgba(232,180,168,.16);
-  background:rgba(247,241,236,.78);
+  border-bottom:1px solid rgba(80,68,175,.14);
+  background:rgba(240,238,248,.78);
   backdrop-filter:blur(12px);
 }
+
+/* ── 이탤릭 제거 ─────────────────────────────────────────────────── */
+h1 em, h2 em, h3 em,
+.card-title em,
+.logo em,
+.hero h1 em,
+.panel h2 em,
+.entry-pop-title em,
+.pb-machine-logo-text em,
+.i-logo-main em,
+.hd-logo em { font-style: normal !important; }
 
 .logo{
   font-family:var(--f-disp);
@@ -114,6 +126,44 @@ a{color:inherit}
 .logo em{
   color:var(--warm-pink);
   font-style:italic;
+}
+
+/* ── Otto Logo Image ────────────────────────────────────────────────── */
+.logo-link{
+  display:flex;
+  align-items:center;
+  line-height:1;
+}
+.logo-img{
+  height:52px;
+  width:auto;
+  display:block;
+  object-fit:contain;
+  mix-blend-mode:multiply;
+}
+
+/* ── Photobooth machine logo ─────────────────────────────────────── */
+.pb-machine-logo-img{
+  width:28px;
+  height:auto;
+  mix-blend-mode:multiply;
+  opacity:.85;
+}
+
+/* ── Shipping Notice (nav 대체) ─────────────────────────────────────── */
+.sf-nav-shipping{
+  font-family:var(--f-body);
+  font-size:.72rem;
+  color:var(--muted-ink);
+  line-height:1.8;
+  letter-spacing:.01em;
+  text-align:center;
+  white-space:nowrap;
+}
+.sf-nav-shipping-sub{
+  font-size:.62rem;
+  color:rgba(24,24,32,.38);
+  display:block;
 }
 
 .mono{
