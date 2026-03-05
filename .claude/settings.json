@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(curl -s http://localhost:8001/assets/js/chatbot.js)",
-      "Bash(curl -sI \"https://pub-5650cb298c85491d9331eeb56998e7cc.r2.dev/musinsa/musinsa_6013679_main.jpg\")"
+      "Bash(curl -sI \"https://pub-5650cb298c85491d9331eeb56998e7cc.r2.dev/musinsa/musinsa_6013679_main.jpg\")",
+      "Bash(ls -lh *.html)",
+      "Bash(xargs head -20)",
+      "Bash(wc -l ./backend/routes/*.py ./backend/services/*.py)"
     ]
   }
 }
