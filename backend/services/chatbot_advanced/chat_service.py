@@ -650,9 +650,16 @@ class ChatService:
                 break
 
         # Step 3. CuratorRequest 구성
+        # 자연어에서 의미없는 토큰 제거 후 keyword 구성
+        # "오늘 코디 추천해줘" 같은 발화에서 불필요한 동사 제거
+        from backend.services.chatbot_advanced.chat_service import KeywordIntentClassifier
+        stop_words = KeywordIntentClassifier.RECOMMEND_KEYWORDS | {"해줘", "부탁해", "알려줘", "오늘"}
+        cleaned_words = [w for w in request.message.split() if w not in stop_words]
+        final_keyword = " ".join(cleaned_words)[:100]
+
         curator_req = CuratorRequest(
             body_type=body_type,
-            keyword=request.message[:100],  # 토큰 비용 통제
+            keyword=final_keyword,  # 토큰 비용 통제 및 추천 동사 제거
             category=category,
             page=1,
             page_size=5,

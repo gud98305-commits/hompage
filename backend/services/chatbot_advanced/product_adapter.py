@@ -167,15 +167,28 @@ def _dict_to_product_item(item: dict, reason: str = "", score: float | None = No
     """dict → ProductItem 변환 헬퍼.
 
     products_enriched.json 필드 매핑을 한 곳에서 관리합니다.
+    방어적 프로그래밍 적용: colors 등 필드가 없거나 None일 때 직렬화 실패 방지.
     """
+    colors = item.get("colors") or []
+    if isinstance(colors, str):
+        colors = [colors]
+        
+    price_jpy = item.get("price_jpy", 0)
+    if price_jpy is None:
+        price_jpy = 0
+        
+    price_krw = item.get("price_krw", 0)
+    if price_krw is None:
+        price_krw = 0
+
     return ProductItem(
         item_id=item.get("id", ""),
         name=item.get("name", ""),
         brand=item.get("brand", ""),
         category=item.get("category", ""),
-        colors=item.get("colors", []),
-        price_jpy=item.get("price_jpy", 0),
-        price_krw=item.get("price_krw", 0),
+        colors=colors,
+        price_jpy=price_jpy,
+        price_krw=price_krw,
         image_url=item.get("main_image"),
         source_url=item.get("source_url"),
         reason=reason,
