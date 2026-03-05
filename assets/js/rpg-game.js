@@ -72,7 +72,6 @@ loadSprite("food_cart", "/assets/rpg/food_cart.png")
 // 거리 소품
 loadSprite("street_props", "/assets/rpg/street_props.png")
 
-console.log("[ENGINE] 에셋 로딩 요청 완료")
 
 // ── 상수 ──
 const BGM_VOLUME = 0.3
@@ -103,7 +102,6 @@ const mobileControls = document.getElementById("mobile-controls")
 
 let gameStarted = false
 function startGame() {
-  console.log("[DEBUG] startGame called, current state:", gameStarted)
   if (gameStarted) return
   gameStarted = true
   titleScreen.style.display = "none"
@@ -113,14 +111,10 @@ function startGame() {
   if ("ontouchstart" in window) {
     mobileControls.style.display = "flex"
   }
-  console.log("[DEBUG] Triggering go('main')")
   go("main")
 }
 function attachTitleListeners() {
-  console.log("[DEBUG] Attaching titleScreen listeners")
-
   const handleStart = (e) => {
-    console.log("[DEBUG] Interaction detected:", e.type)
     startGame()
   }
 
@@ -133,7 +127,6 @@ function attachTitleListeners() {
   // 전체 화면 클릭 시에도 시작되도록 폴백 (다른 요소가 막고 있을 경우 대비)
   window.addEventListener("click", (e) => {
     if (!gameStarted) {
-      console.log("[DEBUG] window fallback click")
       startGame()
     }
   }, { once: true })
@@ -1176,9 +1169,7 @@ scene("main", () => {
   })
 
   updateHUD()
-  console.log("[ENGINE] 메인 씬 초기화 완료")
 })
 
 onLoad(() => {
-  console.log("[ENGINE] 모든 에셋 로딩 완료")
 })

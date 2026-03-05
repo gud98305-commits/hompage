@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='/api/my', tags=['my'])
 
@@ -19,5 +22,6 @@ def get_purchases() -> dict:
     try:
         purchases = json.loads(_PURCHASES_FILE.read_text(encoding='utf-8'))
         return {'purchases': purchases}
-    except Exception:
+    except Exception as e:
+        logger.warning("purchases load failed: %s", e)
         return {'purchases': []}

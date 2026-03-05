@@ -21,6 +21,7 @@ COPY shared/      ./shared/
 COPY assets/      ./assets/
 COPY data/        ./data/
 COPY images/      ./images/
+COPY aeae_popup/  ./aeae_popup/
 COPY *.html       ./
 COPY *.py         ./
 

@@ -746,7 +746,7 @@ canvas,
   border: 3px solid #f0c040;
   border-radius: 10px;
   overflow: hidden;
-  background: url('/assets/covernat_back.png') center center / cover no-repeat;
+  background: url('/assets/rpg/covernat_back.png') center center / cover no-repeat;
 }
 
 #covernat-modal-close {
@@ -832,6 +832,20 @@ canvas,
   z-index: 410;
   max-width: 55%;
   cursor: url('/assets/rpg/cursor_heart.png') 16 16, auto !important;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 브랜드 모달 직원 초상화 (공통) */
+.brand-modal-portrait {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
 }
 
 #covernat-modal-dialog-text {
@@ -938,7 +952,7 @@ canvas,
   border: 3px solid #f0c040;
   border-radius: 10px;
   overflow: hidden;
-  background: url('/assets/musinsa_back.png') center center / cover no-repeat;
+  background: url('/assets/rpg/musinsa_back.png') center center / cover no-repeat;
 }
 
 #musinsa-modal-close {
@@ -1130,7 +1144,7 @@ canvas,
   border: 3px solid #f0c040;
   border-radius: 10px;
   overflow: hidden;
-  background: url('/assets/matinkim_back.png') center center / cover no-repeat;
+  background: url('/assets/rpg/matinkim_back.png') center center / cover no-repeat;
 }
 
 #matinkim-modal-close {

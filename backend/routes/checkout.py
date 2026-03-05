@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import json
+import logging
 from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+
+logger = logging.getLogger(__name__)
 
 from backend.services.data_store import find_product
 from backend.services.mailer import send_payment_receipt
@@ -21,7 +24,8 @@ def _append_purchase(record: dict) -> None:
     if _PURCHASES_FILE.exists():
         try:
             purchases = json.loads(_PURCHASES_FILE.read_text(encoding='utf-8'))
-        except Exception:
+        except Exception as e:
+            logger.warning("purchases file read failed: %s", e)
             purchases = []
     purchases.append(record)
     _PURCHASES_FILE.write_text(
@@ -70,7 +74,8 @@ def complete_payment(payload: CompleteRequest) -> dict:
     if payload.status == 'succeeded' and payload.email:
         try:
             sent = send_payment_receipt(payload.email, product['name'], int(product['price_jpy']))
-        except Exception:
+        except Exception as e:
+            logger.warning("payment receipt email failed: %s", e)
             sent = False
 
     if payload.status == 'succeeded':

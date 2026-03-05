@@ -1,17 +1,11 @@
 // ─── SEOULFIT My Page ─────────────────────────────────────────────────────────
+import { escHtml, formatJPY } from './utils.js';
 
-function formatJPY(v) {
-  return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(v || 0);
-}
 function formatDate(iso) {
   return new Date(iso).toLocaleString('ko-KR', {
     year: 'numeric', month: 'long', day: 'numeric',
     hour: '2-digit', minute: '2-digit',
   });
-}
-function escHtml(v) {
-  return String(v ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
-    .replaceAll('"','&quot;').replaceAll("'",'&#39;');
 }
 
 // ── 위시리스트 미리보기 ──────────────────────────────────────────────────────

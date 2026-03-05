@@ -1,4 +1,5 @@
 import { getRecommendations, createPaymentIntent, completePayment } from './api-client.js';
+import { escapeHtml, formatJPY } from './utils.js';
 
 // ─── i18n ────────────────────────────────────────────────────────────────────
 const I18N = {
@@ -293,13 +294,6 @@ const detailMainWrap = document.getElementById('detail-main-wrap');
 let stripe = null, elements = null, paymentElement = null, activePayment = null;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-function escapeHtml(v) {
-  return String(v ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;').replaceAll("'", '&#39;');
-}
-function formatJPY(v) {
-  return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(v || 0);
-}
 function setStatus(text) { statusNode.textContent = text || ''; }
 
 // ─── Tag groups ───────────────────────────────────────────────────────────────
@@ -737,8 +731,8 @@ function productCard(item) {
         <div class="meta">
           <span class="krw-badge" data-krw="${krwVal}">${t('badge.krw')}₩${krwVal.toLocaleString('ko-KR')}</span>
         </div>
-        ${safeReason ? `<div class="ai-reason"><span class="ai-reason-label">✦ AI 스타일링</span><span class="ai-reason-line1">${safeReason}</span></div>` : ''}
         <button class="btn primary pay" data-id="${escapeHtml(sid)}">${t('btn.pay')}</button>
+        ${safeReason ? `<div class="ai-reason"><span class="ai-reason-label">✦ AI 스타일링</span><span class="ai-reason-line1">${safeReason}</span></div>` : ''}
       </div>
     </article>`;
 }

@@ -49,7 +49,6 @@ const SeoulFitGame = (() => {
     }
 
     _currentSession.startedAt = new Date().toISOString();
-    console.log(`[Game] 모드: ${_isDemoMode ? '데모' : '정식 (로그인)'}`);
   }
 
   /**
@@ -72,7 +71,6 @@ const SeoulFitGame = (() => {
     );
     if (!alreadyHas) {
       _currentSession.acquiredItems.push(item);
-      console.log(`[Game] 아이템 획득: ${item.name}`);
     }
   }
 
@@ -149,7 +147,6 @@ const SeoulFitGame = (() => {
     }
 
     const data = await resp.json();
-    console.log(`[Game] 저장 완료: ${data.message}`);
     return data;
   }
 
@@ -167,7 +164,6 @@ const SeoulFitGame = (() => {
       const data = await resp.json();
       // 전역으로 노출 → fashion.js 등에서 인벤토리 배지 표시에 활용
       window._sfInventory = data.items || [];
-      console.log(`[Game] 인벤토리 로드: ${data.total}개`);
       _dispatchInventoryLoaded(data.items);
     } catch (err) {
       console.warn('[Game] 인벤토리 로드 실패:', err);
