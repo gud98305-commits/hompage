@@ -309,7 +309,7 @@ function initChatbot() {
     addMessage(
       "assistant",
       "키, 몸무게, 체형을 알려주세요! " +
-        "(예: 키 165cm, 몸무게 55kg, 허리가 잘록한 편)",
+      "(예: 키 165cm, 몸무게 55kg, 허리가 잘록한 편)",
       null
     );
   });
@@ -388,17 +388,17 @@ function addMessage(role, content, recommendations) {
     whiteSpace: "pre-wrap",
     ...(role === "user"
       ? {
-          alignSelf: "flex-end",
-          background: "#6366f1",
-          color: "#fff",
-          borderRadius: "12px 12px 2px 12px",
-        }
+        alignSelf: "flex-end",
+        background: "#6366f1",
+        color: "#fff",
+        borderRadius: "12px 12px 2px 12px",
+      }
       : {
-          alignSelf: "flex-start",
-          background: "#f3f4f6",
-          color: "#111",
-          borderRadius: "12px 12px 12px 2px",
-        }),
+        alignSelf: "flex-start",
+        background: "#f3f4f6",
+        color: "#111",
+        borderRadius: "12px 12px 12px 2px",
+      }),
   });
   bubble.textContent = content;
 
@@ -461,13 +461,13 @@ function renderProductCards(recommendations) {
       background: "#fff",
     });
 
-    // 이미지
     const img = document.createElement("img");
     img.src = item.image_url || CHATBOT_CONFIG.IMG_FALLBACK;
     Object.assign(img.style, {
       width: "140px",
       height: "160px",
       objectFit: "cover",
+      display: "block",
     });
     // onerror=null: 폴백 이미지도 실패 시 무한 루프 방지
     img.onerror = function () {
@@ -478,7 +478,12 @@ function renderProductCards(recommendations) {
     // 카드 바디
     const cardBody = document.createElement("div");
     cardBody.className = "card-body";
-    cardBody.style.padding = "8px";
+    Object.assign(cardBody.style, {
+      padding: "8px",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+    });
 
     // 상품명 (2줄 말줄임)
     const nameEl = document.createElement("p");
@@ -491,6 +496,8 @@ function renderProductCards(recommendations) {
       display: "-webkit-box",
       WebkitLineClamp: "2",
       WebkitBoxOrient: "vertical",
+      color: "inherit",
+      textDecoration: "none",
     });
 
     // 브랜드
@@ -501,6 +508,7 @@ function renderProductCards(recommendations) {
       fontSize: "11px",
       color: "#888",
       margin: "0 0 4px",
+      textDecoration: "none",
     });
 
     // 가격 (원화 locale)
@@ -513,34 +521,38 @@ function renderProductCards(recommendations) {
       fontSize: "13px",
       fontWeight: "bold",
       margin: "0 0 6px",
+      color: "#111",
+      textDecoration: "none",
     });
 
     cardBody.appendChild(nameEl);
     cardBody.appendChild(brandEl);
     cardBody.appendChild(priceEl);
 
-    // 바로가기 버튼
     if (item.source_url) {
-      const link = document.createElement("a");
-      link.href = item.source_url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.textContent = "바로가기";
-      Object.assign(link.style, {
-        display: "block",
-        textAlign: "center",
-        background: "#6366f1",
-        color: "#fff",
-        borderRadius: "6px",
-        padding: "4px",
-        fontSize: "12px",
+      const wrapperLink = document.createElement("a");
+      wrapperLink.href = item.source_url;
+      wrapperLink.target = "_blank";
+      wrapperLink.rel = "noopener noreferrer";
+      Object.assign(wrapperLink.style, {
         textDecoration: "none",
+        color: "inherit",
+        display: "block",
+        cursor: "pointer",
+        transition: "transform 0.2s allow-discrete",
       });
-      cardBody.appendChild(link);
+      // hover animation (simple workaround without external stylesheet)
+      wrapperLink.onmouseover = () => { wrapperLink.style.transform = "scale(0.98)"; };
+      wrapperLink.onmouseout = () => { wrapperLink.style.transform = "scale(1)"; };
+
+      wrapperLink.appendChild(img);
+      wrapperLink.appendChild(cardBody);
+      card.appendChild(wrapperLink);
+    } else {
+      card.appendChild(img);
+      card.appendChild(cardBody);
     }
 
-    card.appendChild(img);
-    card.appendChild(cardBody);
     cardsWrapper.appendChild(card);
   });
 
@@ -640,7 +652,7 @@ async function fetchGameItems() {
       addMessage(
         "assistant",
         `게임에서 담으신 아이템: [${names}] 외 ${data.count}개\n` +
-          "이 아이템들과 어울리는 옷을 추천해드릴까요?",
+        "이 아이템들과 어울리는 옷을 추천해드릴까요?",
         null
       );
     } else {

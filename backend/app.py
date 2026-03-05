@@ -118,3 +118,11 @@ for _refs_path in _refs_candidates:
 @app.get('/api/health')
 def health() -> dict:
     return {'status': 'ok'}
+
+@app.get('/favicon.ico', include_in_schema=False)
+async def favicon():
+    favicon_path = ROOT / 'assets' / 'img' / 'otto-logo.png'
+    if favicon_path.exists():
+        return FileResponse(favicon_path)
+    from fastapi.responses import Response
+    return Response(status_code=204)
