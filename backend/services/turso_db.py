@@ -18,15 +18,9 @@ TURSO_URL   = os.getenv("TURSO_DATABASE_URL", "")
 TURSO_TOKEN = os.getenv("TURSO_AUTH_TOKEN", "")
 
 if not TURSO_URL:
-    raise RuntimeError(
-        "[DB] TURSO_DATABASE_URL 환경변수가 설정되지 않았습니다. "
-        ".env 파일을 확인해주세요."
-    )
+    print("[DB] WARNING: TURSO_DATABASE_URL 환경변수가 설정되지 않았습니다.")
 if not TURSO_TOKEN:
-    raise RuntimeError(
-        "[DB] TURSO_AUTH_TOKEN 환경변수가 설정되지 않았습니다. "
-        ".env 파일을 확인해주세요."
-    )
+    print("[DB] WARNING: TURSO_AUTH_TOKEN 환경변수가 설정되지 않았습니다.")
 
 def _get_connection():
     """요청마다 새 커넥션 생성 (Thread-Safety 보장)."""

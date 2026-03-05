@@ -34,11 +34,28 @@ from backend.services.rpg_exceptions import RpgGameError
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """서버 시작/종료 시 실행되는 라이프사이클."""
-    init_db()               # Turso 테이블 초기화 (동기)
-    await init_chat_db()    # 챗봇 히스토리 SQLite 초기화 (비동기)
-    await init_rpg_db()     # RPG 게임 SQLite 초기화 (비동기)
+    print("[Startup] 서버 시작 중...")
+    try:
+        init_db()
+        print("[Startup] Turso DB 초기화 완료")
+    except Exception as e:
+        print(f"[Startup] Turso DB 초기화 실패 (계속 진행): {e}")
+    try:
+        await init_chat_db()
+        print("[Startup] ChatDB 초기화 완료")
+    except Exception as e:
+        print(f"[Startup] ChatDB 초기화 실패 (계속 진행): {e}")
+    try:
+        await init_rpg_db()
+        print("[Startup] RPG DB 초기화 완료")
+    except Exception as e:
+        print(f"[Startup] RPG DB 초기화 실패 (계속 진행): {e}")
+    print("[Startup] 서버 준비 완료")
     yield
-    await close_rpg_db()    # RPG DB 연결 해제
+    try:
+        await close_rpg_db()
+    except Exception:
+        pass
 
 
 app = FastAPI(title='SEOULFIT API', version='0.1.0', lifespan=lifespan)
