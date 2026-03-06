@@ -735,8 +735,17 @@ class ChatService:
         cleaned_words = [w for w in request.message.split() if w not in stop_words]
         final_keyword = " ".join(cleaned_words)[:100]
 
+        # 챗봇 체형(wave/straight/neutral) → ai_curator 체형(curvy/slim/standard) 변환
+        # ai_curator의 BODY_TYPE_TOKEN_MAP 키와 매핑
+        _BODY_TO_CURATOR = {
+            "wave": "curvy",        # 곡선형 → 글래머/X라인
+            "straight": "slim",     # 직선형 → 슬림/I라인
+            "neutral": "standard",  # 균형형 → 표준
+        }
+        curator_body = _BODY_TO_CURATOR.get(body_type, body_type)
+
         curator_req = CuratorRequest(
-            body_type=body_type,
+            body_type=curator_body,
             keyword=final_keyword,
             category=category,
             style=pref_style,       # 위시리스트/게임에서 추출한 선호 스타일

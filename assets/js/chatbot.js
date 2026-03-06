@@ -601,7 +601,21 @@ async function sendMessage(message) {
         // localStorage에서 복원되므로 새로고침 후에도 유지.
       }),
     });
+
+    // 서버 에러 응답 처리 (4xx, 5xx)
+    if (!res.ok) {
+      console.error("[OttO봇] API 에러:", res.status, res.statusText);
+      removeTypingIndicator();
+      addMessage(
+        "assistant",
+        "서버에서 오류가 발생했어요. 잠시 후 다시 시도해주세요.",
+        null
+      );
+      return;
+    }
+
     const data = await res.json();
+    console.log("[OttO봇] API 응답:", JSON.stringify(data).substring(0, 500));
 
     // session_id: 최초 응답에서 서버 확정값 저장.
     // 이후 모든 요청에 포함하여 대화 맥락 유지.
@@ -611,14 +625,18 @@ async function sendMessage(message) {
     }
 
     // 상품 추천이 있으면 이미지를 먼저 프리로드한 후 메시지 표시
-    if (data.recommendations && data.recommendations.length > 0) {
+    const recs = data.recommendations;
+    if (recs && Array.isArray(recs) && recs.length > 0) {
+      console.log("[OttO봇] 추천 상품 수:", recs.length);
       try {
-        await preloadProductImages(data.recommendations);
+        await preloadProductImages(recs);
       } catch (_) { /* 프리로드 실패해도 계속 진행 */ }
+    } else {
+      console.log("[OttO봇] 추천 상품 없음. recommendations:", typeof recs, recs);
     }
 
     removeTypingIndicator();
-    addMessage("assistant", data.response, data.recommendations);
+    addMessage("assistant", data.response, recs || null);
     history.push({ role: "assistant", content: data.response });
   } catch (err) {
     removeTypingIndicator();

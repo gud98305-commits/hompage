@@ -21,6 +21,7 @@ main.py 연동 방법:
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.services.chatbot_advanced.chat_schemas import (
@@ -59,7 +60,10 @@ async def chat(
     service: ChatService = Depends(get_chat_service),
 ) -> ChatResponse:
     """OttO봇 메인 대화 엔드포인트."""
-    return await service.process_chat(request, session=db)
+    result = await service.process_chat(request, session=db)
+    # 명시적 JSON 직렬화: response_model 자동 직렬화 과정에서
+    # recommendations(list[ProductItem])가 누락되는 문제 방지
+    return JSONResponse(content=result.model_dump(mode="json"))
 
 
 # ---------------------------------------------------------------------------
