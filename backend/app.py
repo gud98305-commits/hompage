@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 from dotenv import load_dotenv
@@ -60,9 +61,16 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title='SEOULFIT API', version='0.1.0', lifespan=lifespan)
 
+_FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:8000")
+_ALLOWED_ORIGINS = [
+    _FRONTEND_URL,
+    "http://localhost:8000",
+    "http://localhost:3000",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],
+    allow_origins=_ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*'],
