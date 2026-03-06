@@ -135,7 +135,10 @@ class GameStateUpdate(BaseModel):
     discovered_events: list[EventId] | None = Field(default=None, max_length=200)
 
 
+TradeGold = Annotated[int, Field(ge=1, le=9999999)]
+
+
 class TradeRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", validate_assignment=True)
     item_name: ItemName
-    price: Gold
+    price: TradeGold

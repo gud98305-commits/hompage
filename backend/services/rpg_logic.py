@@ -5,7 +5,9 @@ from typing import Sequence
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.services.rpg_models import GameState, GameStateCreate, GameStateUpdate, TradeRequest
-from backend.services.rpg_exceptions import GameNotFoundError, InsufficientFundsError, ItemNotFoundError
+from backend.services.rpg_exceptions import GameNotFoundError, GoldOverflowError, InsufficientFundsError, ItemNotFoundError
+
+GOLD_MAX = 9_999_999
 
 import logging
 
@@ -28,9 +30,12 @@ async def load_game(db: AsyncSession, save_id: int) -> GameState | None:
     return await db.get(GameState, save_id)
 
 
-async def list_saves(db: AsyncSession) -> Sequence[GameState]:
+async def list_saves(db: AsyncSession, player_name: str | None = None) -> Sequence[GameState]:
+    query = select(GameState)
+    if player_name:
+        query = query.where(GameState.player_name == player_name)
     result = await db.execute(
-        select(GameState).order_by(GameState.saved_at.desc()).limit(10)
+        query.order_by(GameState.saved_at.desc()).limit(10)
     )
     return result.scalars().all()
 
@@ -90,7 +95,10 @@ async def sell_item(db: AsyncSession, save_id: int, data: TradeRequest) -> GameS
         raise ItemNotFoundError(data.item_name)
     inv.remove(data.item_name)
     db_obj.inventory = inv
-    db_obj.gold += data.price
+    new_gold = db_obj.gold + data.price
+    if new_gold > GOLD_MAX:
+        raise GoldOverflowError(max_gold=GOLD_MAX)
+    db_obj.gold = new_gold
     try:
         await db.commit()
         await db.refresh(db_obj)

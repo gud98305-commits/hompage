@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import os
+import uuid
+from collections import OrderedDict
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
@@ -30,12 +32,23 @@ JWT_EXPIRE_DAYS      = 30
 FRONTEND_URL         = os.getenv("FRONTEND_URL", "http://localhost:8000")
 REDIRECT_URI         = os.getenv("REDIRECT_URI", "http://localhost:8000/api/auth/callback")
 
+# ── JWT 블랙리스트 (인메모리 LRU, 최대 10000 토큰) ──────────────────────────
+_BLACKLIST_MAX = 10_000
+_jwt_blacklist: OrderedDict[str, bool] = OrderedDict()
+
+
+def _blacklist_jti(jti: str) -> None:
+    _jwt_blacklist[jti] = True
+    _jwt_blacklist.move_to_end(jti)
+    if len(_jwt_blacklist) > _BLACKLIST_MAX:
+        _jwt_blacklist.popitem(last=False)
+
 
 # ── JWT helpers ───────────────────────────────────────────────────────────────
 def create_jwt(user_id: int, email: str) -> str:
     expire = datetime.utcnow() + timedelta(days=JWT_EXPIRE_DAYS)
     return jwt.encode(
-        {"sub": str(user_id), "email": email, "exp": expire},
+        {"sub": str(user_id), "email": email, "exp": expire, "jti": uuid.uuid4().hex},
         JWT_SECRET,
         algorithm=JWT_ALGORITHM,
     )
@@ -43,9 +56,12 @@ def create_jwt(user_id: int, email: str) -> str:
 
 def decode_jwt(token: str) -> dict:
     try:
-        return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
     except PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
+    if payload.get("jti") in _jwt_blacklist:
+        raise HTTPException(status_code=401, detail="Token has been revoked")
+    return payload
 
 
 # ── Auth dependency ───────────────────────────────────────────────────────────
@@ -198,6 +214,18 @@ def sync_wishlist(
 
 
 @router.post("/logout")
-def logout() -> dict:
-    """Client-side logout — just confirm token removal."""
+def logout(authorization: str | None = Header(default=None)) -> dict:
+    """로그아웃 — 토큰을 블랙리스트에 추가하여 서버사이드에서도 무효화."""
+    if authorization and authorization.startswith("Bearer "):
+        try:
+            payload = jwt.decode(
+                authorization.split(" ", 1)[1],
+                JWT_SECRET,
+                algorithms=[JWT_ALGORITHM],
+            )
+            jti = payload.get("jti")
+            if jti:
+                _blacklist_jti(jti)
+        except PyJWTError:
+            pass  # 이미 만료된 토큰이면 무시
     return {"ok": True, "message": "Logged out"}

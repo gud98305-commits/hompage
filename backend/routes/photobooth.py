@@ -38,6 +38,12 @@ except FileNotFoundError as e:
 
 _STYLE_MAP = {s["style_id"]: s for s in _STYLES}
 
+# ── 스레드풀 싱글턴 (매 요청마다 생성/삭제 방지) ──────────────────────
+_image_executor = ThreadPoolExecutor(max_workers=4)
+
+# 전체 생성 요청 타임아웃 (초) — 4장 병렬 + 재시도 포함
+_GENERATE_TIMEOUT_SEC = 120
+
 # ── OpenAI 클라이언트 (지연 초기화: OPENAI_API_KEY 없어도 서버 기동) ──
 _openai_client = None
 
@@ -131,8 +137,17 @@ async def generate(body: GenerateRequest) -> dict:
         else prompts_raw
     )
 
-    # ── 4장 병렬 생성 ────────────────────────────────────────────────
-    frame_results = await _generate_all_frames(prompts, selfie_bytes)
+    # ── 4장 병렬 생성 (전체 타임아웃 적용) ──────────────────────────
+    try:
+        frame_results = await asyncio.wait_for(
+            _generate_all_frames(prompts, selfie_bytes),
+            timeout=_GENERATE_TIMEOUT_SEC,
+        )
+    except asyncio.TimeoutError:
+        raise HTTPException(
+            status_code=504,
+            detail=f"이미지 생성이 {_GENERATE_TIMEOUT_SEC}초를 초과했습니다. 다시 시도해주세요.",
+        )
 
     # 실패 프레임은 placeholder로 대체
     frame_images: list[str] = [
@@ -200,50 +215,44 @@ async def _generate_all_frames(
 ) -> list[dict]:
     """
     4장 병렬 생성 + 실패 시 1회 재시도.
-    ⚠️ 엣지케이스: gpt-image-1 rate limit — 최대 4 concurrent requests
+    모듈 레벨 _image_executor 사용 (매 요청마다 생성/삭제 방지).
     """
     loop = asyncio.get_event_loop()
-    # ⚠️ ThreadPoolExecutor는 함수 종료 시 명시적 shutdown 필요
-    executor = ThreadPoolExecutor(max_workers=4)
 
-    try:
-        first_attempt = await asyncio.gather(
+    first_attempt = await asyncio.gather(
+        *[
+            loop.run_in_executor(_image_executor, _generate_one_sync, p, selfie_bytes)
+            for p in prompts
+        ],
+        return_exceptions=True,
+    )
+
+    results: list[dict] = []
+    retry_indices: list[int] = []
+
+    import logging
+    logger = logging.getLogger("photobooth")
+
+    for i, outcome in enumerate(first_attempt):
+        if isinstance(outcome, Exception):
+            logger.error("[Photobooth] Frame %d 실패: %s", i, outcome)
+            retry_indices.append(i)
+            results.append({"success": False, "error": str(outcome)})
+        else:
+            results.append({"success": True, "imageBase64": outcome})
+
+    # 실패 프레임 재시도
+    if retry_indices:
+        retry_attempt = await asyncio.gather(
             *[
-                loop.run_in_executor(executor, _generate_one_sync, p, selfie_bytes)
-                for p in prompts
+                loop.run_in_executor(_image_executor, _generate_one_sync, prompts[i], selfie_bytes)
+                for i in retry_indices
             ],
             return_exceptions=True,
         )
+        for j, outcome in enumerate(retry_attempt):
+            orig_i = retry_indices[j]
+            if not isinstance(outcome, Exception):
+                results[orig_i] = {"success": True, "imageBase64": outcome}
 
-        results: list[dict] = []
-        retry_indices: list[int] = []
-
-        import logging
-        logger = logging.getLogger("photobooth")
-
-        for i, outcome in enumerate(first_attempt):
-            if isinstance(outcome, Exception):
-                logger.error("[Photobooth] Frame %d 실패: %s", i, outcome)
-                retry_indices.append(i)
-                results.append({"success": False, "error": str(outcome)})
-            else:
-                results.append({"success": True, "imageBase64": outcome})
-
-        # 실패 프레임 재시도
-        if retry_indices:
-            retry_attempt = await asyncio.gather(
-                *[
-                    loop.run_in_executor(executor, _generate_one_sync, prompts[i], selfie_bytes)
-                    for i in retry_indices
-                ],
-                return_exceptions=True,
-            )
-            for j, outcome in enumerate(retry_attempt):
-                orig_i = retry_indices[j]
-                if not isinstance(outcome, Exception):
-                    results[orig_i] = {"success": True, "imageBase64": outcome}
-
-        return results
-
-    finally:
-        executor.shutdown(wait=False)
+    return results

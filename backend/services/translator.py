@@ -15,6 +15,7 @@ Note: DEEPL_API_KEY는 함수 호출 시점에 읽음 (lazy load).
 from __future__ import annotations
 
 import os
+from collections import OrderedDict
 
 import requests
 
@@ -27,8 +28,9 @@ _LANG_MAP: dict[str, str] = {
     "en": "EN-US",
 }
 
-# 번역 결과 메모리 캐시 (프로세스 재시작 전까지 유지)
-_cache: dict[str, str] = {}
+# 번역 결과 메모리 캐시 (LRU, 최대 10000 엔트리)
+_CACHE_MAX_SIZE = 10_000
+_cache: OrderedDict[str, str] = OrderedDict()
 
 
 def _api_key() -> str:
@@ -71,7 +73,9 @@ def translate_batch(
         if not text or not text.strip():
             continue
         cache_key = f"{source}:{target}:{text}"
-        if cache_key not in _cache:
+        if cache_key in _cache:
+            _cache.move_to_end(cache_key)  # LRU 갱신
+        else:
             miss_indices.append(i)
             miss_texts.append(text)
 
@@ -100,7 +104,11 @@ def translate_batch(
                     if idx < len(translations)
                     else orig_text
                 )
-                _cache[f"{source}:{target}:{orig_text}"] = translated
+                cache_key_w = f"{source}:{target}:{orig_text}"
+                _cache[cache_key_w] = translated
+                _cache.move_to_end(cache_key_w)
+                if len(_cache) > _CACHE_MAX_SIZE:
+                    _cache.popitem(last=False)
         except Exception:
             pass  # 실패 시 아래에서 원본 fallback
 

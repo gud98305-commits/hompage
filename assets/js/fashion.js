@@ -896,6 +896,11 @@ async function _handlePaymentSuccess(paymentIntentId) {
       payment_intent_id: paymentIntentId,
       email, status: 'succeeded',
     });
+    if (res.ok === false) {
+      setStatus('결제 검증에 실패했습니다. 다시 시도해주세요.');
+      closeModal();
+      return;
+    }
     savePurchase({
       payment_intent_id: paymentIntentId,
       product_id: activePayment?.product_id || '',

@@ -39,3 +39,13 @@ class ItemNotFoundError(RpgGameError):
             detail=f"아이템 없음: {item_name}",
             status_code=400,
         )
+
+
+class GoldOverflowError(RpgGameError):
+    """골드 상한 초과"""
+
+    def __init__(self, max_gold: int):
+        super().__init__(
+            detail=f"골드 상한 초과: 최대 {max_gold}",
+            status_code=400,
+        )

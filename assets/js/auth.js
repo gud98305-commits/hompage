@@ -74,7 +74,15 @@
     if (data?.url) window.location.href = data.url;
   }
 
-  function logout() {
+  async function logout() {
+    // 서버에 토큰 무효화 요청 (블랙리스트 등록)
+    const token = getToken();
+    if (token) {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+      }).catch(() => {});
+    }
     removeToken();
     window.location.reload();
   }

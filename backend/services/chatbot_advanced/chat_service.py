@@ -135,16 +135,48 @@ class KeywordIntentClassifier:
     _BODY_FOLLOWUP: set[str] = {"골격", "체형"}
     _GAME_FOLLOWUP: set[str] = {"인벤토리", "보관함"}
 
-    def _match_keywords(self, tokens: set[str]) -> IntentType:
-        """토큰 셋 기반 우선순위 매칭.
+    # 한국어 조사/어미 허용 접미사 (키워드 뒤에 바로 붙을 수 있는 한글)
+    # "추천해줘", "게임에서", "스타일로" 등은 매칭하되
+    # "게임기", "스타일리시" 등 복합어는 차단
+    _ALLOWED_SUFFIXES = frozenset(
+        "이가을를에서도는은의로만해줘요"
+        "하고자며다까지지인"
+    )
+
+    @classmethod
+    def _contains_any(cls, text: str, keywords: set[str]) -> bool:
+        """한국어 형태소 경계를 고려한 부분 문자열 매칭.
+
+        키워드 뒤에 조사/어미가 붙으면 매칭 (추천해줘 → 추천 ✓)
+        키워드 뒤에 다른 한글 명사가 붙으면 미매칭 (게임기 → 게임 ✗)
+        """
+        for kw in keywords:
+            idx = text.find(kw)
+            while idx != -1:
+                after_idx = idx + len(kw)
+                if after_idx >= len(text):
+                    return True  # 문장 끝에 키워드
+                next_char = text[after_idx]
+                # 다음 글자가 한글이 아니면 OK (공백, 숫자, 구두점 등)
+                if not ('\uac00' <= next_char <= '\ud7a3'):
+                    return True
+                # 한글이지만 허용된 조사/어미이면 OK
+                if next_char in cls._ALLOWED_SUFFIXES:
+                    return True
+                # 그 외 한글 (복합어) → 이 위치는 스킵, 다음 위치에서 재검색
+                idx = text.find(kw, idx + 1)
+        return False
+
+    def _match_keywords(self, message: str) -> IntentType:
+        """메시지 전체 텍스트 기반 우선순위 매칭.
 
         우선순위: GAME_ITEMS → BODY_ANALYSIS → RECOMMEND → GENERAL
         복합 의도: GAME_ITEMS + RECOMMEND 동시 감지 → RECOMMEND 우선
         (사용자가 게임 아이템 기반 추천을 원하는 것으로 판단)
         """
-        has_game = bool(tokens & self.GAME_KEYWORDS)
-        has_body = bool(tokens & self.BODY_KEYWORDS)
-        has_recommend = bool(tokens & self.RECOMMEND_KEYWORDS)
+        has_game = self._contains_any(message, self.GAME_KEYWORDS)
+        has_body = self._contains_any(message, self.BODY_KEYWORDS)
+        has_recommend = self._contains_any(message, self.RECOMMEND_KEYWORDS)
 
         # 복합 의도 처리: 게임 + 추천 → 추천 우선
         if has_game and has_recommend:
@@ -205,14 +237,9 @@ class KeywordIntentClassifier:
         CPU-bound: 내부 로직은 동기 키워드 매칭입니다.
         IO-bound LLM 교체 대비 async 인터페이스를 유지합니다.
         """
-        # Step A. 현재 메시지 토큰화 (split 기반 오탐 방지)
-        # 단순 "in" 대신 공백 분리 토큰 매칭으로 오탐 감소
-        # 예: "게임기" → {"게임기"} → "게임" 미매칭 (정확한 토큰만 매칭)
-        # TODO: 형태소 분석기(Kiwi/Okt) 도입 시 토큰화 교체 예정
-        tokens = set(message.split())
-
-        # Step B. 현재 메시지 키워드 매칭
-        current_intent = self._match_keywords(tokens)
+        # Step A+B. 부분 문자열 매칭으로 의도 분류
+        # 한국어 조사/어미 결합 대응: "추천해줘" → "추천" 매칭
+        current_intent = self._match_keywords(message)
 
         # Step C. Context Carry-over
         # 현재 메시지에서 명확한 intent 없는 경우(GENERAL)

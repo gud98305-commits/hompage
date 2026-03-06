@@ -26,8 +26,8 @@ class RecommendRequest(BaseModel):
     min_price_krw: int = 0
     max_price_krw: int = 99999999
     email: str | None = None
-    page: int = 0
-    page_size: int = 20
+    page: int = Field(default=0, ge=0)
+    page_size: int = Field(default=20, ge=1, le=100)
 
 
 class RecommendResponse(BaseModel):
@@ -35,15 +35,22 @@ class RecommendResponse(BaseModel):
     total: int = 0
 
 
+def _ensure_jpy(products: list[dict]) -> list[dict]:
+    """price_jpy 미설정 상품만 복사 후 변환 — 캐시 원본 오염 방지."""
+    result = []
+    for item in products:
+        if not item.get('price_jpy'):
+            item = {**item, 'price_jpy': krw_to_jpy(int(item.get('price_krw', 0) or 0))}
+        result.append(item)
+    return result
+
+
 @router.post('/recommend', response_model=RecommendResponse)
 def recommend(payload: RecommendRequest) -> RecommendResponse:
-    products = load_products()
+    products = _ensure_jpy(load_products())
     if not products:
         return RecommendResponse(items=[], total=0)
 
-    for item in products:
-        if not item.get('price_jpy'):
-            item['price_jpy'] = krw_to_jpy(int(item['price_krw']))
     try:
         result = curate_with_openai(
             products, payload.model_dump(),
@@ -69,13 +76,9 @@ class MatchComplementRequest(BaseModel):
 
 @router.post('/match-complement')
 def match_complement(payload: MatchComplementRequest) -> dict:
-    products = load_products()
+    products = _ensure_jpy(load_products())
     if not products:
         return {'items': []}
-
-    for item in products:
-        if not item.get('price_jpy'):
-            item['price_jpy'] = krw_to_jpy(int(item.get('price_krw', 0) or 0))
 
     current_cat = (payload.current_item.get('category') or '').lower()
     complement_cats: list[str] = {
