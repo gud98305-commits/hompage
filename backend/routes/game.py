@@ -55,11 +55,11 @@ def save_game(
     current_user: User = Depends(get_current_user),
     db=Depends(get_db),
 ) -> dict[str, Any]:
-    # 1. 인벤토리 저장 (이미 있으면 스킵)
+    # 1. 인벤토리 저장 (UNIQUE 제약으로 중복 자동 스킵)
     saved_ids: list[str] = []
     for item in payload.acquired_items:
-        if not InventoryItem.exists(db, current_user.id, item.product_id):
-            InventoryItem.create(db, current_user.id, item.dict())
+        result = InventoryItem.create(db, current_user.id, item.dict())
+        if result is not None:
             saved_ids.append(item.product_id)
 
     # 2. 게임 세션 기록 (ended_at, is_completed, items_count 포함)

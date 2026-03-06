@@ -609,18 +609,28 @@ class ChatService:
                 None,
             )
 
-        # Step 5. 스타일 가이드 획득
+        # Step 5. 체형 결과를 DB에 저장 (로그인 유저만)
+        if request.user_id:
+            try:
+                from backend.services.turso_db import User as TursoUser, _get_connection
+                conn = _get_connection()
+                try:
+                    TursoUser.update_body_type(conn, int(request.user_id), body_type.value)
+                finally:
+                    conn.close()
+            except Exception:
+                pass  # 저장 실패해도 응답은 정상 반환
+
+        # Step 6. 스타일 가이드 획득
         style_guide = analyzer.get_style_guide(body_type)
 
-        # Step 6. 응답 생성 (body_type.value를 3번째 요소로 전달)
+        # Step 7. 응답 생성 (body_type.value를 3번째 요소로 전달)
         response = (
             f"{style_guide}\n\n"
             "체형에 맞는 옷을 추천받고 싶으시면 "
             "'추천해줘'라고 말씀해 주세요!"
         )
         return response, None, body_type.value
-        # TODO 4단계: _handle_recommend 연계로 즉시 추천까지 확장 가능
-        # request.user_meta["body_type"] = body_type.value 후 추천 호출
 
     async def _handle_recommend(
         self,
@@ -632,26 +642,67 @@ class ChatService:
 
         product_adapter → Corrective RAG 파이프라인을 실행합니다.
         """
-        # Step 1. body_type 추출 (user_meta 단일 경로)
-        # history 텍스트 파싱 방식 제거:
-        # - 텍스트 하드코딩 의존으로 body_analyzer 출력 변경 시 즉시 고장
-        # - user_meta["body_type"]을 단일 신뢰 경로로 사용
+        # Step 1. body_type 추출 (user_meta 우선 → DB fallback)
         body_type = request.user_meta.get("body_type")
-        # TODO: 세션 상태(State) DB 도입 시
-        # session에서 user_id 기반 body_type 조회로 교체
-        # user_meta 없이도 이전 체형 분석 결과 유지 가능
+        if not body_type and request.user_id:
+            try:
+                from backend.services.turso_db import User as TursoUser, _get_connection
+                conn = _get_connection()
+                try:
+                    user = TursoUser.get_by_id(conn, int(request.user_id))
+                    if user and user.body_type:
+                        body_type = user.body_type
+                finally:
+                    conn.close()
+            except Exception:
+                pass
 
-        # Step 2. 메시지에서 카테고리 추출 (동의어 사전 기반)
-        # TODO 7단계: LLM 기반 파라미터 추출로 교체 예정
+        # Step 2. 유저 선호도 조회 (위시리스트 + 게임 히스토리)
+        pref_style = None
+        pref_color = None
+        if request.user_id:
+            try:
+                from backend.services.turso_db import _get_connection, Wishlist, GameResult
+                from backend.services.data_store import find_product
+                conn = _get_connection()
+                try:
+                    # 위시리스트 → 선호 스타일 추출
+                    wish_items = Wishlist.get_by_user(conn, int(request.user_id))
+                    wish_styles = []
+                    for w in wish_items[:10]:
+                        prod = find_product(w.product_id)
+                        if prod and prod.get("style"):
+                            wish_styles.append(prod["style"])
+                    if wish_styles:
+                        from collections import Counter
+                        pref_style = Counter(wish_styles).most_common(1)[0][0]
+
+                    # 게임 결과 → 선호 색상/스타일
+                    results = GameResult.get_by_user(conn, int(request.user_id), limit=5)
+                    all_colors = []
+                    all_styles = []
+                    for r in results:
+                        all_colors.extend(r.selected_colors or [])
+                        all_styles.extend(r.selected_styles or [])
+                    if all_colors:
+                        from collections import Counter
+                        pref_color = Counter(all_colors).most_common(1)[0][0]
+                    if all_styles and not pref_style:
+                        from collections import Counter
+                        pref_style = Counter(all_styles).most_common(1)[0][0]
+                finally:
+                    conn.close()
+            except Exception:
+                pass  # 선호도 조회 실패해도 기본 추천 진행
+
+        # Step 3. 메시지에서 카테고리 추출 (동의어 사전 기반)
         category = None
         for keyword, cat in CATEGORY_MAP.items():
             if keyword in request.message:
                 category = cat
                 break
 
-        # Step 3. CuratorRequest 구성
-        # 자연어에서 의미없는 토큰 제거 후 keyword 구성
-        # "오늘 코디 추천해줘" 같은 발화에서 불필요한 동사 제거
+        # Step 4. CuratorRequest 구성
         from backend.services.chatbot_advanced.chat_service import KeywordIntentClassifier
         stop_words = KeywordIntentClassifier.RECOMMEND_KEYWORDS | {"해줘", "부탁해", "알려줘", "오늘"}
         cleaned_words = [w for w in request.message.split() if w not in stop_words]
@@ -659,8 +710,10 @@ class ChatService:
 
         curator_req = CuratorRequest(
             body_type=body_type,
-            keyword=final_keyword,  # 토큰 비용 통제 및 추천 동사 제거
+            keyword=final_keyword,
             category=category,
+            style=pref_style,       # 위시리스트/게임에서 추출한 선호 스타일
+            color=pref_color,       # 게임에서 추출한 선호 색상
             page=1,
             page_size=5,
         )
@@ -668,9 +721,7 @@ class ChatService:
         # Step 4. product_adapter로 1차 검색
         try:
             from backend.services.chatbot_advanced.product_adapter import get_products_by_curator
-            print(f">>> [DEBUG] _handle_recommend: curator_req = {curator_req}")
             products = await get_products_by_curator(curator_req)
-            print(f">>> [DEBUG] _handle_recommend: found {len(products)} products from get_products_by_curator")
         except RAGEngineError as e:
             if e.code == "no_result":
                 return (
@@ -692,10 +743,8 @@ class ChatService:
             products: list[ProductItem] = await self.rag_engine.run(
                 products, curator_req,
             )
-            print(f">>> [DEBUG] _handle_recommend: found {len(products)} products after rag_engine")
-        except Exception as e:
+        except Exception:
             # RAG 실패 시 1차 검색 결과 그대로 사용 (서비스 연속성)
-            print(f">>> [DEBUG] _handle_recommend: rag_engine error = {e}")
             pass
 
         # Step 6. 응답 텍스트 생성
@@ -719,7 +768,6 @@ class ChatService:
             f"{prefix}상품 {len(products)}개를 추천드려요! "
             "아래 상품들을 확인해보세요 😊"
         )
-        print(f">>> [DEBUG] _handle_recommend: Returning {len(products)} products to caller.")
         return response, products, None
         # TODO 5단계: game_items 연동 시 게임 담은 옷 기반 추천으로 확장
 

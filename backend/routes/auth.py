@@ -19,7 +19,12 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 # ── Config ────────────────────────────────────────────────────────────────────
 GOOGLE_CLIENT_ID     = os.getenv("GOOGLE_CLIENT_ID", "")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
-JWT_SECRET           = os.getenv("JWT_SECRET", "change-this-secret-in-production")
+JWT_SECRET           = os.getenv("JWT_SECRET", "")
+if not JWT_SECRET:
+    import warnings
+    warnings.warn("JWT_SECRET 환경변수가 설정되지 않았습니다. 프로덕션에서는 반드시 설정하세요.", stacklevel=1)
+    import secrets
+    JWT_SECRET = secrets.token_urlsafe(32)
 JWT_ALGORITHM        = "HS256"
 JWT_EXPIRE_DAYS      = 30
 FRONTEND_URL         = os.getenv("FRONTEND_URL", "http://localhost:8000")
@@ -127,7 +132,8 @@ def google_callback(code: str, db=Depends(get_db)):
         user = User.get_by_google_id(db, user_info["sub"])
 
     token = create_jwt(user.id, user.email)
-    return RedirectResponse(url=f"{FRONTEND_URL}/my.html?token={token}")
+    # fragment(#)는 서버 로그·Referer 헤더에 포함되지 않아 토큰 노출 방지
+    return RedirectResponse(url=f"{FRONTEND_URL}/my.html#token={token}")
 
 
 @router.get("/me")

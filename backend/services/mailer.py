@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+import logging
 import os
 import smtplib
 from email.message import EmailMessage
 
+logger = logging.getLogger(__name__)
+
 
 def send_payment_receipt(email: str, item_name: str, amount_jpy: int) -> bool:
     if not email:
+        logger.warning("receipt skipped — no email provided (item: %s)", item_name)
         return False
 
     host = os.getenv('SMTP_HOST', '').strip()
@@ -16,6 +20,7 @@ def send_payment_receipt(email: str, item_name: str, amount_jpy: int) -> bool:
     mail_from = os.getenv('MAIL_FROM', user or 'no-reply@seoulfit.local')
 
     if not host:
+        logger.warning("receipt skipped — SMTP_HOST not configured (to: %s, item: %s)", email, item_name)
         return False
 
     msg = EmailMessage()

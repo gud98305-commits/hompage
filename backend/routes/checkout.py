@@ -19,18 +19,21 @@ router = APIRouter(prefix='/api/checkout', tags=['checkout'])
 _PURCHASES_FILE = Path(__file__).resolve().parents[2] / 'backend' / 'data' / 'purchases.json'
 
 def _append_purchase(record: dict) -> None:
-    _PURCHASES_FILE.parent.mkdir(parents=True, exist_ok=True)
-    purchases: list = []
-    if _PURCHASES_FILE.exists():
-        try:
-            purchases = json.loads(_PURCHASES_FILE.read_text(encoding='utf-8'))
-        except Exception as e:
-            logger.warning("purchases file read failed: %s", e)
-            purchases = []
-    purchases.append(record)
-    _PURCHASES_FILE.write_text(
-        json.dumps(purchases, ensure_ascii=False, indent=2), encoding='utf-8'
-    )
+    try:
+        _PURCHASES_FILE.parent.mkdir(parents=True, exist_ok=True)
+        purchases: list = []
+        if _PURCHASES_FILE.exists():
+            try:
+                purchases = json.loads(_PURCHASES_FILE.read_text(encoding='utf-8'))
+            except Exception as e:
+                logger.warning("purchases file read failed: %s", e)
+                purchases = []
+        purchases.append(record)
+        _PURCHASES_FILE.write_text(
+            json.dumps(purchases, ensure_ascii=False, indent=2), encoding='utf-8'
+        )
+    except Exception as e:
+        logger.error("purchases file write failed — record lost: %s | record: %s", e, record)
 
 
 class IntentRequest(BaseModel):
@@ -75,7 +78,7 @@ def complete_payment(payload: CompleteRequest) -> dict:
         try:
             sent = send_payment_receipt(payload.email, product['name'], int(product['price_jpy']))
         except Exception as e:
-            logger.warning("payment receipt email failed: %s", e)
+            logger.error("payment receipt email failed (to: %s): %s", payload.email, e)
             sent = False
 
     if payload.status == 'succeeded':

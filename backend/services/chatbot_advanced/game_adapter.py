@@ -240,31 +240,32 @@ class GameItemToProductAdapter:
             if category_counts else None
         )
 
-        # Step 2. 다중 속성 keyword 구성 (정보 손실 최소화)
-        # 단순 "첫 번째 아이템 색상"이 아닌
-        # 모든 아이템의 이름+색상 조합을 나열하여
-        # 검색 엔진이 최대한 다양한 관련 상품을 찾도록 유도
+        # Step 2. 전체 아이템 패턴 분석
         keyword_parts: list[str] = []
-        for item in items[:3]:
-            # 게임 용어 → 패션 용어 변환 시도
+        all_colors: list[str] = []
+
+        for item in items:
+            # 게임 용어 → 패션 용어 변환
             fashion_name = item.name
             for game_term, fashion_term in GAME_TO_FASHION_KEYWORD.items():
                 if game_term in item.name:
                     fashion_name = fashion_term
                     break
-            # 색상 포함하여 구체적 조합 생성
-            if item.color:
-                keyword_parts.append(f"{item.color} {fashion_name}")
+            c = item.color
+            if c:
+                all_colors.append(c)
+                keyword_parts.append(f"{c} {fashion_name}")
             else:
                 keyword_parts.append(fashion_name)
 
-        keyword = " ".join(keyword_parts)[:100]
-        # 토큰 비용 통제: 100자 제한
+        # 상위 5개 아이템으로 키워드 구성 (토큰 비용 통제)
+        kw_parts = keyword_parts[:5]
+        keyword = " ".join(kw_parts)[:100]
 
-        # Step 3. 첫 번째 아이템 색상 (color 파라미터용)
-        color = next(
-            (item.color for item in items if item.color), None
-        )
+        # Step 3. 가장 많이 등장한 색상 선택
+        color: str | None = None
+        if all_colors:
+            color = Counter(all_colors).most_common(1)[0][0]
 
         return CuratorRequest(
             body_type=body_type,

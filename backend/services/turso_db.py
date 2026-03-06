@@ -80,7 +80,8 @@ def init_db() -> None:
             price_krw     INTEGER DEFAULT 0,
             source_url    TEXT DEFAULT '',
             obtained_from TEXT DEFAULT 'game',
-            obtained_at   TEXT DEFAULT (datetime('now'))
+            obtained_at   TEXT DEFAULT (datetime('now')),
+            UNIQUE(user_id, product_id)
         )""",
         """CREATE TABLE IF NOT EXISTS game_sessions (
             id           INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -130,10 +131,21 @@ def init_db() -> None:
         "CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand)",
         "CREATE INDEX IF NOT EXISTS idx_products_price ON products(price_krw)",
     ]
+    # 기존 테이블에 컬럼 추가 (이미 존재하면 무시)
+    _migrations = [
+        "ALTER TABLE users ADD COLUMN body_type TEXT DEFAULT NULL",
+        "CREATE UNIQUE INDEX IF NOT EXISTS idx_inventory_user_product ON inventory_items(user_id, product_id)",
+    ]
     try:
         for stmt in statements:
             conn.execute(stmt)
         conn.commit()
+        for mig in _migrations:
+            try:
+                conn.execute(mig)
+                conn.commit()
+            except Exception:
+                pass  # 이미 컬럼이 존재하면 무시
         print("[DB] 테이블 초기화 완료")
     except Exception:
         conn.rollback()
@@ -168,6 +180,7 @@ class User:
         self.email     = row["email"]
         self.name      = row.get("name", "")
         self.picture   = row.get("picture", "")
+        self.body_type = row.get("body_type")
 
     @staticmethod
     def get_by_google_id(conn, google_id: str):
@@ -184,6 +197,14 @@ class User:
         )
         row = cur.fetchone()
         return User(row_to_dict(cur, row)) if row else None
+
+    @staticmethod
+    def update_body_type(conn, user_id: int, body_type: str) -> None:
+        conn.execute(
+            "UPDATE users SET body_type = ? WHERE id = ?",
+            (body_type, user_id),
+        )
+        conn.commit()
 
     @staticmethod
     def create(conn, google_id: str, email: str,
@@ -236,9 +257,9 @@ class InventoryItem:
         return cur.fetchone() is not None
 
     @staticmethod
-    def create(conn, user_id: int, data: dict) -> "InventoryItem":
+    def create(conn, user_id: int, data: dict) -> "InventoryItem | None":
         cur = conn.execute(
-            """INSERT INTO inventory_items
+            """INSERT OR IGNORE INTO inventory_items
                (user_id, product_id, name, brand, category, sub_category,
                 style, colors, tags, image_url, price_krw, source_url,
                 obtained_from)
@@ -261,6 +282,8 @@ class InventoryItem:
         )
         row = cur.fetchone()
         conn.commit()
+        if row is None:
+            return None  # 중복 — INSERT OR IGNORE로 스킵됨
         return InventoryItem(row_to_dict(cur, row))
 
 

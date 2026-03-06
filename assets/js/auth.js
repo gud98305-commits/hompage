@@ -33,13 +33,16 @@
 
   // ── Capture token from URL (after OAuth callback redirect) ─────────────────
   (async function captureTokenFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
+    // fragment(#token=...)를 우선 확인, 없으면 query(?token=...) fallback
+    const hashParams = new URLSearchParams(window.location.hash.slice(1));
+    const queryParams = new URLSearchParams(window.location.search);
+    const token = hashParams.get('token') || queryParams.get('token');
     if (!token) return;
     setToken(token);
     // Clean URL
     const url = new URL(window.location.href);
     url.searchParams.delete('token');
+    url.hash = '';
     window.history.replaceState({}, '', url.toString());
     // Sync localStorage wishlist → backend
     await _syncWishlist(token);
